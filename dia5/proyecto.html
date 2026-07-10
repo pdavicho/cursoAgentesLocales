@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proyecto final · Tu agente — Agentes IA Local</title>
+<link rel="stylesheet" href="../assets/curso.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏆</text></svg>">
+</head>
+<body>
+<div class="contenedor">
+
+  <nav class="nav">
+    <span class="marca">🤖 Agentes <span>IA Local</span></span>
+    <div style="display:flex;gap:18px;flex-wrap:wrap">
+      <a href="../index.html">Portada</a>
+      <a href="slides.html">Slides Día 5</a>
+      <a href="oficina.html">🏢 La Oficina</a>
+    </div>
+  </nav>
+
+  <header class="lab-cabecera">
+    <div class="kicker">Proyecto final · 50% de la nota</div>
+    <h1>🏆 Construye TU agente (y demuestra que funciona)</h1>
+    <div class="meta">
+      <span>📅 Entrega: hasta la fecha indicada por el docente</span>
+      <span>👤 Individual</span>
+      <span>🏠 Local o ☁️ nube: tú eliges</span>
+    </div>
+    <p style="margin-top:14px;color:var(--texto-suave)">
+      <b style="color:var(--texto)">La consigna es simple:</b> diseña y construye un agente que resuelva
+      <b style="color:var(--texto)">un problema real de tu trabajo, estudio o vida diaria</b>, y entrega la evidencia de que funciona.
+      Puede ser local (AnythingLLM, como los días 2-3) o en la nube (Zapier o MindStudio, manuales bonus). Lo que importa: que sea útil de verdad.
+    </p>
+  </header>
+
+  <!-- Qué entregar -->
+  <div class="paso">
+    <div class="paso-cabecera"><span class="paso-num">📦</span><h2>Qué entregas (3 cosas)</h2></div>
+    <ol>
+      <li><b>La ficha de tu agente</b> (las 4 casillas — puedes copiar la plantilla de abajo y llenarla en Word):</li>
+    </ol>
+    <div class="copiable">FICHA DE MI AGENTE
+Nombre del agente: ______________________
+Autor/a: ______________________
+
+🎯 MISIÓN — ¿Qué problema real resuelve y para quién?
+______________________
+
+📜 INSTRUCCIONES — El prompt completo que le diste (rol + tarea + formato + reglas):
+______________________
+
+🛠️ HERRAMIENTAS — ¿Cuáles usa y por qué solo esas? (documentos, web, archivos, visión…)
+______________________
+
+💾 MEMORIA — ¿Qué documentos o datos conoce?
+______________________
+
+⚠️ LÍMITES Y RIESGOS — ¿Qué NO debe hacer? ¿Qué podría salir mal y cómo lo controlas?
+______________________</div>
+    <ol start="2">
+      <li><b>Evidencia de que funciona</b>: un video corto (3 a 5 minutos, puede ser grabación de pantalla con tu voz) <b>o</b> mínimo 6 capturas de pantalla comentadas, mostrando a tu agente resolviendo un caso real de inicio a fin.</li>
+      <li><b>Una reflexión de 5 líneas</b>: qué te sorprendió, qué le mejorarías, y si lo seguirás usando.</li>
+    </ol>
+    <div class="caja caja-tip"><b>💚 Para grabar la pantalla gratis en Windows:</b> presiona <kbd>Windows</kbd> + <kbd>G</kbd> (barra de juegos de Windows) → botón de grabar. O usa el propio Zoom/Meet grabándote a ti mismo compartiendo pantalla.</div>
+  </div>
+
+  <!-- Rúbrica -->
+  <div class="paso">
+    <div class="paso-cabecera"><span class="paso-num">📏</span><h2>Rúbrica de evaluación (sobre 10)</h2></div>
+    <div class="tabla-scroll">
+    <table class="tabla">
+      <tr><th>Criterio</th><th>Puntos</th><th>Qué se evalúa</th></tr>
+      <tr><td><b>🎯 Misión real y clara</b></td><td>2</td><td>El agente resuelve un problema concreto y verosímil de tu contexto (no "un agente que hace de todo").</td></tr>
+      <tr><td><b>📜 Instrucciones con receta</b></td><td>2</td><td>El prompt tiene ROL + TAREA + FORMATO + REGLAS, incluyendo regla anti-invento.</td></tr>
+      <tr><td><b>🛠️ Herramientas y memoria bien elegidas</b></td><td>2</td><td>Usa solo lo que necesita (mínimo privilegio) y su memoria/documentos tienen sentido para la misión.</td></tr>
+      <tr><td><b>▶️ Funciona (la demo)</b></td><td>3</td><td>La evidencia muestra el agente completando su misión de inicio a fin con un caso real.</td></tr>
+      <tr><td><b>⚠️ Límites y riesgos identificados</b></td><td>1</td><td>Reconoces honestamente qué no hace bien, qué riesgos tiene y cómo los controlas.</td></tr>
+    </table>
+    </div>
+    <div class="caja caja-info"><b>ℹ️ Bonus (+1, máximo 10):</b> si tu agente usa una combinación creativa de superpoderes (ej. visión + archivos, o dos workspaces que se complementan) o si construiste una variante de la Oficina con roles propios.</div>
+  </div>
+
+  <!-- Ideas -->
+  <div class="paso">
+    <div class="paso-cabecera"><span class="paso-num">💡</span><h2>¿Sin ideas? Roba una de estas</h2></div>
+    <ul>
+      <li>🧾 <b>Digitalizador de facturas</b>: fotos de recibos → tabla mensual de gastos (visión + archivos).</li>
+      <li>📚 <b>Tutor personal</b>: workspace con tus apuntes del semestre que te toma lecciones antes del examen.</li>
+      <li>📄 <b>Asistente de reglamentos</b>: responde dudas del personal citando el manual interno (RAG puro).</li>
+      <li>📰 <b>Vigía del sector</b>: cada semana investiga novedades de tu industria y guarda un informe (@agent web + archivos).</li>
+      <li>📬 <b>Analista de correos</b> (nube bonus): el taller de Zapier adaptado a TU bandeja y TUS prioridades.</li>
+      <li>📋 <b>Preseleccionador de CVs</b> (nube bonus): el taller de MindStudio con los requisitos reales de tu área.</li>
+    </ul>
+  </div>
+
+  <!-- Cómo entregar -->
+  <div class="paso">
+    <div class="paso-cabecera"><span class="paso-num">📤</span><h2>Cómo entregar (modalidad asíncrona)</h2></div>
+    <ol>
+      <li>Junta las 3 cosas (ficha, evidencia y reflexión) en una carpeta con tu nombre: <code>Proyecto_TuNombre</code>.</li>
+      <li>Si el video pesa mucho, súbelo a YouTube como "oculto" (unlisted) o a tu Drive y comparte el enlace dentro de la ficha.</li>
+      <li>Envía todo por el canal indicado por el docente (aula virtual o correo) antes de la fecha límite.</li>
+    </ol>
+    <div class="caja caja-alerta"><b>⚠️ Regla de privacidad para tu demo:</b> si tu agente maneja datos reales de terceros (CVs, correos, nóminas), usa datos de EJEMPLO para el video. Demuestra lo aprendido: los datos ajenos se protegen.</div>
+  </div>
+
+  <!-- Checklist -->
+  <div class="paso" data-paso="c1">
+    <div class="paso-cabecera"><span class="paso-num">✅</span><h2>Checklist antes de enviar</h2></div>
+    <ul style="list-style:none; margin-left:0">
+      <li><label class="paso-check" style="margin-top:8px"><input type="checkbox" data-item="i1"> Mi ficha tiene las 4 casillas llenas + límites y riesgos</label></li>
+      <li><label class="paso-check" style="margin-top:8px"><input type="checkbox" data-item="i2"> Mi prompt sigue la receta ROL + TAREA + FORMATO + REGLAS</label></li>
+      <li><label class="paso-check" style="margin-top:8px"><input type="checkbox" data-item="i3"> Mi video/capturas muestran la misión completa, de inicio a fin</label></li>
+      <li><label class="paso-check" style="margin-top:8px"><input type="checkbox" data-item="i4"> No expongo datos reales de terceros en la demo</label></li>
+      <li><label class="paso-check" style="margin-top:8px"><input type="checkbox" data-item="i5"> Escribí mi reflexión de 5 líneas</label></li>
+      <li><label class="paso-check" style="margin-top:8px"><input type="checkbox" data-item="i6"> Carpeta nombrada y enviada por el canal correcto 🎉</label></li>
+    </ul>
+  </div>
+
+  <div class="nav-paginas">
+    <a class="btn btn-secundario" href="slides.html#/8">← Volver a las slides</a>
+    <a class="btn btn-primario" href="oficina.html">🏢 Jugar con La Oficina →</a>
+  </div>
+
+  <footer class="pie">Curso <b>Agentes de IA Locales</b> · ISTER 2026 · Proyecto final</footer>
+</div>
+
+<script>
+/* Checklist persistente (por ítem) + botones copiar */
+const clave = 'proyecto-' + location.pathname;
+const estado = JSON.parse(localStorage.getItem(clave) || '{}');
+document.querySelectorAll('.paso-check input').forEach(chk => {
+  chk.checked = !!estado[chk.dataset.item];
+  chk.addEventListener('change', () => {
+    estado[chk.dataset.item] = chk.checked;
+    localStorage.setItem(clave, JSON.stringify(estado));
+  });
+});
+document.querySelectorAll('.copiable').forEach(bloque => {
+  const texto = bloque.textContent.trim();
+  const btn = document.createElement('button');
+  btn.className = 'btn-copiar'; btn.textContent = '📋 Copiar';
+  btn.onclick = () => navigator.clipboard.writeText(texto).then(() => {
+    btn.textContent = '✅ ¡Copiado!'; btn.classList.add('copiado');
+    setTimeout(() => { btn.textContent = '📋 Copiar'; btn.classList.remove('copiado'); }, 1800);
+  });
+  bloque.appendChild(btn);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab Día 4 · Los superpoderes — Agentes IA Local</title>
+<link rel="stylesheet" href="../assets/curso.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👁️</text></svg>">
+</head>
+<body>
+<div class="contenedor">
+
+  <nav class="nav">
+    <span class="marca">🤖 Agentes <span>IA Local</span></span>
+    <div style="display:flex;gap:18px;flex-wrap:wrap">
+      <a href="../index.html">Portada</a>
+      <a href="slides.html">Slides Día 4</a>
+    </div>
+  </nav>
+
+  <header class="lab-cabecera">
+    <div class="kicker">Laboratorio · Día 4</div>
+    <h1>👁️ Superpoderes: visión, páginas web, gráficos y memoria</h1>
+    <div class="meta">
+      <span>⏱️ ~70 minutos</span>
+      <span>🎚️ Nivel: principiante+</span>
+      <span>📋 Requiere: lo del Día 3 funcionando + tu celular para fotos</span>
+    </div>
+  </header>
+
+  <div class="progreso-wrap">
+    <div class="progreso-texto">Tu progreso: <b id="prog-num">0 de 7 pasos</b> — se guarda en tu navegador.</div>
+    <div class="progreso-barra"><div id="prog-fill"></div></div>
+  </div>
+
+  <!-- PASO 1 -->
+  <div class="paso" data-paso="p1">
+    <div class="paso-cabecera"><span class="paso-num">1</span><h2>Consigue una foto de un documento real 📸</h2></div>
+    <ol>
+      <li>Toma con tu celular una foto de un documento en papel que tengas a mano: una <b>factura, recibo, oficio, certificado o una página de un libro</b>. (Nada con datos ultra sensibles para practicar, por si compartes pantalla.)</li>
+      <li>Pásala a tu computadora: envíatela por correo a ti mismo, por WhatsApp Web, o con un cable. Guárdala donde la encuentres (ej. Escritorio).</li>
+    </ol>
+    <div class="caja caja-tip"><b>💚 Foto buena = resultado bueno.</b> Con luz, sin dedos encima y lo más recta posible. No necesita ser perfecta: los modelos con visión aguantan bastante.</div>
+    <label class="paso-check"><input type="checkbox"> Tengo la foto en mi computadora</label>
+  </div>
+
+  <!-- PASO 2 -->
+  <div class="paso" data-paso="p2">
+    <div class="paso-cabecera"><span class="paso-num">2</span><h2>El momento WOW: tu modelo la LEE 👁️</h2></div>
+    <p>Vamos primero a la app de <b>Ollama</b> (la del Día 1):</p>
+    <ol>
+      <li>Abre Ollama y verifica que el modelo sea <b>gemma3:4b</b> (los gemma3 tienen visión; el llama3.2:1b del plan B <b>no ve</b> — si es tu caso, haz este paso en pareja con alguien del curso o descarga gemma3:4b con paciencia).</li>
+      <li><b>Arrastra tu foto</b> a la ventana del chat (o usa el clip 📎 para adjuntarla).</li>
+      <li>Junto a la imagen, escribe:</li>
+    </ol>
+    <div class="copiable">Lee este documento y extrae TODOS los datos que contiene, organizados: tipo de documento, fechas, nombres, valores y cualquier dato importante. Al final dime si detectas alguna fecha límite o monto total.</div>
+    <p>Y observa cómo tu computadora, sin internet, sin nube, sin pagar un centavo… <b>lee papel</b>. 🤯</p>
+    <label class="paso-check"><input type="checkbox"> Mi modelo local leyó la foto del documento</label>
+  </div>
+
+  <!-- PASO 3 -->
+  <div class="paso" data-paso="p3">
+    <div class="paso-cabecera"><span class="paso-num">3</span><h2>Digitalización pro: de foto a tabla 🧾</h2></div>
+    <p>Ahora el caso de oficina más útil del mundo real. Con la misma foto (ideal si es factura o recibo):</p>
+    <div class="copiable">Convierte este documento en una tabla con columnas: Concepto | Cantidad | Valor. Debajo de la tabla escribe el total. Formato listo para copiar a Excel. Si algún dato no se lee bien, márcalo como [ILEGIBLE] en vez de inventarlo.</div>
+    <ul>
+      <li>Copia el resultado y pégalo en Excel o Google Sheets. <b>Acabas de digitalizar papel en 30 segundos.</b></li>
+      <li>Fíjate en el detalle anti-alucinación del prompt: le pedimos <b>[ILEGIBLE]</b> en vez de inventar. La receta del Día 2 aplica también con imágenes.</li>
+    </ul>
+    <label class="paso-check"><input type="checkbox"> Convertí un documento en tabla</label>
+  </div>
+
+  <!-- PASO 4 -->
+  <div class="paso" data-paso="p4">
+    <div class="paso-cabecera"><span class="paso-num">4</span><h2>Visión también en AnythingLLM 🧩</h2></div>
+    <ol>
+      <li>Abre <b>AnythingLLM</b> → tu workspace <b>mi-asistente</b>.</li>
+      <li>Adjunta la misma foto al chat (clip 📎 o arrastrándola) y pídele algo distinto, por ejemplo:</li>
+    </ol>
+    <div class="copiable">Mira este documento y redáctame un correo breve y formal para enviárselo a mi jefe resumiendo de qué se trata y qué acción requiere.</div>
+    <div class="caja caja-info"><b>ℹ️ ¿Por qué en los dos programas?</b> Ollama es ideal para pruebas rápidas; AnythingLLM combina la visión con el contrato de trabajo y la memoria de tu workspace. Mismo cerebro, distinto equipamiento.</div>
+    <label class="paso-check"><input type="checkbox"> Usé visión dentro de AnythingLLM</label>
+  </div>
+
+  <!-- PASO 5 -->
+  <div class="paso" data-paso="p5">
+    <div class="paso-cabecera"><span class="paso-num">5</span><h2>Léete esta página 🌐</h2></div>
+    <p>Busca el link de una noticia o página que te interese (cópialo de tu navegador) y en AnythingLLM:</p>
+    <div class="copiable">@agent lee esta página [PEGA AQUÍ EL LINK] y dame: un resumen de 5 líneas, los datos más importantes, y tu conclusión en una frase.</div>
+    <ul>
+      <li>El agente visitará esa página específica (habilidad "scrape websites" del Día 3) y te la servirá masticada.</li>
+    </ul>
+    <label class="paso-check"><input type="checkbox"> Mi agente leyó una página que yo le indiqué</label>
+  </div>
+
+  <!-- PASO 6 -->
+  <div class="paso" data-paso="p6">
+    <div class="paso-cabecera"><span class="paso-num">6</span><h2>Gráficos y memoria de elefante 📊🧠</h2></div>
+    <p><b>Gráfico</b> (habilidad "generate charts" activada el Día 3):</p>
+    <div class="copiable">@agent genera un gráfico de barras con estos datos: enero 120, febrero 95, marzo 150, abril 210, mayo 180. Título: "Ventas del semestre".</div>
+    <p><b>Memoria a largo plazo:</b></p>
+    <div class="copiable">@agent recuerda esta información importante: mi jefe se llama [NOMBRE], mi proyecto principal es [PROYECTO] y mi día más ocupado es [DÍA].</div>
+    <ul>
+      <li>Ahora abre un <b>chat nuevo</b> (New thread) en el mismo workspace y pregúntale: <i>"@agent ¿cómo se llama mi jefe y cuál es mi proyecto principal?"</i></li>
+      <li>Si te responde bien: tu agente ya <b>aprende de ti con el tiempo</b>. Cada día que lo uses, te conocerá mejor.</li>
+    </ul>
+    <label class="paso-check"><input type="checkbox"> Generé un gráfico y la memoria funcionó en un chat nuevo</label>
+  </div>
+
+  <!-- PASO 7 -->
+  <div class="paso" data-paso="p7">
+    <div class="paso-cabecera"><span class="paso-num">7</span><h2>Visita el "garaje de cerebros" 🧠</h2></div>
+    <ol>
+      <li>Entra a <a href="https://ollama.com/library" target="_blank" style="color:var(--acento-2)"><b>ollama.com/library</b></a> y explora 5 minutos: verás modelos con visión, para código, razonadores, gigantes y miniaturas.</li>
+      <li>No descargues nada todavía (a menos que te sobre disco y curiosidad 😄). El objetivo es que sepas que <b>este catálogo existe y es todo tuyo, gratis</b>.</li>
+      <li>Pregunta guía: para el agente de TU proyecto final, ¿el modelo del curso basta o necesitarías otro? (Pista: casi siempre basta.)</li>
+    </ol>
+    <label class="paso-check"><input type="checkbox">🏆 Exploré la biblioteca de modelos — laboratorio completado</label>
+  </div>
+
+  <!-- Reto -->
+  <div class="paso">
+    <div class="paso-cabecera"><span class="paso-num">🏅</span><h2>Reto extra (opcional)</h2></div>
+    <ul>
+      <li><b>Nivel 1:</b> digitaliza 3 documentos en papel de tu trabajo o casa y arma con ellos una mini-tabla en Excel.</li>
+      <li><b>Nivel 2:</b> foto a una pizarra o apuntes de cuaderno → pídele el acta de reunión con responsables y pendientes.</li>
+      <li><b>Nivel 3:</b> combina superpoderes: "@agent lee esta página [link], compárala con mis documentos y guarda las conclusiones en un archivo".</li>
+    </ul>
+  </div>
+
+  <!-- Tarea -->
+  <div class="paso">
+    <div class="paso-cabecera"><span class="paso-num">📌</span><h2>Para mañana (el gran final 🏢)</h2></div>
+    <ul>
+      <li>📋 Ten tu <b>ficha del proyecto final</b> lista (las 4 casillas del Día 3).</li>
+      <li>💡 Piensa un <b>encargo para un equipo</b>: mañana le darás trabajo a una oficina entera de agentes. Ejemplos: "el plan de la fiesta de fin de año", "una campaña para redes del nuevo curso", "un plan de ahorro familiar".</li>
+      <li>🦙 Deja Ollama instalado y funcionando: la Oficina de Agentes de mañana usa TU modelo local.</li>
+    </ul>
+  </div>
+
+  <!-- Troubleshooting -->
+  <div class="paso">
+    <div class="paso-cabecera"><span class="paso-num">🚑</span><h2>Si algo falla</h2></div>
+    <details class="problema">
+      <summary>El modelo dice que no puede ver imágenes</summary>
+      <div class="problema-cuerpo">Estás usando un modelo sin visión (ej. llama3.2:1b del plan B). Cambia a <b>gemma3:4b</b> en el selector de modelos. Si tu máquina no lo aguanta, trabaja este lab en pareja o prueba <b>moondream</b> (un modelo de visión muy pequeñito) desde la biblioteca.</div>
+    </details>
+    <details class="problema">
+      <summary>Lee la imagen pero se inventa datos</summary>
+      <div class="problema-cuerpo">Foto borrosa u oscura = el modelo "adivina". Repite la foto con más luz y de frente. Y usa siempre la instrucción anti-invento: "si algo no se lee bien, márcalo como [ILEGIBLE]".</div>
+    </details>
+    <details class="problema">
+      <summary>El @agent no puede leer la página que le pasé</summary>
+      <div class="problema-cuerpo">Algunas páginas bloquean lectores automáticos (bancos, redes sociales, sitios con login). Prueba con una noticia de un medio público o una página institucional. Verifica también que la habilidad "scrape websites" esté activada (Día 3, paso 2).</div>
+    </details>
+    <details class="problema">
+      <summary>La memoria no recuerda lo que le dije</summary>
+      <div class="problema-cuerpo">Verifica que la habilidad <b>RAG & long-term memory</b> esté activada y que usaste <code>@agent recuerda…</code> (con @agent). La memoria vive por workspace: pregúntale en el mismo workspace donde se lo contaste.</div>
+    </details>
+  </div>
+
+  <div class="nav-paginas">
+    <a class="btn btn-secundario" href="slides.html#/10">← Volver a las slides (quiz)</a>
+    <a class="btn btn-primario" href="../dia5/slides.html">Día 5: el gran final 🏢 →</a>
+  </div>
+
+  <footer class="pie">Curso <b>Agentes de IA Locales</b> · ISTER 2026 · Día 4</footer>
+</div>
+
+<script>
+const clave = 'lab-' + location.pathname;
+const estado = JSON.parse(localStorage.getItem(clave) || '{}');
+const pasos = [...document.querySelectorAll('.paso[data-paso]')];
+function refrescar() {
+  let hechos = 0;
+  pasos.forEach(p => {
+    const id = p.dataset.paso, chk = p.querySelector('.paso-check input');
+    chk.checked = !!estado[id];
+    p.classList.toggle('completado', !!estado[id]);
+    if (estado[id]) hechos++;
+  });
+  document.getElementById('prog-num').textContent = hechos + ' de ' + pasos.length + ' pasos';
+  document.getElementById('prog-fill').style.width = (hechos / pasos.length * 100) + '%';
+}
+pasos.forEach(p => p.querySelector('.paso-check input').addEventListener('change', e => {
+  estado[p.dataset.paso] = e.target.checked;
+  localStorage.setItem(clave, JSON.stringify(estado));
+  refrescar();
+}));
+refrescar();
+document.querySelectorAll('.copiable').forEach(bloque => {
+  const texto = bloque.textContent.trim();
+  const btn = document.createElement('button');
+  btn.className = 'btn-copiar'; btn.textContent = '📋 Copiar';
+  btn.onclick = () => navigator.clipboard.writeText(texto).then(() => {
+    btn.textContent = '✅ ¡Copiado!'; btn.classList.add('copiado');
+    setTimeout(() => { btn.textContent = '📋 Copiar'; btn.classList.remove('copiado'); }, 1800);
+  });
+  bloque.appendChild(btn);
+});
+</script>
+</body>
+</html>

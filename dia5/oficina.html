@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🏢 La Oficina de Agentes — Agentes IA Local</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏢</text></svg>">
+<style>
+:root {
+  --fondo: #0b0e1a; --tarjeta: #1a2036; --borde: #2a3352;
+  --texto: #e8ecf8; --suave: #9aa5c4;
+  --acento: #7c5cff; --acento2: #00e5ff; --exito: #2dd881; --alerta: #ffb020; --peligro: #ff5c7a;
+  --grad: linear-gradient(135deg, #7c5cff, #00e5ff);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--fondo); color: var(--texto); min-height: 100vh;
+  font-family: 'Segoe UI', system-ui, sans-serif; line-height: 1.55;
+}
+body::before { content: ""; position: fixed; inset: 0; z-index: -1;
+  background: radial-gradient(900px 500px at 85% -10%, rgba(124,92,255,.18), transparent 60%),
+              radial-gradient(700px 400px at -10% 110%, rgba(0,229,255,.10), transparent 60%); }
+.contenedor { max-width: 1080px; margin: 0 auto; padding: 18px; }
+
+/* Cabecera */
+.cabecera { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 6px 0 14px; border-bottom: 1px solid var(--borde); }
+.cabecera h1 { font-size: clamp(1.2rem, 3vw, 1.7rem); font-weight: 900; }
+.cabecera h1 .grad { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.cabecera a { color: var(--suave); text-decoration: none; font-weight: 600; font-size: .9rem; }
+.cabecera a:hover { color: var(--acento2); }
+#estado-conexion {
+  font-size: .82rem; font-weight: 700; padding: 6px 14px; border-radius: 999px;
+  background: var(--tarjeta); border: 1px solid var(--borde);
+}
+#estado-conexion.on { color: var(--exito); border-color: rgba(45,216,129,.5); }
+#estado-conexion.off { color: var(--alerta); border-color: rgba(255,176,32,.5); }
+
+/* La oficina */
+.oficina {
+  margin: 18px 0; padding: clamp(12px, 2.5vw, 28px); border-radius: 22px;
+  border: 1px solid var(--borde);
+  background:
+    linear-gradient(rgba(26,32,54,.88), rgba(26,32,54,.88)),
+    repeating-linear-gradient(45deg, #232b4a 0 22px, #1e2440 22px 44px);
+}
+.escritorios { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(8px, 1.6vw, 18px); }
+@media (max-width: 900px) { .escritorios { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 460px) { .escritorios { grid-template-columns: 1fr; } }
+
+.escritorio {
+  background: var(--fondo); border: 2px solid var(--borde); border-radius: 18px;
+  padding: 14px; display: flex; flex-direction: column; align-items: center; gap: 8px;
+  transition: all .3s; min-height: 300px;
+}
+.escritorio.activo { border-color: var(--acento2); box-shadow: 0 0 24px rgba(0,229,255,.25); }
+.escritorio.hecho { border-color: rgba(45,216,129,.55); }
+.avatar { font-size: clamp(2.4rem, 5vw, 3.4rem); line-height: 1; transition: transform .3s; }
+.escritorio.activo .avatar { animation: pensar 1s ease-in-out infinite; }
+@keyframes pensar { 0%,100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-7px) rotate(2deg); } }
+.nombre { font-weight: 800; font-size: .98rem; }
+.rol { color: var(--suave); font-size: .78rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+.chip-estado {
+  font-size: .74rem; font-weight: 700; padding: 3px 12px; border-radius: 999px;
+  background: var(--tarjeta); border: 1px solid var(--borde); color: var(--suave);
+}
+.escritorio.activo .chip-estado { color: var(--acento2); border-color: var(--acento2); }
+.escritorio.hecho .chip-estado { color: var(--exito); border-color: rgba(45,216,129,.5); }
+
+.burbuja {
+  width: 100%; flex: 1; background: #0d1120; border: 1px solid var(--borde);
+  border-radius: 12px; padding: 10px 12px; font-size: .82rem; color: var(--suave);
+  overflow-y: auto; max-height: 170px; min-height: 110px; text-align: left; white-space: pre-wrap;
+}
+.escritorio.activo .burbuja { border-color: rgba(0,229,255,.4); color: var(--texto); }
+.escritorio.hecho .burbuja { color: #cfe8db; }
+
+/* Panel de control */
+.control {
+  background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 18px;
+  padding: 18px; margin: 14px 0; display: flex; flex-direction: column; gap: 12px;
+}
+.control label { font-weight: 700; font-size: .9rem; }
+.fila-control { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+input[type="text"], select {
+  background: #0d1120; color: var(--texto); border: 1px solid var(--borde);
+  border-radius: 10px; padding: 11px 14px; font-size: .95rem; font-family: inherit;
+  flex: 1; min-width: 220px;
+}
+input[type="text"]:focus, select:focus { outline: none; border-color: var(--acento2); }
+.btn {
+  border: none; border-radius: 12px; padding: 12px 22px; font-weight: 800; font-size: .95rem;
+  cursor: pointer; font-family: inherit; transition: all .18s;
+}
+.btn-primario { background: var(--grad); color: #0b0e1a; }
+.btn-primario:hover { filter: brightness(1.12); }
+.btn-primario:disabled { filter: grayscale(.7); cursor: not-allowed; }
+.btn-secundario { background: transparent; color: var(--acento2); border: 1px solid var(--borde); }
+.btn-secundario:hover { border-color: var(--acento2); }
+.sugerencias { display: flex; gap: 8px; flex-wrap: wrap; }
+.sugerencias button {
+  background: #0d1120; border: 1px dashed var(--borde); color: var(--suave);
+  border-radius: 999px; padding: 6px 14px; font-size: .8rem; cursor: pointer; font-family: inherit;
+}
+.sugerencias button:hover { color: var(--acento2); border-color: var(--acento2); }
+
+/* Config */
+details.config { background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 14px; margin: 10px 0; }
+details.config summary { padding: 12px 16px; cursor: pointer; font-weight: 700; font-size: .9rem; color: var(--suave); }
+details.config .cuerpo { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 10px; }
+.ayuda { font-size: .82rem; color: var(--suave); }
+.ayuda code { background: #0d1120; padding: 2px 7px; border-radius: 6px; font-size: .95em; color: #b8e0ff; }
+
+/* Entregable */
+#panel-final { display: none; background: var(--tarjeta); border: 1px solid rgba(45,216,129,.5); border-radius: 18px; padding: 20px; margin: 16px 0; }
+#panel-final h2 { font-size: 1.15rem; margin-bottom: 10px; }
+#panel-final h2 span { color: var(--exito); }
+#documento {
+  background: #0d1120; border: 1px solid var(--borde); border-radius: 12px;
+  padding: 16px; white-space: pre-wrap; font-size: .92rem; max-height: 400px; overflow-y: auto;
+}
+.acciones-final { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+
+.pie { text-align: center; color: var(--suave); font-size: .85rem; padding: 20px 0; }
+</style>
+</head>
+<body>
+<div class="contenedor">
+
+  <header class="cabecera">
+    <h1>🏢 La Oficina de <span class="grad">Agentes</span></h1>
+    <span id="estado-conexion" class="off">🔌 sin conectar</span>
+    <a href="slides.html">← Slides Día 5</a>
+  </header>
+
+  <p style="color:var(--suave); margin:12px 0; font-size:.95rem">
+    Cuatro agentes de IA — corriendo en <b style="color:var(--texto)">TU computadora</b> con Ollama — trabajan en equipo el encargo que les des:
+    la jefa planifica, el investigador aporta ideas, la redactora escribe y el crítico exige calidad. <b style="color:var(--texto)">Sin Ollama a mano</b> usa el modo demo 🎬.
+  </p>
+
+  <!-- LA OFICINA -->
+  <div class="oficina">
+    <div class="escritorios">
+      <div class="escritorio" id="desk-0">
+        <div class="avatar">👩‍💼</div>
+        <div class="nombre">Marta</div>
+        <div class="rol">Jefa de proyecto</div>
+        <div class="chip-estado" id="estado-0">💤 esperando</div>
+        <div class="burbuja" id="burbuja-0">Lista para recibir el encargo del cliente (o sea, tú).</div>
+      </div>
+      <div class="escritorio" id="desk-1">
+        <div class="avatar">🕵️</div>
+        <div class="nombre">Mateo</div>
+        <div class="rol">Investigador</div>
+        <div class="chip-estado" id="estado-1">💤 esperando</div>
+        <div class="burbuja" id="burbuja-1">Afilando ideas y datos…</div>
+      </div>
+      <div class="escritorio" id="desk-2">
+        <div class="avatar">👩‍💻</div>
+        <div class="nombre">Luciana</div>
+        <div class="rol">Redactora</div>
+        <div class="chip-estado" id="estado-2">💤 esperando</div>
+        <div class="burbuja" id="burbuja-2">Con el teclado caliente.</div>
+      </div>
+      <div class="escritorio" id="desk-3">
+        <div class="avatar">🧐</div>
+        <div class="nombre">Ernesto</div>
+        <div class="rol">Crítico de calidad</div>
+        <div class="chip-estado" id="estado-3">💤 esperando</div>
+        <div class="burbuja" id="burbuja-3">Nada se entrega sin pasar por mí.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTROL -->
+  <div class="control">
+    <label for="encargo">📋 El encargo para el equipo:</label>
+    <div class="fila-control">
+      <input type="text" id="encargo" placeholder="Ej: el plan de la fiesta de fin de año de la oficina con $200 de presupuesto" maxlength="200">
+    </div>
+    <div class="sugerencias">
+      <button onclick="sugerir(this)">🎉 Plan de fiesta de fin de año con $200</button>
+      <button onclick="sugerir(this)">📣 Campaña en redes para promocionar un curso de IA</button>
+      <button onclick="sugerir(this)">💰 Plan de ahorro familiar para 6 meses</button>
+      <button onclick="sugerir(this)">📚 Guía para estudiar mejor con ayuda de IA</button>
+    </div>
+    <div class="fila-control">
+      <button class="btn btn-primario" id="btn-trabajar" onclick="trabajar()">🚀 ¡A trabajar, equipo!</button>
+      <button class="btn btn-secundario" id="btn-demo" onclick="demo()">🎬 Modo demo (sin Ollama)</button>
+      <button class="btn btn-secundario" onclick="reiniciar()">🔄 Reiniciar oficina</button>
+    </div>
+  </div>
+
+  <!-- CONFIG -->
+  <details class="config" id="config">
+    <summary>⚙️ Conexión con tu Ollama (ábreme si algo no conecta)</summary>
+    <div class="cuerpo">
+      <div class="fila-control">
+        <input type="text" id="ollama-url" value="http://localhost:11434" aria-label="Dirección de Ollama">
+        <select id="ollama-modelo"><option value="">— modelo (conecta primero) —</option></select>
+        <button class="btn btn-secundario" onclick="conectar(true)">🔌 Probar conexión</button>
+      </div>
+      <div class="ayuda">
+        <b>¿"Sin conectar" aunque Ollama está abierto?</b> Es normal si abres esta página desde internet (GitHub Pages): por seguridad, Ollama solo acepta llamadas de páginas autorizadas. Dos soluciones:
+        <br>1) <b>Autorizar al sitio</b>: cierra Ollama (clic derecho en la llamita 🦙 → Quit), abre el menú Inicio → escribe <code>cmd</code> → Enter, pega
+        <code>setx OLLAMA_ORIGINS "*"</code> y presiona Enter. Vuelve a abrir Ollama y prueba la conexión de nuevo.
+        <br>2) O simplemente usa el <b>modo demo 🎬</b> para ver la experiencia, que no necesita nada.
+      </div>
+    </div>
+  </details>
+
+  <!-- ENTREGABLE FINAL -->
+  <div id="panel-final">
+    <h2>📄 Entregable del equipo — <span>misión cumplida</span> 🎉</h2>
+    <div id="documento"></div>
+    <div class="acciones-final">
+      <button class="btn btn-secundario" onclick="copiarDoc(this)">📋 Copiar</button>
+      <button class="btn btn-secundario" onclick="descargarDoc()">💾 Descargar .txt</button>
+    </div>
+  </div>
+
+  <footer class="pie">Curso <b>Agentes de IA Locales</b> · ISTER 2026 · Día 5 · Inspirado en la idea de "agent office", reconstruido sin instalar nada: puro navegador + tu Ollama.</footer>
+</div>
+
+<script>
+/* =====================================================
+   LA OFICINA DE AGENTES — multi-agente sobre Ollama local
+   ===================================================== */
+const $ = id => document.getElementById(id);
+let ocupado = false;
+let docFinal = '';
+
+/* ---------- Personal de la oficina ---------- */
+const equipo = [
+  { nombre: 'Marta', sistema: 'Eres Marta, jefa de proyecto de una pequeña oficina creativa. Hablas en español, directa, cálida y motivadora. Recibes un encargo de un cliente. Responde con: una línea aceptando el encargo con entusiasmo, y un plan de exactamente 3 pasos indicando qué harán Mateo (investigador), Luciana (redactora) y Ernesto (crítico). Máximo 80 palabras.' },
+  { nombre: 'Mateo', sistema: 'Eres Mateo, investigador de la oficina. No tienes internet: usas tu conocimiento general y tu ingenio. En español, entrega exactamente 5 datos, ideas o recomendaciones CONCRETAS y útiles para el encargo, en viñetas cortas. Nada de generalidades vacías. Máximo 110 palabras.' },
+  { nombre: 'Luciana', sistema: 'Eres Luciana, la redactora estrella de la oficina. En español, con el encargo, el plan de la jefa y los hallazgos del investigador, redacta el ENTREGABLE COMPLETO: claro, bien estructurado, con títulos o viñetas, listo para usar. Máximo 220 palabras.' },
+  { nombre: 'Ernesto', sistema: 'Eres Ernesto, el crítico de calidad: implacable pero constructivo, con humor fino. En español, lee el borrador y entrega exactamente 3 mejoras concretas y accionables en viñetas. NO reescribas el texto completo. Máximo 70 palabras.' },
+];
+
+/* ---------- Utilidades de escena ---------- */
+function setDesk(i, estado, texto) {
+  const desk = $('desk-' + i);
+  desk.classList.remove('activo', 'hecho');
+  if (estado === 'activo') desk.classList.add('activo');
+  if (estado === 'hecho') desk.classList.add('hecho');
+  $('estado-' + i).textContent = estado === 'activo' ? '🤔 trabajando…' : estado === 'hecho' ? '✅ listo' : '💤 esperando';
+  if (texto !== undefined) $('burbuja-' + i).textContent = texto;
+}
+function appendDesk(i, texto) {
+  const b = $('burbuja-' + i);
+  b.textContent += texto;
+  b.scrollTop = b.scrollHeight;
+}
+function reiniciar() {
+  if (ocupado) return;
+  const frases = ['Lista para recibir el encargo del cliente (o sea, tú).', 'Afilando ideas y datos…', 'Con el teclado caliente.', 'Nada se entrega sin pasar por mí.'];
+  [0, 1, 2, 3].forEach(i => setDesk(i, 'espera', frases[i]));
+  $('panel-final').style.display = 'none';
+  docFinal = '';
+}
+function sugerir(btn) { $('encargo').value = btn.textContent.replace(/^\S+\s/, ''); }
+
+/* ---------- Conexión con Ollama ---------- */
+async function conectar(avisar) {
+  const url = $('ollama-url').value.replace(/\/+$/, '');
+  const chip = $('estado-conexion');
+  try {
+    const r = await fetch(url + '/api/tags', { signal: AbortSignal.timeout(4000) });
+    const data = await r.json();
+    const sel = $('ollama-modelo');
+    sel.innerHTML = '';
+    (data.models || []).forEach(mo => {
+      const o = document.createElement('option');
+      o.value = mo.name; o.textContent = mo.name;
+      if (mo.name.startsWith('gemma3')) o.selected = true;
+      sel.appendChild(o);
+    });
+    if (!sel.options.length) throw new Error('sin modelos');
+    chip.textContent = '🟢 conectado a Ollama';
+    chip.className = 'on';
+    return true;
+  } catch (e) {
+    chip.textContent = '🔌 sin conectar (usa el modo demo 🎬)';
+    chip.className = 'off';
+    if (avisar) $('config').open = true;
+    return false;
+  }
+}
+conectar(false);
+
+async function preguntarOllama(i, sistema, usuario) {
+  const url = $('ollama-url').value.replace(/\/+$/, '');
+  const modelo = $('ollama-modelo').value;
+  const r = await fetch(url + '/api/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: modelo, stream: true,
+      messages: [{ role: 'system', content: sistema }, { role: 'user', content: usuario }],
+      options: { temperature: 0.7, num_predict: 420 },
+    }),
+  });
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  const lector = r.body.getReader();
+  const dec = new TextDecoder();
+  let completo = '', resto = '';
+  $('burbuja-' + i).textContent = '';
+  while (true) {
+    const { done, value } = await lector.read();
+    if (done) break;
+    resto += dec.decode(value, { stream: true });
+    const lineas = resto.split('\n');
+    resto = lineas.pop();
+    for (const linea of lineas) {
+      if (!linea.trim()) continue;
+      try {
+        const j = JSON.parse(linea);
+        const trozo = j.message && j.message.content || '';
+        if (trozo) { completo += trozo; appendDesk(i, trozo); }
+      } catch (e) { /* línea incompleta */ }
+    }
+  }
+  return completo.trim();
+}
+
+/* ---------- El flujo de trabajo real ---------- */
+async function trabajar() {
+  if (ocupado) return;
+  const encargo = $('encargo').value.trim();
+  if (!encargo) { $('encargo').focus(); $('encargo').placeholder = '⚠️ Escribe primero el encargo…'; return; }
+  if (!(await conectar(true))) return;
+  ocupado = true;
+  $('btn-trabajar').disabled = true;
+  reiniciarSuave();
+  try {
+    // 1. La jefa planifica
+    setDesk(0, 'activo');
+    const plan = await preguntarOllama(0, equipo[0].sistema, 'Encargo del cliente: ' + encargo);
+    setDesk(0, 'hecho');
+    // 2. El investigador aporta
+    setDesk(1, 'activo');
+    const hallazgos = await preguntarOllama(1, equipo[1].sistema, 'Encargo: ' + encargo + '\n\nPlan de la jefa:\n' + plan);
+    setDesk(1, 'hecho');
+    // 3. La redactora produce el borrador
+    setDesk(2, 'activo');
+    const borrador = await preguntarOllama(2, equipo[2].sistema, 'Encargo: ' + encargo + '\n\nPlan:\n' + plan + '\n\nHallazgos del investigador:\n' + hallazgos);
+    setDesk(2, 'hecho');
+    // 4. El crítico revisa
+    setDesk(3, 'activo');
+    const critica = await preguntarOllama(3, equipo[3].sistema, 'Encargo: ' + encargo + '\n\nBorrador de Luciana:\n' + borrador);
+    setDesk(3, 'hecho');
+    // 5. La redactora aplica mejoras (versión final)
+    setDesk(2, 'activo');
+    const final = await preguntarOllama(2,
+      'Eres Luciana, redactora. En español, aplica las mejoras del crítico a tu borrador y entrega SOLO la versión final completa, pulida y lista para el cliente. Máximo 250 palabras.',
+      'Encargo: ' + encargo + '\n\nTu borrador:\n' + borrador + '\n\nMejoras exigidas por Ernesto:\n' + critica);
+    setDesk(2, 'hecho');
+    // 6. Entrega
+    setDesk(0, 'activo', '🎉 ¡Equipo, lo logramos! Cliente: aquí abajo tienes tu entregable, revisado y pulido. Un gusto trabajar para ti.');
+    setDesk(0, 'hecho');
+    mostrarFinal(encargo, final);
+  } catch (e) {
+    setDesk(0, 'espera', '😅 Uy, se cayó la conexión con Ollama a mitad del trabajo (' + e.message + '). Revisa la sección ⚙️ o usa el modo demo.');
+  }
+  ocupado = false;
+  $('btn-trabajar').disabled = false;
+}
+function reiniciarSuave() {
+  ['', '', '', ''].forEach((_, i) => setDesk(i, 'espera', '…'));
+  $('panel-final').style.display = 'none';
+}
+
+/* ---------- Modo demo (sin Ollama) ---------- */
+const guionDemo = {
+  encargo: 'El plan de la fiesta de fin de año de la oficina con $200 de presupuesto',
+  pasos: [
+    [0, '¡Encargo aceptado! 🎉 Una fiesta memorable con $200: reto aceptado.\n\nPlan:\n1. Mateo investiga opciones que rindan el presupuesto.\n2. Luciana redacta el plan completo con cronograma.\n3. Ernesto lo revisa con lupa antes de entregar.'],
+    [1, 'Mis 5 hallazgos:\n• Local: la terraza de la oficina = $0.\n• Comida compartida estilo "cada quien trae un plato" + $80 para bebidas y bocaditos.\n• $50: decoración y luces (mercado mayorista).\n• $40: premios para concursos (karaoke, disfraces).\n• $30: fondo para el amigo secreto de emergencia.'],
+    [2, 'BORRADOR — FIESTA DE FIN DE AÑO 🎊\n\n📍 Terraza de la oficina, viernes 18, 7pm.\n\n💵 Presupuesto ($200): bebidas y bocaditos $80 · decoración $50 · premios $40 · reserva $30.\n\n🗓️ Cronograma: 7pm bienvenida · 8pm cena compartida · 9pm karaoke con premios · 10pm amigo secreto · 11pm baile.\n\n✅ Cada quien trae un plato; la oficina pone el resto.'],
+    [3, 'Buen borrador, Luciana, pero:\n• Falta un plan B si llueve (¡es una terraza!).\n• ¿Quién coordina el amigo secreto? Asignar responsable.\n• El karaoke sin lista de canciones termina en caos: sugerir 20 canciones previas.'],
+    [2, 'VERSIÓN FINAL — FIESTA DE FIN DE AÑO 🎊\n\n📍 Terraza (plan B: sala de reuniones grande si llueve).\n\n💵 $200: bebidas y bocaditos $80 · decoración $50 · premios $40 · reserva $30.\n\n🗓️ 7pm bienvenida · 8pm cena compartida (cada quien trae un plato) · 9pm karaoke (lista de 20 canciones que circula el lunes) · 10pm amigo secreto (coordina: Recursos Humanos) · 11pm baile.\n\n✅ Responsables asignados y plan B listo. ¡Que empiece la fiesta!'],
+    [0, '🎉 ¡Equipo, lo logramos! Cliente: entregable revisado y pulido aquí abajo. Un gusto trabajar para ti.'],
+  ],
+};
+async function demo() {
+  if (ocupado) return;
+  ocupado = true;
+  $('btn-trabajar').disabled = true;
+  $('encargo').value = guionDemo.encargo;
+  reiniciarSuave();
+  for (const [i, texto] of guionDemo.pasos) {
+    setDesk(i, 'activo');
+    await escribirLento(i, texto);
+    setDesk(i, 'hecho');
+    await pausa(400);
+  }
+  mostrarFinal(guionDemo.encargo, guionDemo.pasos[4][1]);
+  ocupado = false;
+  $('btn-trabajar').disabled = false;
+}
+function pausa(ms) { return new Promise(r => setTimeout(r, ms)); }
+async function escribirLento(i, texto) {
+  // Tipeo basado en tiempo transcurrido: fluido en primer plano y no se
+  // eterniza si el navegador estrangula los timers en segundo plano.
+  $('burbuja-' + i).textContent = '';
+  const inicio = performance.now();
+  const cps = 220; // caracteres por segundo
+  let mostrados = 0;
+  while (mostrados < texto.length) {
+    await pausa(30);
+    const objetivo = Math.min(texto.length, Math.floor((performance.now() - inicio) / 1000 * cps));
+    if (objetivo > mostrados) { appendDesk(i, texto.slice(mostrados, objetivo)); mostrados = objetivo; }
+  }
+}
+
+/* ---------- Entregable ---------- */
+function mostrarFinal(encargo, texto) {
+  docFinal = 'ENCARGO: ' + encargo + '\n\n' + texto + '\n\n— Producido por La Oficina de Agentes 🏢 (IA 100% local)';
+  $('documento').textContent = docFinal;
+  $('panel-final').style.display = 'block';
+  $('panel-final').scrollIntoView({ behavior: 'smooth' });
+}
+function copiarDoc(btn) {
+  navigator.clipboard.writeText(docFinal).then(() => {
+    btn.textContent = '✅ ¡Copiado!';
+    setTimeout(() => btn.textContent = '📋 Copiar', 1800);
+  });
+}
+function descargarDoc() {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([docFinal], { type: 'text/plain;charset=utf-8' }));
+  a.download = 'entregable-oficina-agentes.txt';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+</script>
+</body>
+</html>

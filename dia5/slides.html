@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Día 5 · La Oficina de Agentes y tu proyecto — Agentes IA Local</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏢</text></svg>">
+<style>
+/* ====== Motor de slides — autocontenido para proyectar incluso sin internet ====== */
+:root {
+  --fondo: #0b0e1a; --tarjeta: #1a2036; --borde: #2a3352;
+  --texto: #e8ecf8; --suave: #9aa5c4;
+  --acento: #7c5cff; --acento2: #00e5ff; --exito: #2dd881; --alerta: #ffb020; --peligro: #ff5c7a;
+  --grad: linear-gradient(135deg, #7c5cff, #00e5ff);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; overflow: hidden; background: var(--fondo); color: var(--texto);
+  font-family: 'Segoe UI', system-ui, sans-serif; }
+body::before { content: ""; position: fixed; inset: 0; z-index: 0;
+  background: radial-gradient(900px 500px at 85% -10%, rgba(124,92,255,.20), transparent 60%),
+              radial-gradient(700px 400px at -10% 110%, rgba(0,229,255,.12), transparent 60%); }
+
+.slide {
+  position: absolute; inset: 0; z-index: 1;
+  display: none; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 5vh 7vw; gap: 2.2vh;
+}
+.slide.activa { display: flex; animation: entrar .45s ease; }
+@keyframes entrar { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+
+.kicker { color: var(--acento2); font-weight: 800; letter-spacing: 3px; text-transform: uppercase; font-size: clamp(.7rem, 1.4vw, 1rem); }
+h1 { font-size: clamp(1.9rem, 5.5vw, 4.2rem); font-weight: 900; line-height: 1.1; letter-spacing: -1px; max-width: 20ch; }
+h2 { font-size: clamp(1.5rem, 4vw, 3rem); font-weight: 900; line-height: 1.15; max-width: 24ch; }
+.grad { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+p.grande { font-size: clamp(1rem, 2.2vw, 1.5rem); color: var(--suave); max-width: 56ch; }
+p.grande b, li b { color: var(--texto); }
+.emoji-gigante { font-size: clamp(3rem, 10vw, 7rem); line-height: 1; }
+
+.frag { opacity: 0; transform: translateY(12px); transition: all .4s; }
+.frag.visible { opacity: 1; transform: none; }
+
+.fila { display: flex; gap: 2vw; flex-wrap: wrap; justify-content: center; width: 100%; }
+.tarjeta {
+  background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 18px;
+  padding: clamp(12px, 2.2vw, 26px); min-width: 200px; max-width: 340px; flex: 1;
+  text-align: left; font-size: clamp(.85rem, 1.7vw, 1.1rem);
+}
+.tarjeta h3 { font-size: clamp(1rem, 2vw, 1.4rem); margin-bottom: 8px; }
+.tarjeta p, .tarjeta li { color: var(--suave); }
+.tarjeta ul { margin-left: 20px; }
+.tarjeta.ok { border-color: rgba(45,216,129,.5); }
+.tarjeta.mal { border-color: rgba(255,92,122,.5); }
+
+.btn-int {
+  background: var(--tarjeta); color: var(--texto); border: 2px solid var(--borde);
+  border-radius: 14px; padding: clamp(10px, 1.6vw, 18px) clamp(16px, 2.4vw, 28px);
+  font-size: clamp(.95rem, 1.9vw, 1.25rem); font-weight: 700; cursor: pointer;
+  transition: all .18s; font-family: inherit; text-decoration: none; display: inline-block;
+}
+.btn-int:hover { border-color: var(--acento2); transform: translateY(-2px); }
+.btn-int.correcta { background: rgba(45,216,129,.18); border-color: var(--exito); }
+.btn-int.incorrecta { background: rgba(255,92,122,.15); border-color: var(--peligro); }
+.btn-int:disabled { cursor: default; opacity: .85; }
+
+/* Pipeline de la oficina */
+.pipeline { display: flex; gap: 1vw; align-items: center; flex-wrap: wrap; justify-content: center; }
+.pipeline .paso-pipe {
+  background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 16px;
+  padding: clamp(8px, 1.6vw, 16px); text-align: center; min-width: 120px;
+  font-size: clamp(.75rem, 1.5vw, .95rem); color: var(--suave);
+}
+.pipeline .paso-pipe .cara { font-size: clamp(1.6rem, 3.5vw, 2.6rem); }
+.pipeline .paso-pipe b { color: var(--texto); display: block; }
+.pipeline .flecha-pipe { font-size: clamp(1rem, 2.4vw, 1.8rem); color: var(--acento2); font-weight: 900; }
+
+/* Quiz */
+.quiz-caja { width: min(720px, 90vw); }
+.quiz-pregunta { font-size: clamp(1.15rem, 2.6vw, 1.8rem); font-weight: 800; margin-bottom: 2.2vh; }
+.quiz-opciones { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.quiz-opciones .btn-int { text-align: left; }
+.quiz-feedback { margin-top: 14px; font-size: clamp(.9rem, 1.8vw, 1.15rem); min-height: 2.4em; color: var(--suave); }
+@media (max-width: 640px) { .quiz-opciones { grid-template-columns: 1fr; } }
+
+/* Confeti */
+.confeti { position: fixed; top: -5vh; z-index: 30; font-size: clamp(1rem, 2.4vw, 1.8rem); animation: caer linear forwards; pointer-events: none; }
+@keyframes caer { to { transform: translateY(115vh) rotate(720deg); } }
+
+/* HUD */
+#hud { position: fixed; bottom: 0; left: 0; right: 0; z-index: 10; }
+#barra-prog { height: 5px; background: var(--tarjeta); }
+#barra-prog > div { height: 100%; background: var(--grad); width: 0%; transition: width .3s; }
+#controles { display: flex; justify-content: space-between; align-items: center; padding: 8px 16px; font-size: .85rem; color: var(--suave); }
+#controles .flechas button {
+  background: var(--tarjeta); border: 1px solid var(--borde); color: var(--texto);
+  border-radius: 10px; padding: 6px 16px; font-size: 1rem; cursor: pointer; margin-left: 8px;
+}
+#controles .flechas button:hover { border-color: var(--acento2); }
+#controles a { color: var(--suave); text-decoration: none; }
+#controles a:hover { color: var(--acento2); }
+.pista { font-size: clamp(.75rem, 1.4vw, .9rem); color: var(--suave); opacity: .8; }
+</style>
+</head>
+<body>
+
+<!-- ============ SLIDE 1: Portada ============ -->
+<section class="slide">
+  <div class="emoji-gigante">🏢</div>
+  <div class="kicker">Curso Agentes de IA Locales · Día 5 · El gran final</div>
+  <h1>No un agente… una <span class="grad">OFICINA entera</span></h1>
+  <p class="grande">Toda la semana construiste UN agente. Hoy verás lo que viene después: <b>equipos de agentes que trabajan juntos</b> — y todos corriendo en tu computadora. Además: ética, tu proyecto final y la graduación. 🎓</p>
+  <p class="pista">Flechas ← → para navegar</p>
+</section>
+
+<!-- ============ SLIDE 2: Calentamiento ============ -->
+<section class="slide">
+  <div class="kicker">Calentamiento ⚡ · 30 segundos</div>
+  <h2>Ayer descubrimos que gemma3 puede…</h2>
+  <div class="fila" id="calentamiento">
+    <button class="btn-int" onclick="calentar(this, false)">🍳 Cocinar</button>
+    <button class="btn-int" onclick="calentar(this, true)">👁️ Ver y leer imágenes</button>
+    <button class="btn-int" onclick="calentar(this, false)">📞 Hacer llamadas</button>
+  </div>
+  <p class="grande" id="calentamiento-fb" style="min-height:2em"></p>
+</section>
+
+<!-- ============ SLIDE 3: Por qué multi-agente ============ -->
+<section class="slide">
+  <div class="kicker">El siguiente nivel</div>
+  <h2>¿Por qué un <span class="grad">equipo</span> le gana a un genio solitario?</h2>
+  <div class="fila">
+    <div class="tarjeta frag"><h3>🎯 Especialización</h3><p>Un agente que solo investiga, investiga mejor. Uno que solo redacta, redacta mejor. Igual que las personas.</p></div>
+    <div class="tarjeta frag"><h3>🧐 Revisión cruzada</h3><p>Un agente CRÍTICO que revisa el trabajo de otro atrapa errores y alucinaciones que uno solo dejaría pasar.</p></div>
+    <div class="tarjeta frag"><h3>🏭 Así funciona la industria</h3><p>Los sistemas de IA serios de 2026 son equipos de agentes orquestados. Hoy lo ves con tus propios ojos.</p></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 4: El organigrama ============ -->
+<section class="slide">
+  <div class="kicker">Nuestra oficina 🏢</div>
+  <h2>Conoce al <span class="grad">equipo</span></h2>
+  <div class="pipeline">
+    <div class="paso-pipe"><div class="cara">👩‍💼</div><b>Marta</b>Jefa: recibe el encargo y reparte el trabajo</div>
+    <div class="flecha-pipe">→</div>
+    <div class="paso-pipe"><div class="cara">🕵️</div><b>Mateo</b>Investigador: aporta datos e ideas</div>
+    <div class="flecha-pipe">→</div>
+    <div class="paso-pipe"><div class="cara">👩‍💻</div><b>Luciana</b>Redactora: produce el entregable</div>
+    <div class="flecha-pipe">→</div>
+    <div class="paso-pipe"><div class="cara">🧐</div><b>Ernesto</b>Crítico: exige 3 mejoras</div>
+    <div class="flecha-pipe">→</div>
+    <div class="paso-pipe"><div class="cara">📄</div><b>Entregable</b>versión final para ti</div>
+  </div>
+  <p class="grande frag">¿Y el secreto? Cada personaje es solo un <b>system prompt distinto</b> sobre el mismo modelo local. Sí: la receta ROL + TAREA + FORMATO + REGLAS del Día 2, cuatro veces. <b>Ya sabías construir esto y no lo sabías.</b> 🤯</p>
+</section>
+
+<!-- ============ SLIDE 5: Abrir la oficina ============ -->
+<section class="slide">
+  <div class="emoji-gigante">🏢</div>
+  <div class="kicker">La experiencia ✨</div>
+  <h2>Abramos <span class="grad">La Oficina de Agentes</span></h2>
+  <p class="grande">Dale un encargo real ("el plan de la fiesta de fin de año…") y mira al equipo planificar, investigar, redactar, criticar y entregar — <b>en vivo, con TU Ollama</b>.</p>
+  <a class="btn-int" style="border-color:var(--acento2); font-size:clamp(1rem,2.2vw,1.4rem)" href="oficina.html" target="_blank">🚀 Abrir La Oficina de Agentes</a>
+  <p class="pista">¿Sin Ollama a mano o viendo esto asíncrono? Usa el botón 🎬 "Modo demo" dentro de la oficina: funciona sin configurar nada.</p>
+</section>
+
+<!-- ============ SLIDE 6: Reflexión ============ -->
+<section class="slide">
+  <div class="kicker">Lo que acabas de ver 🔍</div>
+  <h2>Eso se llama <span class="grad">orquestación</span></h2>
+  <div class="fila">
+    <div class="tarjeta frag"><h3>🎼 Un flujo dirige</h3><p>Alguien (aquí, la página) decide el orden: jefa → investigador → redactora → crítico. A eso se le llama orquestar.</p></div>
+    <div class="tarjeta frag"><h3>📨 Se pasan el trabajo</h3><p>Cada agente recibe lo que produjo el anterior. Como una posta de relevos, pero de texto.</p></div>
+    <div class="tarjeta frag"><h3>🧐 La crítica mejora TODO</h3><p>¿Notaste que la versión final es mejor que el borrador? Agregar un revisor es el truco más rentable del multi-agente.</p></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 7: Ética (dilemas) ============ -->
+<section class="slide">
+  <div class="kicker">Momento serio 🧭 · el poder con responsabilidad</div>
+  <h2>¿Se puede o no se puede?</h2>
+  <div class="quiz-caja" id="juego-etica"></div>
+</section>
+
+<!-- ============ SLIDE 8: Proyecto final ============ -->
+<section class="slide">
+  <div class="kicker">Tu turno 🏆</div>
+  <h2>El proyecto final: <span class="grad">TU agente</span></h2>
+  <div class="fila">
+    <div class="tarjeta"><h3>📋 Qué entregas</h3><ul><li>Tu ficha de 4 casillas</li><li>Las instrucciones (prompt) de tu agente</li><li>Evidencia de que FUNCIONA: video corto o capturas</li></ul></div>
+    <div class="tarjeta frag"><h3>📏 Cómo se califica</h3><ul><li>Misión real y clara: 2 pts</li><li>Instrucciones con receta: 2 pts</li><li>Herramientas/memoria bien elegidas: 2 pts</li><li>Funciona (demo): 3 pts</li><li>Límites y riesgos identificados: 1 pt</li></ul></div>
+  </div>
+  <a class="btn-int frag" style="border-color:var(--acento2)" href="proyecto.html" target="_blank">📄 Ver la guía completa del proyecto y la rúbrica</a>
+</section>
+
+<!-- ============ SLIDE 9: Quiz final ============ -->
+<section class="slide">
+  <div class="kicker">Quiz del Día 5 · el último 👀</div>
+  <div class="quiz-caja" id="quiz"></div>
+</section>
+
+<!-- ============ SLIDE 10: Graduación ============ -->
+<section class="slide">
+  <div class="emoji-gigante">🎓</div>
+  <h2>Hace 5 días no sabías <span class="grad">qué era un agente</span></h2>
+  <p class="grande">Hoy tienes: una IA privada en tu máquina 🧠 · un asistente que estudia tus documentos 📚 · un agente con manos y ojos 🦾👁️ · y viste una oficina entera trabajando para ti 🏢.</p>
+  <p class="grande frag">Y de yapa: dos manuales <b>bonus</b> para crear agentes en la nube (Zapier y MindStudio) cuando quieras dar ese paso. ☁️</p>
+  <button class="btn-int frag" style="border-color:var(--exito); font-size:clamp(1.1rem,2.4vw,1.5rem)" onclick="graduar()">🎓 ¡GRADUARME! 🎉</button>
+</section>
+
+<!-- ============ HUD ============ -->
+<div id="hud">
+  <div id="barra-prog"><div></div></div>
+  <div id="controles">
+    <a href="../index.html">← Portada del curso</a>
+    <span id="contador">1 / ?</span>
+    <span class="flechas">
+      <button onclick="mover(-1)" aria-label="Anterior">←</button>
+      <button onclick="mover(1)" aria-label="Siguiente">→</button>
+    </span>
+  </div>
+</div>
+
+<script>
+/* ================= MOTOR DE SLIDES ================= */
+const slides = [...document.querySelectorAll('.slide')];
+let idx = 0;
+function pintar() {
+  slides.forEach((s, i) => s.classList.toggle('activa', i === idx));
+  document.querySelector('#barra-prog div').style.width = ((idx + 1) / slides.length * 100) + '%';
+  document.getElementById('contador').textContent = (idx + 1) + ' / ' + slides.length;
+  location.hash = '#/' + (idx + 1);
+}
+function mover(dir) {
+  const frags = [...slides[idx].querySelectorAll('.frag')];
+  if (dir > 0) {
+    const oculto = frags.find(f => !f.classList.contains('visible'));
+    if (oculto) { oculto.classList.add('visible'); return; }
+    if (idx < slides.length - 1) idx++;
+  } else {
+    const visibles = frags.filter(f => f.classList.contains('visible'));
+    if (visibles.length) { visibles[visibles.length - 1].classList.remove('visible'); return; }
+    if (idx > 0) idx--;
+  }
+  pintar();
+}
+document.addEventListener('keydown', e => {
+  if (['ArrowRight', ' ', 'PageDown'].includes(e.key)) { e.preventDefault(); mover(1); }
+  if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); mover(-1); }
+});
+let x0 = null;
+document.addEventListener('touchstart', e => x0 = e.touches[0].clientX);
+document.addEventListener('touchend', e => {
+  if (x0 === null) return;
+  const dx = e.changedTouches[0].clientX - x0;
+  if (Math.abs(dx) > 50) mover(dx < 0 ? 1 : -1);
+  x0 = null;
+});
+const m = location.hash.match(/#\/(\d+)/);
+if (m) idx = Math.min(slides.length - 1, Math.max(0, +m[1] - 1));
+pintar();
+
+/* ================= CALENTAMIENTO ================= */
+function calentar(btn, ok) {
+  [...document.querySelectorAll('#calentamiento .btn-int')].forEach(b => b.disabled = true);
+  btn.classList.add(ok ? 'correcta' : 'incorrecta');
+  document.getElementById('calentamiento-fb').innerHTML = ok
+    ? '✅ ¡Correcto! gemma3 es multimodal: le muestras fotos de documentos y los lee. Lo de cocinar… paciencia, todo llega. 😄'
+    : '❌ Todavía no 😄 — lo de ayer fue la VISIÓN: gemma3 lee imágenes y documentos en papel.';
+}
+
+/* ================= DILEMAS DE ÉTICA ================= */
+const dilemas = [
+  { p: 'Subir las hojas de vida de 50 postulantes REALES a una plataforma de IA en la nube, sin avisarle a nadie…',
+    ops: ['✅ Se puede, es trabajo', '⚠️ Solo con consentimiento (o mejor: hazlo LOCAL)', '🤷 Da igual'],
+    ok: 1, fb: 'Los datos de otras personas no son tuyos para regalarlos. O pides consentimiento, o usas tu agente LOCAL, donde nada sale de tu máquina. Para eso lo aprendiste.' },
+  { p: 'Usar tu agente para redactar un informe que TÚ revisas, corriges y firmas…',
+    ops: ['✅ Se puede: la IA propone, tú respondes', '🚫 Jamás, es trampa', '⚠️ Solo los feriados'],
+    ok: 0, fb: 'Perfectamente legítimo: la herramienta acelera, el humano verifica y se hace responsable. La firma es tuya, el criterio también.' },
+  { p: 'Presentar el trabajo del agente SIN revisarlo, porque "la IA no se equivoca"…',
+    ops: ['✅ Se puede, para eso está', '🚫 No: viste las alucinaciones con tus propios ojos', '⚠️ Solo si el jefe no lee'],
+    ok: 1, fb: '¿Recuerdas el "artículo 14" inventado del Día 2? Exacto. Todo lo que produce un agente se revisa antes de usarse. Sin excepciones.' },
+];
+let dIdx = 0, dPuntos = 0;
+function pintarEtica() {
+  const caja = document.getElementById('juego-etica');
+  if (dIdx >= dilemas.length) {
+    caja.innerHTML = '<div class="emoji-gigante">🧭</div>' +
+      '<h2>Acertaste <span class="grad">' + dPuntos + ' de 3</span></h2>' +
+      '<p class="grande" style="margin:2vh auto">Las 3 reglas del graduado: <b>datos ajenos se protegen</b> (local o consentimiento), <b>todo se revisa</b> antes de usarse, y <b>la responsabilidad siempre es humana</b>.</p>';
+    return;
+  }
+  const d = dilemas[dIdx];
+  caja.innerHTML = '<div class="quiz-pregunta" style="font-style:italic">' + d.p + '</div>' +
+    '<div class="fila">' + d.ops.map((o, i) =>
+      '<button class="btn-int" onclick="jugarEtica(' + i + ', this)">' + o + '</button>').join('') + '</div>' +
+    '<div class="quiz-feedback" id="etica-fb"></div>';
+}
+function jugarEtica(i, btn) {
+  const d = dilemas[dIdx];
+  const botones = btn.parentElement.querySelectorAll('button');
+  botones.forEach(b => b.disabled = true);
+  botones[d.ok].classList.add('correcta');
+  if (i === d.ok) { dPuntos++; document.getElementById('etica-fb').innerHTML = '✅ ' + d.fb; }
+  else { btn.classList.add('incorrecta'); document.getElementById('etica-fb').innerHTML = '🤔 ' + d.fb; }
+  setTimeout(() => { dIdx++; pintarEtica(); }, 3600);
+}
+pintarEtica();
+
+/* ================= QUIZ FINAL ================= */
+const preguntas = [
+  { p: '1. La gran ventaja de un EQUIPO de agentes frente a uno solo es…',
+    ops: ['Que gasta menos luz', 'Especialización + revisión cruzada entre agentes', 'Que es más bonito de ver', 'Ninguna, es puro show'],
+    ok: 1, fb: 'Cada rol hace mejor su parte, y el crítico atrapa los errores del redactor. Igual que un buen equipo humano.' },
+  { p: '2. En la Oficina, ¿qué diferencia a Marta de Ernesto?',
+    ops: ['Usan modelos distintos', 'Solo su SYSTEM PROMPT: mismo cerebro, distinto contrato', 'Marta es de pago', 'Ernesto tiene más RAM'],
+    ok: 1, fb: 'El mismo modelo local con instrucciones distintas = personajes distintos. La receta del Día 2 es el ADN de todo.' },
+  { p: '3. ¿Para qué sirve el agente CRÍTICO en un equipo?',
+    ops: ['Para hacer bulto', 'Para atrapar errores y mejorar la calidad antes de entregar', 'Para trabajar menos', 'Para asustar a los otros agentes'],
+    ok: 1, fb: 'Agregar un revisor es la mejora más rentable del multi-agente: la versión final siempre sale mejor que el borrador.' },
+  { p: '4. Tienes que procesar datos personales de terceros con IA. La opción correcta es…',
+    ops: ['Subirlos a cualquier plataforma, nadie se entera', 'Procesarlos LOCAL (o con consentimiento explícito)', 'Publicarlos para que la IA los encuentre', 'Cambiarles el nombre y listo'],
+    ok: 1, fb: 'Datos ajenos = máxima protección. Tu agente local existe exactamente para esto.' },
+  { p: '5. ¿Qué debes entregar como proyecto final?',
+    ops: ['Un ensayo de 20 páginas sobre IA', 'La ficha + instrucciones + evidencia (video o capturas) de tu agente FUNCIONANDO', 'Una maqueta en cartulina', 'El examen teórico'],
+    ok: 1, fb: 'Agente real, problema real, evidencia real. La guía completa y la rúbrica están en la página del proyecto.' },
+];
+let qIdx = 0, aciertos = 0;
+function pintarQuiz() {
+  const caja = document.getElementById('quiz');
+  if (qIdx >= preguntas.length) {
+    const nota = Math.round(aciertos / preguntas.length * 10);
+    const emoji = nota >= 9 ? '🏆' : nota >= 7 ? '💪' : nota >= 5 ? '🙂' : '📚';
+    caja.innerHTML = '<div class="emoji-gigante">' + emoji + '</div>' +
+      '<h2>Resultado: <span class="grad">' + aciertos + ' de ' + preguntas.length + '</span> (' + nota + '/10)</h2>' +
+      '<p class="grande" style="margin:2vh auto">' + (nota >= 7 ? 'Último quiz superado. Pasa a la siguiente slide para lo que te mereces…' : 'Repasa y reintenta: la graduación te espera en la siguiente slide.') + '</p>' +
+      '<button class="btn-int" onclick="qIdx=0;aciertos=0;pintarQuiz()">🔄 Reintentar</button>';
+    return;
+  }
+  const q = preguntas[qIdx];
+  caja.innerHTML = '<div class="quiz-pregunta">' + q.p + '</div>' +
+    '<div class="quiz-opciones">' + q.ops.map((o, i) =>
+      '<button class="btn-int" onclick="responder(' + i + ', this)">' + o + '</button>').join('') + '</div>' +
+    '<div class="quiz-feedback" id="quiz-fb"></div>';
+}
+function responder(i, btn) {
+  const q = preguntas[qIdx];
+  const botones = btn.parentElement.querySelectorAll('button');
+  botones.forEach(b => b.disabled = true);
+  botones[q.ok].classList.add('correcta');
+  const fb = document.getElementById('quiz-fb');
+  if (i === q.ok) { aciertos++; fb.innerHTML = '✅ <b>¡Correcto!</b> ' + q.fb; }
+  else { btn.classList.add('incorrecta'); fb.innerHTML = '❌ Casi. ' + q.fb; }
+  setTimeout(() => { qIdx++; pintarQuiz(); }, 2600);
+}
+pintarQuiz();
+
+/* ================= CONFETI DE GRADUACIÓN ================= */
+function graduar() {
+  const emojis = ['🎉', '🎊', '🤖', '🎓', '⭐', '💜', '🦙', '🏆'];
+  for (let i = 0; i < 80; i++) {
+    const c = document.createElement('div');
+    c.className = 'confeti';
+    c.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    c.style.left = Math.random() * 100 + 'vw';
+    c.style.animationDuration = (2.2 + Math.random() * 2.5) + 's';
+    c.style.animationDelay = (Math.random() * 1.5) + 's';
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 7000);
+  }
+}
+</script>
+</body>
+</html>
