@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab Día 3 · Tu primer agente completo — Agentes IA Local</title>
+<link rel="stylesheet" href="../assets/curso.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦾</text></svg>">
+</head>
+<body>
+<div class="contenedor">
+
+  <nav class="nav">
+    <span class="marca">🤖 Agentes <span>IA Local</span></span>
+    <div style="display:flex;gap:18px;flex-wrap:wrap">
+      <a href="../index.html">Portada</a>
+      <a href="slides.html">Slides Día 3</a>
+    </div>
+  </nav>
+
+  <header class="lab-cabecera">
+    <div class="kicker">Laboratorio · Día 3</div>
+    <h1>🦾 Tu primer agente completo: investiga, redacta y guarda</h1>
+    <div class="meta">
+      <span>⏱️ ~70 minutos</span>
+      <span>🎚️ Nivel: principiante+</span>
+      <span>📋 Requiere: lo del Día 2 funcionando + internet</span>
+    </div>
+  </header>
+
+  <div class="progreso-wrap">
+    <div class="progreso-texto">Tu progreso: <b id="prog-num">0 de 8 pasos</b> — se guarda en tu navegador.</div>
+    <div class="progreso-barra"><div id="prog-fill"></div></div>
+  </div>
+
+  <div class="caja caja-info"><b>ℹ️ Hoy sí usamos internet (un poco).</b> La búsqueda web necesita conexión, obvio. Pero el cerebro sigue siendo TU modelo local y tus documentos no salen de tu máquina: solo viaja la consulta de búsqueda, como cuando tú buscas en Google.</div>
+
+  <!-- PASO 1 -->
+  <div class="paso" data-paso="p1">
+    <div class="paso-cabecera"><span class="paso-num">1</span><h2>Configura el cerebro del agente 🧠</h2></div>
+    <p>En AnythingLLM, el "modo agente" puede usar su propio modelo. Vamos a decirle cuál:</p>
+    <ol>
+      <li>Pasa el mouse sobre tu workspace <b>mi-asistente</b> → <b>engranaje ⚙️</b>.</li>
+      <li>Ve a la pestaña <b>Agent Configuration</b>.</li>
+      <li>En <b>LLM Provider</b> del agente elige <b>Ollama</b>, y en el modelo: <b>gemma3:4b</b>.</li>
+      <li>Guarda los cambios (<b>Update workspace</b> o el botón equivalente).</li>
+    </ol>
+    <div class="caja caja-alerta"><b>⚠️ Si usas el plan B (modelo 1B):</b> los modelos muy pequeños se marean con las herramientas. Funcionará, pero con paciencia: si el agente se enreda, reformula el pedido más simple y corto.</div>
+    <label class="paso-check"><input type="checkbox"> Agente configurado con mi modelo local</label>
+  </div>
+
+  <!-- PASO 2 -->
+  <div class="paso" data-paso="p2">
+    <div class="paso-cabecera"><span class="paso-num">2</span><h2>Enciende sus habilidades 🎛️</h2></div>
+    <ol>
+      <li>Abre los ajustes generales de AnythingLLM (llave/engranaje ⚙️ en la esquina inferior de la barra lateral).</li>
+      <li>Busca la sección <b>Agent Skills</b> (habilidades del agente).</li>
+      <li>Activa los interruptores de:
+        <ul>
+          <li>📄 <b>RAG & long-term memory</b> — usar tus documentos y recordar</li>
+          <li>📑 <b>View & summarize documents</b> — leer y resumir documentos</li>
+          <li>🌐 <b>Scrape websites</b> — leer páginas web específicas</li>
+          <li>💾 <b>Generate & save files</b> — crear y guardar archivos</li>
+          <li>📊 <b>Generate charts</b> — hacer gráficos (opcional pero divertido)</li>
+        </ul>
+      </li>
+    </ol>
+    <label class="paso-check"><input type="checkbox"> Habilidades activadas</label>
+  </div>
+
+  <!-- PASO 3 -->
+  <div class="paso" data-paso="p3">
+    <div class="paso-cabecera"><span class="paso-num">3</span><h2>Habilita la búsqueda web 🔎</h2></div>
+    <ol>
+      <li>En la misma sección de habilidades, entra a <b>Web Search</b>.</li>
+      <li>Elige un proveedor de búsqueda. Busca en la lista uno <b>gratuito y sin clave</b> (por ejemplo <b>DuckDuckGo</b>, si aparece en tu versión: es la opción sin registro).</li>
+      <li>Si tu versión solo trae proveedores con clave (Serper, Tavily, etc.): crea una cuenta gratuita en uno de ellos, copia la <b>API key</b> que te dan y pégala en el campo. Es un trámite de 3 minutos y el nivel gratuito sobra para el curso.</li>
+      <li>Guarda.</li>
+    </ol>
+    <div class="caja caja-tip"><b>💚 ¿Qué es una API key?</b> Una "llave" que te identifica ante un servicio, como tu carnet en la biblioteca. Se pega una vez y listo. Guárdala como una contraseña: es tuya.</div>
+    <label class="paso-check"><input type="checkbox"> Búsqueda web configurada</label>
+  </div>
+
+  <!-- PASO 4 -->
+  <div class="paso" data-paso="p4">
+    <div class="paso-cabecera"><span class="paso-num">4</span><h2>Despierta al agente: primer @agent 🤖</h2></div>
+    <p>En el chat de tu workspace, escribe (nota el <b>@agent</b> al inicio — así se invoca el modo agente):</p>
+    <div class="copiable">@agent preséntate: dime qué habilidades tienes disponibles y para qué sirve cada una.</div>
+    <ul>
+      <li>Verás que el mensaje activa el "modo agente" y responde listando sus habilidades. Ya no hablas con un chatbot: hablas con un agente equipado. 🦾</li>
+    </ul>
+    <label class="paso-check"><input type="checkbox"> El agente respondió a mi primer @agent</label>
+  </div>
+
+  <!-- PASO 5 -->
+  <div class="paso" data-paso="p5">
+    <div class="paso-cabecera"><span class="paso-num">5</span><h2>Misión 1: que investigue en la web 🌐</h2></div>
+    <p>¿Recuerdas el tema que trajiste de tarea? Es su momento. Adapta y envía:</p>
+    <div class="copiable">@agent busca en la web información reciente sobre [TU TEMA] y dame un resumen de los 5 puntos más importantes, en español, con las fuentes que usaste.</div>
+    <ul>
+      <li>Observa cómo "narra" lo que va haciendo: decidir buscar → buscar → leer resultados → redactar. <b>Es el cine de la clase, pero en tu máquina y de verdad.</b></li>
+      <li>La primera vez puede tardar un par de minutos: el modelo local está razonando + esperando resultados de la web. Paciencia de científico. ⏳</li>
+    </ul>
+    <label class="paso-check"><input type="checkbox"> Mi agente investigó mi tema en la web</label>
+  </div>
+
+  <!-- PASO 6 -->
+  <div class="paso" data-paso="p6">
+    <div class="paso-cabecera"><span class="paso-num">6</span><h2>Misión 2: que produzca un archivo 💾</h2></div>
+    <div class="copiable">@agent toma el resumen que acabas de hacer y guárdalo en un archivo de texto llamado "investigacion.txt", con un título, la fecha de hoy y los 5 puntos.</div>
+    <ul>
+      <li>El agente generará el archivo y te lo ofrecerá para guardar/descargar. Ábrelo y compruébalo: <b>tu agente acaba de producir un entregable real</b>, no solo texto en un chat.</li>
+    </ul>
+    <div class="caja caja-tip"><b>💚 Bonus gráfico:</b> si activaste los gráficos, prueba: <i>"@agent hazme un gráfico de barras con estos datos: ventas enero 120, febrero 90, marzo 150, abril 200"</i>. 📊</div>
+    <label class="paso-check"><input type="checkbox"> Tengo el archivo generado por mi agente</label>
+  </div>
+
+  <!-- PASO 7 -->
+  <div class="paso" data-paso="p7">
+    <div class="paso-cabecera"><span class="paso-num">7</span><h2>Mini-proyecto: el Analista de Documentos 📊</h2></div>
+    <p>Ahora junta TODO lo del curso en un solo agente especializado:</p>
+    <ol>
+      <li>Crea un workspace nuevo: <b>analista-documentos</b>.</li>
+      <li>En Chat Settings → Prompt, dale su contrato:</li>
+    </ol>
+    <div class="copiable">Eres un analista de documentos senior. Trabajas SIEMPRE en español.
+
+Cuando te pidan un informe, entrégalo con esta estructura:
+📌 RESUMEN EJECUTIVO (máximo 5 líneas)
+🔍 HALLAZGOS PRINCIPALES (viñetas)
+⚠️ PUNTOS DE ATENCIÓN (riesgos, vacíos o inconsistencias que detectes)
+✅ RECOMENDACIONES (accionables y concretas)
+
+Reglas: básate solo en los documentos y datos disponibles, cita el documento del que sale cada hallazgo, y si algo no está en los documentos dilo explícitamente.</div>
+    <ol start="3">
+      <li>En Agent Configuration, configura el modelo del agente (como en el paso 1).</li>
+      <li>Sube tus PDFs del Día 2 a este workspace (📎 → Move to workspace → Save and Embed).</li>
+      <li>Y ahora, la orden maestra:</li>
+    </ol>
+    <div class="copiable">@agent analiza mis documentos y genera el informe completo con tu estructura. Al final, guárdalo en un archivo llamado "informe-analisis.txt".</div>
+    <p>Espera a que termine y abre su informe. <b>Eso que tienes en pantalla es un agente completo: cerebro local + contrato + memoria + herramientas, construido por ti en 3 días.</b> 🏆</p>
+    <label class="paso-check"><input type="checkbox">🏆 Mi Analista de Documentos generó su informe — laboratorio completado</label>
+  </div>
+
+  <!-- PASO 8 -->
+  <div class="paso" data-paso="p8">
+    <div class="paso-cabecera"><span class="paso-num">8</span><h2>Llena la ficha de tu proyecto final 📋</h2></div>
+    <p>Mientras lo tienes fresco, llena la plantilla de 4 casillas de tu proyecto (en papel, Word o donde quieras):</p>
+    <div class="tabla-scroll">
+    <table class="tabla">
+      <tr><th>🎯 Misión</th><td>¿Qué problema real de TU trabajo/estudio resolverá tu agente?</td></tr>
+      <tr><th>📜 Instrucciones</th><td>Borrador con ROL + TAREA + FORMATO + REGLAS</td></tr>
+      <tr><th>🛠️ Herramientas</th><td>¿Web, documentos, archivos? Solo las necesarias</td></tr>
+      <tr><th>💾 Memoria</th><td>¿Qué documentos o datos necesita conocer?</td></tr>
+    </table>
+    </div>
+    <p>El viernes construyes este agente como proyecto final (puede ser local como hoy, o en la nube como los talleres de mañana). Trae la ficha llena.</p>
+    <label class="paso-check"><input type="checkbox"> Ficha del proyecto final en borrador</label>
+  </div>
+
+  <!-- Tarea -->
+  <div class="paso">
+    <div class="paso-cabecera"><span class="paso-num">📌</span><h2>Para mañana (taller Zapier ☁️)</h2></div>
+    <ul>
+      <li>📧 Ten tu cuenta de <b>Gmail</b> con contraseña a mano.</li>
+      <li>📱 Instala <b>Telegram</b> en tu celular e inicia sesión.</li>
+      <li>⚡ Opcional pero recomendado: crea desde ya tu cuenta gratis en <b>zapier.com</b> (con el botón de Google) para no gastar tiempo de clase en eso.</li>
+    </ul>
+  </div>
+
+  <!-- Troubleshooting -->
+  <div class="paso">
+    <div class="paso-cabecera"><span class="paso-num">🚑</span><h2>Si algo falla</h2></div>
+    <details class="problema">
+      <summary>Escribo @agent y no pasa nada especial</summary>
+      <div class="problema-cuerpo">Debe ser la PRIMERA palabra del mensaje: <code>@agent</code> + espacio + tu pedido. Verifica también que guardaste la Agent Configuration del workspace (paso 1). Al escribir @ debería aparecer una sugerencia para autocompletar.</div>
+    </details>
+    <details class="problema">
+      <summary>El agente dice que no puede buscar en la web</summary>
+      <div class="problema-cuerpo">La habilidad Web Search no quedó configurada (paso 3): revisa que el proveedor esté seleccionado y guardado, y si usa API key, que esté pegada completa y sin espacios.</div>
+    </details>
+    <details class="problema">
+      <summary>El agente se queda "pensando" eternamente o responde incoherencias</summary>
+      <div class="problema-cuerpo">Es lo normal de pedirle trabajo de agente a un modelo pequeño en una laptop: (1) cierra otros programas pesados, (2) reformula el pedido más corto y de una sola tarea, (3) inicia un chat nuevo, y (4) si tu máquina lo aguanta, usa gemma3:4b o superior para el agente — los 1B sufren con herramientas.</div>
+    </details>
+    <details class="problema">
+      <summary>No encuentro dónde quedó el archivo generado</summary>
+      <div class="problema-cuerpo">El agente te muestra el archivo en el chat con opción de guardarlo/descargarlo; revisa también tu carpeta de <b>Descargas</b>. Si no aparece, pídeselo de nuevo: "@agent vuelve a darme el archivo para descargar".</div>
+    </details>
+  </div>
+
+  <div class="nav-paginas">
+    <a class="btn btn-secundario" href="slides.html#/10">← Volver a las slides (quiz)</a>
+    <a class="btn btn-primario" href="../talleres/zapier.html">Día 4: Taller Zapier ☁️ →</a>
+  </div>
+
+  <footer class="pie">Curso <b>Agentes de IA Locales</b> · ISTER 2026 · Día 3</footer>
+</div>
+
+<script>
+const clave = 'lab-' + location.pathname;
+const estado = JSON.parse(localStorage.getItem(clave) || '{}');
+const pasos = [...document.querySelectorAll('.paso[data-paso]')];
+function refrescar() {
+  let hechos = 0;
+  pasos.forEach(p => {
+    const id = p.dataset.paso, chk = p.querySelector('.paso-check input');
+    chk.checked = !!estado[id];
+    p.classList.toggle('completado', !!estado[id]);
+    if (estado[id]) hechos++;
+  });
+  document.getElementById('prog-num').textContent = hechos + ' de ' + pasos.length + ' pasos';
+  document.getElementById('prog-fill').style.width = (hechos / pasos.length * 100) + '%';
+}
+pasos.forEach(p => p.querySelector('.paso-check input').addEventListener('change', e => {
+  estado[p.dataset.paso] = e.target.checked;
+  localStorage.setItem(clave, JSON.stringify(estado));
+  refrescar();
+}));
+refrescar();
+document.querySelectorAll('.copiable').forEach(bloque => {
+  const texto = bloque.textContent.trim();
+  const btn = document.createElement('button');
+  btn.className = 'btn-copiar'; btn.textContent = '📋 Copiar';
+  btn.onclick = () => navigator.clipboard.writeText(texto).then(() => {
+    btn.textContent = '✅ ¡Copiado!'; btn.classList.add('copiado');
+    setTimeout(() => { btn.textContent = '📋 Copiar'; btn.classList.remove('copiado'); }, 1800);
+  });
+  bloque.appendChild(btn);
+});
+</script>
+</body>
+</html>

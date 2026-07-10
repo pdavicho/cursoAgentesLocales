@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Día 2 · Anatomía de un agente — Agentes IA Local</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧩</text></svg>">
+<style>
+/* ====== Motor de slides — autocontenido para proyectar incluso sin internet ====== */
+:root {
+  --fondo: #0b0e1a; --tarjeta: #1a2036; --borde: #2a3352;
+  --texto: #e8ecf8; --suave: #9aa5c4;
+  --acento: #7c5cff; --acento2: #00e5ff; --exito: #2dd881; --alerta: #ffb020; --peligro: #ff5c7a;
+  --grad: linear-gradient(135deg, #7c5cff, #00e5ff);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; overflow: hidden; background: var(--fondo); color: var(--texto);
+  font-family: 'Segoe UI', system-ui, sans-serif; }
+body::before { content: ""; position: fixed; inset: 0; z-index: 0;
+  background: radial-gradient(900px 500px at 85% -10%, rgba(124,92,255,.20), transparent 60%),
+              radial-gradient(700px 400px at -10% 110%, rgba(0,229,255,.12), transparent 60%); }
+
+.slide {
+  position: absolute; inset: 0; z-index: 1;
+  display: none; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 5vh 7vw; gap: 2.2vh;
+}
+.slide.activa { display: flex; animation: entrar .45s ease; }
+@keyframes entrar { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+
+.kicker { color: var(--acento2); font-weight: 800; letter-spacing: 3px; text-transform: uppercase; font-size: clamp(.7rem, 1.4vw, 1rem); }
+h1 { font-size: clamp(1.9rem, 5.5vw, 4.2rem); font-weight: 900; line-height: 1.1; letter-spacing: -1px; max-width: 20ch; }
+h2 { font-size: clamp(1.5rem, 4vw, 3rem); font-weight: 900; line-height: 1.15; max-width: 24ch; }
+.grad { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+p.grande { font-size: clamp(1rem, 2.2vw, 1.5rem); color: var(--suave); max-width: 56ch; }
+p.grande b, li b { color: var(--texto); }
+.emoji-gigante { font-size: clamp(3rem, 10vw, 7rem); line-height: 1; }
+
+.frag { opacity: 0; transform: translateY(12px); transition: all .4s; }
+.frag.visible { opacity: 1; transform: none; }
+
+.fila { display: flex; gap: 2vw; flex-wrap: wrap; justify-content: center; width: 100%; }
+.tarjeta {
+  background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 18px;
+  padding: clamp(12px, 2.2vw, 26px); min-width: 200px; max-width: 340px; flex: 1;
+  text-align: left; font-size: clamp(.85rem, 1.7vw, 1.1rem);
+}
+.tarjeta h3 { font-size: clamp(1rem, 2vw, 1.4rem); margin-bottom: 8px; }
+.tarjeta p, .tarjeta li { color: var(--suave); }
+.tarjeta ul { margin-left: 20px; }
+.tarjeta.ok { border-color: rgba(45,216,129,.5); }
+.tarjeta.mal { border-color: rgba(255,92,122,.5); }
+.tarjeta.apagada { opacity: .45; }
+
+.btn-int {
+  background: var(--tarjeta); color: var(--texto); border: 2px solid var(--borde);
+  border-radius: 14px; padding: clamp(10px, 1.6vw, 18px) clamp(16px, 2.4vw, 28px);
+  font-size: clamp(.95rem, 1.9vw, 1.25rem); font-weight: 700; cursor: pointer;
+  transition: all .18s; font-family: inherit;
+}
+.btn-int:hover { border-color: var(--acento2); transform: translateY(-2px); }
+.btn-int.correcta { background: rgba(45,216,129,.18); border-color: var(--exito); }
+.btn-int.incorrecta { background: rgba(255,92,122,.15); border-color: var(--peligro); }
+.btn-int.encendido { background: rgba(124,92,255,.2); border-color: var(--acento); }
+.btn-int:disabled { cursor: default; opacity: .85; }
+
+/* Chat / consola del agente */
+.chat {
+  width: min(680px, 88vw); max-height: 44vh; overflow-y: auto; text-align: left;
+  background: #0d1120; border: 1px solid var(--borde); border-radius: 18px; padding: 18px;
+  display: flex; flex-direction: column; gap: 10px; font-size: clamp(.85rem, 1.7vw, 1.05rem);
+}
+.msg { padding: 10px 16px; border-radius: 14px; max-width: 88%; animation: entrar .3s ease; line-height: 1.45; }
+.msg.sistema { background: var(--tarjeta); align-self: flex-start; border: 1px solid var(--borde); }
+.msg.agente { background: rgba(124,92,255,.18); border: 1px solid rgba(124,92,255,.5); align-self: flex-end; }
+.msg.ok { background: rgba(45,216,129,.12); border: 1px solid rgba(45,216,129,.45); align-self: flex-start; }
+.msg.error { background: rgba(255,92,122,.12); border: 1px solid rgba(255,92,122,.5); align-self: flex-start; }
+.msg .rol { display: block; font-size: .72rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--acento2); margin-bottom: 3px; }
+
+/* Constructor de instrucciones */
+.constructor { width: min(760px, 92vw); display: flex; flex-direction: column; gap: 1.6vh; }
+.prompt-vivo {
+  background: #0d1120; border: 1px solid var(--borde); border-radius: 16px; padding: 18px;
+  text-align: left; font-family: Consolas, monospace; font-size: clamp(.8rem, 1.6vw, 1.05rem);
+  min-height: 5em; color: #b8e0ff; line-height: 1.6;
+}
+.prompt-vivo .pieza { display: block; animation: entrar .35s ease; }
+.medidor { height: 22px; background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 99px; overflow: hidden; }
+.medidor > div { height: 100%; width: 5%; border-radius: 99px; background: var(--peligro); transition: all .5s; }
+.medidor-etiqueta { font-weight: 800; font-size: clamp(.9rem, 1.8vw, 1.2rem); }
+
+/* Documento RAG */
+.doc-rag {
+  width: min(700px, 90vw); text-align: left; background: #0d1120;
+  border: 1px solid var(--borde); border-radius: 16px; padding: 16px;
+  font-size: clamp(.8rem, 1.6vw, 1rem); display: flex; flex-direction: column; gap: 8px;
+}
+.doc-rag .titulo-doc { font-weight: 800; color: var(--acento2); font-size: .85em; letter-spacing: 1px; }
+.fragmento { padding: 10px 14px; border-radius: 10px; border: 1px dashed var(--borde); color: var(--suave); transition: all .4s; }
+.fragmento.resaltado { border: 2px solid var(--exito); background: rgba(45,216,129,.12); color: var(--texto); transform: scale(1.02); }
+.fragmento.apagado { opacity: .35; }
+
+/* Quiz */
+.quiz-caja { width: min(720px, 90vw); }
+.quiz-pregunta { font-size: clamp(1.15rem, 2.6vw, 1.8rem); font-weight: 800; margin-bottom: 2.2vh; }
+.quiz-opciones { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.quiz-opciones .btn-int { text-align: left; }
+.quiz-feedback { margin-top: 14px; font-size: clamp(.9rem, 1.8vw, 1.15rem); min-height: 2.4em; color: var(--suave); }
+@media (max-width: 640px) { .quiz-opciones { grid-template-columns: 1fr; } }
+
+/* HUD */
+#hud { position: fixed; bottom: 0; left: 0; right: 0; z-index: 10; }
+#barra-prog { height: 5px; background: var(--tarjeta); }
+#barra-prog > div { height: 100%; background: var(--grad); width: 0%; transition: width .3s; }
+#controles { display: flex; justify-content: space-between; align-items: center; padding: 8px 16px; font-size: .85rem; color: var(--suave); }
+#controles .flechas button {
+  background: var(--tarjeta); border: 1px solid var(--borde); color: var(--texto);
+  border-radius: 10px; padding: 6px 16px; font-size: 1rem; cursor: pointer; margin-left: 8px;
+}
+#controles .flechas button:hover { border-color: var(--acento2); }
+#controles a { color: var(--suave); text-decoration: none; }
+#controles a:hover { color: var(--acento2); }
+.pista { font-size: clamp(.75rem, 1.4vw, .9rem); color: var(--suave); opacity: .8; }
+</style>
+</head>
+<body>
+
+<!-- ============ SLIDE 1: Portada ============ -->
+<section class="slide">
+  <div class="emoji-gigante">🧩</div>
+  <div class="kicker">Curso Agentes de IA Locales · Día 2</div>
+  <h1>El cerebro consigue <span class="grad">cuerpo</span></h1>
+  <p class="grande">Ayer instalaste el cerebro 🧠. Hoy le damos <b>instrucciones</b> 📜 y <b>memoria</b> 💾: al final de la clase, tu asistente responderá preguntas sobre <b>TUS propios documentos</b>.</p>
+  <p class="pista">Flechas ← → para navegar</p>
+</section>
+
+<!-- ============ SLIDE 2: Calentamiento ============ -->
+<section class="slide">
+  <div class="kicker">Calentamiento ⚡ · 30 segundos</div>
+  <h2>Ayer aprendimos que un agente, a diferencia de un chatbot…</h2>
+  <div class="fila" id="calentamiento">
+    <button class="btn-int" onclick="calentar(this, false)">💬 Escribe con mejor ortografía</button>
+    <button class="btn-int" onclick="calentar(this, true)">🦾 Usa herramientas y ACTÚA</button>
+    <button class="btn-int" onclick="calentar(this, false)">💰 Cuesta más caro</button>
+  </div>
+  <p class="grande" id="calentamiento-fb" style="min-height:2em"></p>
+</section>
+
+<!-- ============ SLIDE 3: Mapa de piezas ============ -->
+<section class="slide">
+  <div class="kicker">El mapa del curso</div>
+  <h2>Las 4 piezas: <span class="grad">¿dónde vamos?</span></h2>
+  <div class="fila">
+    <div class="tarjeta ok"><h3>🧠 Cerebro ✅</h3><p>Ayer: Ollama + tu modelo local corriendo sin internet.</p></div>
+    <div class="tarjeta frag"><h3>📜 Instrucciones 👈 HOY</h3><p>El "contrato de trabajo" de tu asistente.</p></div>
+    <div class="tarjeta frag"><h3>💾 Memoria 👈 HOY</h3><p>Que conozca TUS documentos, no solo internet de 2024.</p></div>
+    <div class="tarjeta apagada frag"><h3>🛠️ Herramientas</h3><p>Mañana: buscar en la web, crear archivos… las manos.</p></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 4: Instrucciones = contrato ============ -->
+<section class="slide">
+  <div class="kicker">Pieza 1: Instrucciones 📜</div>
+  <h2>Contrata bien a tu <span class="grad">empleado digital</span></h2>
+  <div class="fila">
+    <div class="tarjeta mal">
+      <h3>😵 Así contrata la mayoría</h3>
+      <p>"Ayúdame con los correos"</p>
+      <p style="margin-top:8px">Resultado: respuestas genéricas, en el idioma que le dé la gana, con formato de lotería.</p>
+    </div>
+    <div class="tarjeta ok frag">
+      <h3>😎 Así contrata un pro</h3>
+      <p>Le da un <b>ROL</b>, una <b>TAREA</b> concreta, un <b>FORMATO</b> de entrega y <b>REGLAS</b> claras.</p>
+      <p style="margin-top:8px">Resultado: un empleado que hace exactamente lo que necesitas.</p>
+    </div>
+  </div>
+  <p class="grande frag">La IA no lee mentes: <b>lee instrucciones.</b> Veamos la diferencia en vivo…</p>
+</section>
+
+<!-- ============ SLIDE 5: Constructor de instrucciones ============ -->
+<section class="slide">
+  <div class="kicker">Interactivo 🎛️ · vayan diciendo qué agregamos</div>
+  <h2 style="font-size:clamp(1.2rem,3vw,2.2rem)">El <span class="grad">constructor de instrucciones</span></h2>
+  <div class="constructor">
+    <div class="fila">
+      <button class="btn-int" id="chip-rol" onclick="pieza('rol', this)">+ 👤 ROL</button>
+      <button class="btn-int" id="chip-tarea" onclick="pieza('tarea', this)">+ 🎯 TAREA</button>
+      <button class="btn-int" id="chip-formato" onclick="pieza('formato', this)">+ 📐 FORMATO</button>
+      <button class="btn-int" id="chip-reglas" onclick="pieza('reglas', this)">+ 🚧 REGLAS</button>
+    </div>
+    <div class="prompt-vivo" id="prompt-vivo"><span class="pieza" style="color:#ff9db0">Resume mis correos.</span></div>
+    <div class="medidor"><div id="medidor-fill"></div></div>
+    <div class="medidor-etiqueta" id="medidor-etiqueta">🥴 Calidad: instrucción vaga — resultado de lotería</div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 6: Juego buena o mala ============ -->
+<section class="slide">
+  <div class="kicker">Juego 🎮 · ¿contratarías con estas instrucciones?</div>
+  <h2>¿<span style="color:var(--exito)">Buena</span> o <span style="color:var(--peligro)">mala</span> instrucción?</h2>
+  <div class="quiz-caja" id="juego-bm"></div>
+</section>
+
+<!-- ============ SLIDE 7: Demo alucinación ============ -->
+<section class="slide">
+  <div class="kicker">Pieza 2: Memoria 💾 · el problema</div>
+  <h2 style="font-size:clamp(1.2rem,3vw,2.2rem)">Tu modelo <span class="grad">no sabe NADA de ti</span> (y aún así responde 😬)</h2>
+  <div class="chat" id="chat-alucina">
+    <div class="msg sistema"><span class="rol">Situación</span>El modelo se entrenó con internet… pero JAMÁS ha visto el reglamento de tu empresa. Pregúntale igual y mira qué pasa:</div>
+  </div>
+  <div class="fila" id="botones-alucina">
+    <button class="btn-int" onclick="alucinar()">😈 Pregúntale: "¿Qué dice mi reglamento sobre atrasos?"</button>
+  </div>
+</section>
+
+<!-- ============ SLIDE 8: RAG sin jerga + simulador ============ -->
+<section class="slide">
+  <div class="kicker">La solución se llama RAG · "examen a libro abierto" 📖</div>
+  <h2 style="font-size:clamp(1.1rem,2.8vw,2rem)">Antes de responder, el asistente <span class="grad">busca en TUS documentos</span></h2>
+  <div class="doc-rag">
+    <span class="titulo-doc">📄 MANUAL_VACACIONES.PDF (tu documento, en tu compu)</span>
+    <div class="fragmento" id="frag-0">Art. 1 — Todo empleado tiene derecho a 15 días de vacaciones pagadas por año trabajado.</div>
+    <div class="fragmento" id="frag-1">Art. 2 — Las solicitudes deben presentarse con mínimo 2 semanas de anticipación al jefe directo.</div>
+    <div class="fragmento" id="frag-2">Art. 3 — Se pueden acumular vacaciones hasta un máximo de 30 días.</div>
+  </div>
+  <div class="fila">
+    <button class="btn-int" onclick="rag(0, '✅ Tienes derecho a 15 días pagados por año. 📎 Fuente: Manual_Vacaciones.pdf, Art. 1')">"¿Cuántos días me tocan?"</button>
+    <button class="btn-int" onclick="rag(1, '✅ Debes pedirlas con 2 semanas de anticipación a tu jefe directo. 📎 Art. 2')">"¿Con cuánto aviso pido?"</button>
+    <button class="btn-int" onclick="rag(2, '✅ Sí, hasta acumular máximo 30 días. 📎 Art. 3')">"¿Puedo acumularlas?"</button>
+  </div>
+  <p class="grande" id="rag-respuesta" style="min-height:2.4em"></p>
+</section>
+
+<!-- ============ SLIDE 9: AnythingLLM ============ -->
+<section class="slide">
+  <div class="emoji-gigante">🚗</div>
+  <h2>Conozcan a <span class="grad">AnythingLLM</span></h2>
+  <p class="grande">Si Ollama es el <b>motor</b>, AnythingLLM es la <b>carrocería</b>: una app gratuita y bonita donde tu IA local gana instrucciones, memoria y (mañana) herramientas. Todo con clics.</p>
+  <div class="fila">
+    <div class="tarjeta frag"><h3>🗂️ Workspaces</h3><p>Cada workspace = un "empleado" distinto: tu asistente personal, un tutor, un analista… cada uno con sus propios documentos e instrucciones.</p></div>
+    <div class="tarjeta frag"><h3>📎 Sube documentos</h3><p>PDFs, Word, textos → tu asistente los "estudia" (RAG) y responde citando la fuente.</p></div>
+    <div class="tarjeta frag"><h3>🔒 Privado</h3><p>Se conecta a TU Ollama: los documentos y las respuestas nunca salen de tu máquina.</p></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 10: Al laboratorio ============ -->
+<section class="slide">
+  <div class="emoji-gigante">🧪</div>
+  <div class="kicker">Manos a la obra · ~60 minutos</div>
+  <h2>Laboratorio 2: <span class="grad">tu asistente estudia tus PDFs</span></h2>
+  <p class="grande">Instalarás AnythingLLM, lo conectarás a tu Ollama, le darás su contrato de trabajo (instrucciones) y lo pondrás a estudiar tus documentos.</p>
+  <a class="btn-int" style="border-color:var(--acento2); font-size:clamp(1rem,2.2vw,1.4rem)" href="lab.html" target="_blank">🚀 Abrir la guía del laboratorio</a>
+  <p class="pista">Al volver: quiz del día 👀</p>
+</section>
+
+<!-- ============ SLIDE 11: Quiz ============ -->
+<section class="slide">
+  <div class="kicker">Quiz del Día 2 · cuenta para la nota 👀</div>
+  <div class="quiz-caja" id="quiz"></div>
+</section>
+
+<!-- ============ SLIDE 12: Cierre ============ -->
+<section class="slide">
+  <div class="emoji-gigante">🚀</div>
+  <h2>Tu asistente ya tiene <span class="grad">cerebro, contrato y memoria</span></h2>
+  <p class="grande">✅ Sabes la receta de oro: <b>ROL + TAREA + FORMATO + REGLAS</b><br>
+  ✅ Viste una alucinación en vivo (y cómo el RAG la cura)<br>
+  ✅ Tu asistente responde sobre TUS documentos, citando fuentes</p>
+  <p class="grande frag"><b>Mañana:</b> le damos MANOS 🦾 — buscará en la web, creará archivos y hará informes solo. <b>Tarea:</b> piensa un tema que quieras investigar (mañana tu agente lo investigará por ti).</p>
+</section>
+
+<!-- ============ HUD ============ -->
+<div id="hud">
+  <div id="barra-prog"><div></div></div>
+  <div id="controles">
+    <a href="../index.html">← Portada del curso</a>
+    <span id="contador">1 / ?</span>
+    <span class="flechas">
+      <button onclick="mover(-1)" aria-label="Anterior">←</button>
+      <button onclick="mover(1)" aria-label="Siguiente">→</button>
+    </span>
+  </div>
+</div>
+
+<script>
+/* ================= MOTOR DE SLIDES ================= */
+const slides = [...document.querySelectorAll('.slide')];
+let idx = 0;
+function pintar() {
+  slides.forEach((s, i) => s.classList.toggle('activa', i === idx));
+  document.querySelector('#barra-prog div').style.width = ((idx + 1) / slides.length * 100) + '%';
+  document.getElementById('contador').textContent = (idx + 1) + ' / ' + slides.length;
+  location.hash = '#/' + (idx + 1);
+}
+function mover(dir) {
+  const frags = [...slides[idx].querySelectorAll('.frag')];
+  if (dir > 0) {
+    const oculto = frags.find(f => !f.classList.contains('visible'));
+    if (oculto) { oculto.classList.add('visible'); return; }
+    if (idx < slides.length - 1) idx++;
+  } else {
+    const visibles = frags.filter(f => f.classList.contains('visible'));
+    if (visibles.length) { visibles[visibles.length - 1].classList.remove('visible'); return; }
+    if (idx > 0) idx--;
+  }
+  pintar();
+}
+document.addEventListener('keydown', e => {
+  if (['ArrowRight', ' ', 'PageDown'].includes(e.key)) { e.preventDefault(); mover(1); }
+  if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); mover(-1); }
+});
+let x0 = null;
+document.addEventListener('touchstart', e => x0 = e.touches[0].clientX);
+document.addEventListener('touchend', e => {
+  if (x0 === null) return;
+  const dx = e.changedTouches[0].clientX - x0;
+  if (Math.abs(dx) > 50) mover(dx < 0 ? 1 : -1);
+  x0 = null;
+});
+const m = location.hash.match(/#\/(\d+)/);
+if (m) idx = Math.min(slides.length - 1, Math.max(0, +m[1] - 1));
+pintar();
+
+/* ================= CALENTAMIENTO ================= */
+function calentar(btn, ok) {
+  [...document.querySelectorAll('#calentamiento .btn-int')].forEach(b => b.disabled = true);
+  btn.classList.add(ok ? 'correcta' : 'incorrecta');
+  document.getElementById('calentamiento-fb').innerHTML = ok
+    ? '✅ ¡Memoria fresca! El agente <b>percibe → razona → actúa</b> con sus herramientas.'
+    : '❌ Recuerda el juego de ayer: la clave es que el agente <b>ACTÚA con herramientas</b>.';
+}
+
+/* ================= CONSTRUCTOR DE INSTRUCCIONES ================= */
+const piezas = {
+  rol:     { texto: 'Eres mi asistente ejecutivo, experto en comunicación empresarial.', color: '#9fd0ff' },
+  tarea:   { texto: 'Cada mañana, resume mis correos NO LEÍDOS de las últimas 24 horas.', color: '#b8e0ff' },
+  formato: { texto: 'Formato: lista con remitente, asunto y una línea esencial. Clasifica: 🔴 urgente, 🟡 importante, ⚪ informativo.', color: '#c9f0e2' },
+  reglas:  { texto: 'Reglas: responde SIEMPRE en español, nunca inventes información, y si no hay correos dilo tal cual.', color: '#ffe9b8' },
+};
+const activas = new Set();
+const niveles = [
+  ['🥴 Calidad: instrucción vaga — resultado de lotería', 'var(--peligro)', 5],
+  ['😐 Calidad: mejorando, pero aún ambigua', 'var(--alerta)', 30],
+  ['🙂 Calidad: decente — ya hay dirección', 'var(--alerta)', 55],
+  ['😎 Calidad: profesional — resultados consistentes', 'var(--acento2)', 80],
+  ['🏆 Calidad: NIVEL PRO — así se contrata a un agente', 'var(--exito)', 100],
+];
+function pieza(cual, btn) {
+  if (activas.has(cual)) { activas.delete(cual); btn.classList.remove('encendido'); }
+  else { activas.add(cual); btn.classList.add('encendido'); }
+  const caja = document.getElementById('prompt-vivo');
+  caja.innerHTML = activas.size === 0
+    ? '<span class="pieza" style="color:#ff9db0">Resume mis correos.</span>'
+    : ['rol', 'tarea', 'formato', 'reglas'].filter(k => activas.has(k))
+        .map(k => '<span class="pieza" style="color:' + piezas[k].color + '">' + piezas[k].texto + '</span>').join('');
+  const [etiqueta, color, ancho] = niveles[activas.size];
+  const fill = document.getElementById('medidor-fill');
+  fill.style.width = ancho + '%'; fill.style.background = color;
+  document.getElementById('medidor-etiqueta').textContent = etiqueta;
+}
+
+/* ================= JUEGO BUENA O MALA ================= */
+const rondas = [
+  { texto: '"Hazme un informe."', buena: false,
+    fb: 'MALA: ¿informe de qué, para quién, de qué largo? El pobre agente tendrá que adivinar… y adivinará mal.' },
+  { texto: '"Eres un tutor de matemáticas paciente. Explica fracciones a un niño de 10 años, con 2 ejemplos de comida, y termina con un mini-quiz de 3 preguntas."', buena: true,
+    fb: 'BUENA: tiene rol (tutor paciente), tarea (explicar fracciones), audiencia (niño de 10), formato (2 ejemplos + quiz). ¡De manual!' },
+  { texto: '"Redacta un correo. Que sea bueno. Ya sabes cómo. No me falles porfa 🙏"', buena: false,
+    fb: 'MALA: mucha fe y cero datos. ¿A quién va? ¿Sobre qué? ¿Formal o cercano? La cortesía no reemplaza al contexto.' },
+];
+let ronda = 0, puntosBM = 0;
+function pintarBM() {
+  const caja = document.getElementById('juego-bm');
+  if (ronda >= rondas.length) {
+    caja.innerHTML = '<div class="emoji-gigante">' + (puntosBM === 3 ? '🏆' : puntosBM === 2 ? '💪' : '📚') + '</div>' +
+      '<h2>Acertaste <span class="grad">' + puntosBM + ' de 3</span></h2>' +
+      '<p class="grande" style="margin:2vh auto">Regla de oro: si un empleado nuevo NO podría hacerlo con esas instrucciones, tu agente tampoco.</p>';
+    return;
+  }
+  const r = rondas[ronda];
+  caja.innerHTML = '<div class="quiz-pregunta" style="font-style:italic">' + r.texto + '</div>' +
+    '<div class="fila">' +
+    '<button class="btn-int" onclick="jugarBM(true, this)">✅ Buena</button>' +
+    '<button class="btn-int" onclick="jugarBM(false, this)">❌ Mala</button></div>' +
+    '<div class="quiz-feedback" id="bm-fb"></div>';
+}
+function jugarBM(eleccion, btn) {
+  const r = rondas[ronda];
+  const acierto = eleccion === r.buena;
+  if (acierto) puntosBM++;
+  btn.parentElement.querySelectorAll('button').forEach(b => b.disabled = true);
+  btn.classList.add(acierto ? 'correcta' : 'incorrecta');
+  document.getElementById('bm-fb').innerHTML = (acierto ? '✅ ' : '❌ ') + r.fb;
+  setTimeout(() => { ronda++; pintarBM(); }, 3200);
+}
+pintarBM();
+
+/* ================= DEMO ALUCINACIÓN ================= */
+let faseAlucina = 0;
+function alucinar() {
+  const chat = document.getElementById('chat-alucina');
+  const botones = document.getElementById('botones-alucina');
+  if (faseAlucina === 0) {
+    faseAlucina = 1;
+    agregarMsg(chat, 'agente', 'Tú', '¿Qué dice mi reglamento interno sobre los atrasos?');
+    setTimeout(() => agregarMsg(chat, 'sistema', 'Modelo (sin memoria)', 'Según el artículo 14 de su reglamento interno, los atrasos mayores a 15 minutos generan una multa del 2% del salario diario, y tres atrasos acumulados ameritan un memorando de gerencia.'), 800);
+    setTimeout(() => {
+      agregarMsg(chat, 'error', '🚨 Alerta', '¡TODO ESO ES INVENTADO! No existe tal artículo 14. El modelo nunca vio tu reglamento… pero respondió con una seguridad pasmosa. Esto se llama ALUCINACIÓN, y es el riesgo #1 de usar IA sin memoria.');
+      botones.innerHTML = '<button class="btn-int" onclick="alucinar()">💾 Ahora dale MEMORIA (RAG) y repite la pregunta</button>';
+    }, 2600);
+  } else {
+    agregarMsg(chat, 'agente', 'Tú', '¿Qué dice mi reglamento interno sobre los atrasos?');
+    setTimeout(() => agregarMsg(chat, 'ok', 'Asistente (con RAG)', 'Según tu documento "Reglamento_Interno.pdf" (sección 5.2): los atrasos deben justificarse por escrito dentro de las 48 horas siguientes. No se mencionan multas. 📎 Fuente: Reglamento_Interno.pdf'), 900);
+    setTimeout(() => agregarMsg(chat, 'sistema', 'Moraleja', 'Misma pregunta, mundos de diferencia: ahora responde CON tu documento y CITA la fuente para que verifiques. Eso es lo que construiremos hoy en el laboratorio.'), 2600);
+    document.getElementById('botones-alucina').innerHTML = '';
+  }
+}
+function agregarMsg(chat, clase, rol, texto) {
+  const d = document.createElement('div');
+  d.className = 'msg ' + clase;
+  d.innerHTML = '<span class="rol">' + rol + '</span>' + texto;
+  chat.appendChild(d);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+/* ================= SIMULADOR RAG ================= */
+function rag(fragOk, respuesta) {
+  [0, 1, 2].forEach(i => {
+    const f = document.getElementById('frag-' + i);
+    f.classList.toggle('resaltado', i === fragOk);
+    f.classList.toggle('apagado', i !== fragOk);
+  });
+  const salida = document.getElementById('rag-respuesta');
+  salida.innerHTML = '🔎 <i>buscando en tus documentos…</i>';
+  setTimeout(() => { salida.innerHTML = respuesta; }, 700);
+}
+
+/* ================= QUIZ ================= */
+const preguntas = [
+  { p: '1. La receta de oro para instruir a un agente es…',
+    ops: ['ROL + TAREA + FORMATO + REGLAS', 'Por favor + gracias + emoji', 'Escribir TODO EN MAYÚSCULAS', 'Repetir la orden 3 veces'],
+    ok: 0, fb: 'Rol, tarea concreta, formato de entrega y reglas claras. Como contratar a un buen empleado.' },
+  { p: '2. ¿Por qué el modelo NO conoce el reglamento de tu empresa?',
+    ops: ['Porque es información privada que no estuvo en su entrenamiento', 'Porque los reglamentos están prohibidos para las IA', 'Porque no ha tomado café', 'Sí lo conoce: las IA lo saben todo'],
+    ok: 0, fb: 'El modelo solo "sabe" lo que vio al entrenarse (internet público). Lo tuyo hay que dárselo como memoria.' },
+  { p: '3. ¿Qué es RAG, en cristiano?',
+    ops: ['Un virus informático', 'Buscar primero en TUS documentos y responder citando lo encontrado', 'Un modelo de IA más grande', 'Una red social de reclutadores'],
+    ok: 1, fb: 'Examen a libro abierto: busca el fragmento relevante en tus documentos y responde con la fuente.' },
+  { p: '4. En AnythingLLM, un "workspace" es…',
+    ops: ['Un espacio con sus propios documentos e instrucciones (un "empleado" distinto)', 'Una carpeta de Windows', 'Un tipo de contraseña', 'El nombre del modelo'],
+    ok: 0, fb: 'Cada workspace tiene su contrato (instrucciones) y su memoria (documentos): un empleado especializado.' },
+  { p: '5. Le preguntas algo que NO está en tus documentos. Un buen asistente debe…',
+    ops: ['Inventar algo convincente para quedar bien', 'Decir que no está en los documentos', 'Apagarse', 'Buscar en tu historial del navegador'],
+    ok: 1, fb: 'Por eso pusimos en las reglas: "si no está, dilo tal cual". Un agente honesto vale oro.' },
+];
+let qIdx = 0, aciertos = 0;
+function pintarQuiz() {
+  const caja = document.getElementById('quiz');
+  if (qIdx >= preguntas.length) {
+    const nota = Math.round(aciertos / preguntas.length * 10);
+    const emoji = nota >= 9 ? '🏆' : nota >= 7 ? '💪' : nota >= 5 ? '🙂' : '📚';
+    caja.innerHTML = '<div class="emoji-gigante">' + emoji + '</div>' +
+      '<h2>Resultado: <span class="grad">' + aciertos + ' de ' + preguntas.length + '</span> (' + nota + '/10)</h2>' +
+      '<p class="grande" style="margin:2vh auto">' + (nota >= 7 ? '¡Excelente! Instrucciones y memoria: dominados.' : 'Repasa las slides y reintenta con el botón de abajo.') + '</p>' +
+      '<button class="btn-int" onclick="qIdx=0;aciertos=0;pintarQuiz()">🔄 Reintentar</button>';
+    return;
+  }
+  const q = preguntas[qIdx];
+  caja.innerHTML = '<div class="quiz-pregunta">' + q.p + '</div>' +
+    '<div class="quiz-opciones">' + q.ops.map((o, i) =>
+      '<button class="btn-int" onclick="responder(' + i + ', this)">' + o + '</button>').join('') + '</div>' +
+    '<div class="quiz-feedback" id="quiz-fb"></div>';
+}
+function responder(i, btn) {
+  const q = preguntas[qIdx];
+  const botones = btn.parentElement.querySelectorAll('button');
+  botones.forEach(b => b.disabled = true);
+  botones[q.ok].classList.add('correcta');
+  const fb = document.getElementById('quiz-fb');
+  if (i === q.ok) { aciertos++; fb.innerHTML = '✅ <b>¡Correcto!</b> ' + q.fb; }
+  else { btn.classList.add('incorrecta'); fb.innerHTML = '❌ Casi. ' + q.fb; }
+  setTimeout(() => { qIdx++; pintarQuiz(); }, 2600);
+}
+pintarQuiz();
+</script>
+</body>
+</html>

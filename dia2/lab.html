@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab Día 2 · Tu asistente estudia tus PDFs — Agentes IA Local</title>
+<link rel="stylesheet" href="../assets/curso.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧩</text></svg>">
+</head>
+<body>
+<div class="contenedor">
+
+  <nav class="nav">
+    <span class="marca">🤖 Agentes <span>IA Local</span></span>
+    <div style="display:flex;gap:18px;flex-wrap:wrap">
+      <a href="../index.html">Portada</a>
+      <a href="slides.html">Slides Día 2</a>
+    </div>
+  </nav>
+
+  <header class="lab-cabecera">
+    <div class="kicker">Laboratorio · Día 2</div>
+    <h1>🧩 AnythingLLM: tu asistente con contrato y memoria</h1>
+    <div class="meta">
+      <span>⏱️ ~60 minutos</span>
+      <span>🎚️ Nivel: principiante</span>
+      <span>📋 Requiere: Ollama instalado (Día 1) + 2-3 PDFs tuyos</span>
+    </div>
+  </header>
+
+  <div class="progreso-wrap">
+    <div class="progreso-texto">Tu progreso: <b id="prog-num">0 de 7 pasos</b> — se guarda en tu navegador.</div>
+    <div class="progreso-barra"><div id="prog-fill"></div></div>
+  </div>
+
+  <!-- PASO 1 -->
+  <div class="paso" data-paso="p1">
+    <div class="paso-cabecera"><span class="paso-num">1</span><h2>Verifica que el motor sigue vivo 🦙</h2></div>
+    <ul>
+      <li>Busca la llamita 🦙 de Ollama en los iconos junto al reloj. ¿Está? Perfecto.</li>
+      <li>¿No está? Tecla <kbd>Windows</kbd> → escribe "Ollama" → Enter. Espera unos segundos a que aparezca el icono.</li>
+    </ul>
+    <div class="caja caja-info"><b>ℹ️ ¿Por qué importa?</b> AnythingLLM es la carrocería, pero el motor es Ollama: si no está corriendo, tu asistente no tendrá cerebro que usar.</div>
+    <label class="paso-check"><input type="checkbox"> Ollama está corriendo</label>
+  </div>
+
+  <!-- PASO 2 -->
+  <div class="paso" data-paso="p2">
+    <div class="paso-cabecera"><span class="paso-num">2</span><h2>Instala AnythingLLM Desktop</h2></div>
+    <ol>
+      <li>Entra a <a href="https://anythingllm.com" target="_blank" style="color:var(--acento-2)"><b>anythingllm.com</b></a> → botón <b>Download for desktop</b> → versión <b>Windows</b>.</li>
+      <li>Ejecuta el instalador descargado. Si Windows muestra una advertencia de "aplicación desconocida", haz clic en <b>Más información → Ejecutar de todas formas</b> (es software de código abierto, seguro y muy usado).</li>
+      <li>Abre AnythingLLM al terminar. Verás un asistente de bienvenida.</li>
+    </ol>
+    <label class="paso-check"><input type="checkbox"> AnythingLLM instalado y abierto</label>
+  </div>
+
+  <!-- PASO 3 -->
+  <div class="paso" data-paso="p3">
+    <div class="paso-cabecera"><span class="paso-num">3</span><h2>Conecta la carrocería al motor 🔌</h2></div>
+    <p>En el asistente de configuración inicial (o después en Ajustes ⚙️ → <b>LLM Preference</b>):</p>
+    <ol>
+      <li>Como proveedor de IA (<b>LLM Provider</b>) elige <b>Ollama</b>.</li>
+      <li>AnythingLLM detectará tu Ollama automáticamente (dirección <code>http://127.0.0.1:11434</code>).</li>
+      <li>En el selector de modelo, elige el que descargaste ayer: <b>gemma3:4b</b> (o el de tu plan B).</li>
+      <li>Las demás opciones (embedder, base de datos vectorial): deja las que vienen <b>por defecto</b> — son locales y funcionan solas.</li>
+      <li>Si te pide crear un workspace para terminar el asistente, ponle: <b>mi-asistente</b>.</li>
+    </ol>
+    <div class="caja caja-tip"><b>💚 Dato curioso:</b> fíjate en la pantalla de privacidad del asistente: dirá que TODO (modelo, embeddings, datos) se procesa en tu máquina. Eso que ves ahí es la promesa del curso cumplida.</div>
+    <label class="paso-check"><input type="checkbox"> AnythingLLM conectado a Ollama con mi modelo</label>
+  </div>
+
+  <!-- PASO 4 -->
+  <div class="paso" data-paso="p4">
+    <div class="paso-cabecera"><span class="paso-num">4</span><h2>Dale su contrato de trabajo 📜</h2></div>
+    <p>Aplica la receta de oro de la clase (ROL + TAREA + FORMATO + REGLAS):</p>
+    <ol>
+      <li>Pasa el mouse sobre tu workspace <b>mi-asistente</b> y haz clic en el <b>engranaje ⚙️</b> (configuración del workspace).</li>
+      <li>Ve a la pestaña <b>Chat Settings</b> y busca el campo <b>Prompt</b> (o "System Prompt").</li>
+      <li>Borra lo que haya y pega esto:</li>
+    </ol>
+    <div class="copiable">Eres mi asistente personal de trabajo. Respondes SIEMPRE en español, de forma breve, clara y ordenada.
+
+Cuando uses información de mis documentos, menciona de qué documento la sacaste.
+
+Si la respuesta NO está en mis documentos ni en esta conversación, responde exactamente: "Eso no aparece en tus documentos" — y no inventes nada.
+
+Tono profesional pero cercano. Usa viñetas cuando la respuesta tenga varios puntos.</div>
+    <ol start="4">
+      <li>Guarda con el botón <b>Update workspace</b>.</li>
+    </ol>
+    <label class="paso-check"><input type="checkbox"> Instrucciones pegadas y guardadas</label>
+  </div>
+
+  <!-- PASO 5 -->
+  <div class="paso" data-paso="p5">
+    <div class="paso-cabecera"><span class="paso-num">5</span><h2>Que estudie tus documentos 📚</h2></div>
+    <p>Saca los PDFs de la tarea de ayer (2-3 documentos de tu trabajo o estudio, no confidenciales):</p>
+    <ol>
+      <li>En el chat de tu workspace, haz clic en el icono de <b>subir/adjuntar 📎</b> (o arrastra los archivos directamente a la ventana).</li>
+      <li>Se abrirá el gestor de documentos: verás tus archivos en la columna de la izquierda.</li>
+      <li>Selecciónalos y usa <b>Move to workspace</b> para pasarlos a la columna derecha (tu workspace).</li>
+      <li>Haz clic en <b>Save and Embed</b>. Ahora tu asistente los está "estudiando": los divide en fragmentos y los indexa. Puede tardar 1-3 minutos según el tamaño. ☕</li>
+    </ol>
+    <div class="caja caja-alerta"><b>⚠️ ¿PDF escaneado?</b> Si tu PDF es una foto/escaneo (no puedes seleccionar el texto con el mouse), el asistente no podrá leerlo. Usa PDFs "de verdad" (generados desde Word u otra app).</div>
+    <label class="paso-check"><input type="checkbox"> Documentos embebidos (Save and Embed completado)</label>
+  </div>
+
+  <!-- PASO 6 -->
+  <div class="paso" data-paso="p6">
+    <div class="paso-cabecera"><span class="paso-num">6</span><h2>El interrogatorio 🔍</h2></div>
+    <p>Momento de la verdad. Pregúntale cosas cuya respuesta está en tus documentos:</p>
+    <div class="copiable">¿De qué tratan mis documentos? Dame un resumen de cada uno.</div>
+    <div class="copiable">Según mis documentos, [pregunta algo específico que TÚ sabes que está ahí]</div>
+    <ul>
+      <li>Fíjate en las <b>citas (Citations)</b> que aparecen bajo la respuesta: haz clic y verás el fragmento exacto del documento que usó. <b>Eso es RAG en vivo.</b></li>
+    </ul>
+    <p style="margin-top:12px"><b>Ahora la prueba anti-alucinación</b> (la de la clase):</p>
+    <div class="copiable">¿Cuál es la capital de Australia según mis documentos?</div>
+    <ul>
+      <li>Si responde <i>"Eso no aparece en tus documentos"</i> → tu contrato de trabajo funciona. 👏 Un asistente honesto vale oro.</li>
+    </ul>
+    <label class="paso-check"><input type="checkbox"> Respondió sobre mis documentos CON citas y pasó la prueba anti-alucinación</label>
+  </div>
+
+  <!-- PASO 7 -->
+  <div class="paso" data-paso="p7">
+    <div class="paso-cabecera"><span class="paso-num">7</span><h2>Crea tu segundo "empleado" 🗂️</h2></div>
+    <p>Para que veas el poder de los workspaces, crea otro con personalidad distinta:</p>
+    <ol>
+      <li>Botón <b>+ New Workspace</b> → nómbralo <b>tutor</b>.</li>
+      <li>En su configuración → Chat Settings → Prompt, pega:</li>
+    </ol>
+    <div class="copiable">Eres un tutor paciente y motivador. Explicas cualquier tema en español, con ejemplos de la vida diaria en Ecuador, paso a paso, como si el estudiante tuviera 15 años. Al final de cada explicación haces UNA pregunta para comprobar que se entendió.</div>
+    <ol start="3">
+      <li>Pídele que te explique algo ("explícame qué es el interés compuesto") y compara el estilo con tu otro workspace.</li>
+    </ol>
+    <div class="caja caja-tip"><b>💚 ¿Ves la magia?</b> Mismo cerebro (tu modelo local), pero dos "empleados" totalmente distintos gracias a instrucciones y memoria diferentes. Esa es la anatomía de un agente.</div>
+    <label class="paso-check"><input type="checkbox">🏆 Tengo 2 workspaces con personalidades distintas — laboratorio completado</label>
+  </div>
+
+  <!-- Tarea -->
+  <div class="paso">
+    <div class="paso-cabecera"><span class="paso-num">📌</span><h2>Para mañana</h2></div>
+    <ul>
+      <li>Piensa <b>un tema que quieras investigar</b> (noticias de tu sector, un trámite, una tecnología…). Mañana tu agente lo investigará EN LA WEB por ti y te entregará un informe.</li>
+      <li>No desinstales nada: mañana le damos manos 🦾 a este mismo asistente.</li>
+    </ul>
+  </div>
+
+  <!-- Troubleshooting -->
+  <div class="paso">
+    <div class="paso-cabecera"><span class="paso-num">🚑</span><h2>Si algo falla</h2></div>
+    <details class="problema">
+      <summary>AnythingLLM no encuentra Ollama / lista de modelos vacía</summary>
+      <div class="problema-cuerpo">Ollama no está corriendo. Ábrelo (tecla <kbd>Windows</kbd> → "Ollama"), espera a ver la llamita junto al reloj, y en AnythingLLM vuelve a la pantalla de LLM Preference y refresca. La dirección debe ser <code>http://127.0.0.1:11434</code>.</div>
+    </details>
+    <details class="problema">
+      <summary>El "Save and Embed" tarda muchísimo o falla</summary>
+      <div class="problema-cuerpo">La primera vez descarga el modelo de embeddings (pequeño) — necesita internet un momento. Si falla con un PDF concreto, probablemente es escaneado o gigante: prueba con un documento más pequeño primero.</div>
+    </details>
+    <details class="problema">
+      <summary>Responde en inglés o ignora mis instrucciones</summary>
+      <div class="problema-cuerpo">Verifica que guardaste el prompt con <b>Update workspace</b> y que estás chateando en el workspace correcto. Los modelos pequeños a veces se "olvidan": empezar un chat nuevo (New thread) suele arreglarlo.</div>
+    </details>
+    <details class="problema">
+      <summary>Responde cosas que NO están en mis documentos</summary>
+      <div class="problema-cuerpo">En la configuración del workspace → Chat Settings, cambia el <b>Chat mode</b> de "Chat" a <b>"Query"</b>: en modo Query SOLO responde con información de tus documentos. Es el modo recomendado cuando la precisión importa más que la conversación.</div>
+    </details>
+  </div>
+
+  <div class="nav-paginas">
+    <a class="btn btn-secundario" href="slides.html#/11">← Volver a las slides (quiz)</a>
+    <a class="btn btn-primario" href="../dia3/slides.html">Día 3: le damos manos →</a>
+  </div>
+
+  <footer class="pie">Curso <b>Agentes de IA Locales</b> · ISTER 2026 · Día 2</footer>
+</div>
+
+<script>
+const clave = 'lab-' + location.pathname;
+const estado = JSON.parse(localStorage.getItem(clave) || '{}');
+const pasos = [...document.querySelectorAll('.paso[data-paso]')];
+function refrescar() {
+  let hechos = 0;
+  pasos.forEach(p => {
+    const id = p.dataset.paso, chk = p.querySelector('.paso-check input');
+    chk.checked = !!estado[id];
+    p.classList.toggle('completado', !!estado[id]);
+    if (estado[id]) hechos++;
+  });
+  document.getElementById('prog-num').textContent = hechos + ' de ' + pasos.length + ' pasos';
+  document.getElementById('prog-fill').style.width = (hechos / pasos.length * 100) + '%';
+}
+pasos.forEach(p => p.querySelector('.paso-check input').addEventListener('change', e => {
+  estado[p.dataset.paso] = e.target.checked;
+  localStorage.setItem(clave, JSON.stringify(estado));
+  refrescar();
+}));
+refrescar();
+document.querySelectorAll('.copiable').forEach(bloque => {
+  const texto = bloque.textContent.trim();
+  const btn = document.createElement('button');
+  btn.className = 'btn-copiar'; btn.textContent = '📋 Copiar';
+  btn.onclick = () => navigator.clipboard.writeText(texto).then(() => {
+    btn.textContent = '✅ ¡Copiado!'; btn.classList.add('copiado');
+    setTimeout(() => { btn.textContent = '📋 Copiar'; btn.classList.remove('copiado'); }, 1800);
+  });
+  bloque.appendChild(btn);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Día 3 · Agentes locales en acción — Agentes IA Local</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦾</text></svg>">
+<style>
+/* ====== Motor de slides — autocontenido para proyectar incluso sin internet ====== */
+:root {
+  --fondo: #0b0e1a; --tarjeta: #1a2036; --borde: #2a3352;
+  --texto: #e8ecf8; --suave: #9aa5c4;
+  --acento: #7c5cff; --acento2: #00e5ff; --exito: #2dd881; --alerta: #ffb020; --peligro: #ff5c7a;
+  --grad: linear-gradient(135deg, #7c5cff, #00e5ff);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; overflow: hidden; background: var(--fondo); color: var(--texto);
+  font-family: 'Segoe UI', system-ui, sans-serif; }
+body::before { content: ""; position: fixed; inset: 0; z-index: 0;
+  background: radial-gradient(900px 500px at 85% -10%, rgba(124,92,255,.20), transparent 60%),
+              radial-gradient(700px 400px at -10% 110%, rgba(0,229,255,.12), transparent 60%); }
+
+.slide {
+  position: absolute; inset: 0; z-index: 1;
+  display: none; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 5vh 7vw; gap: 2.2vh;
+}
+.slide.activa { display: flex; animation: entrar .45s ease; }
+@keyframes entrar { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+
+.kicker { color: var(--acento2); font-weight: 800; letter-spacing: 3px; text-transform: uppercase; font-size: clamp(.7rem, 1.4vw, 1rem); }
+h1 { font-size: clamp(1.9rem, 5.5vw, 4.2rem); font-weight: 900; line-height: 1.1; letter-spacing: -1px; max-width: 20ch; }
+h2 { font-size: clamp(1.5rem, 4vw, 3rem); font-weight: 900; line-height: 1.15; max-width: 24ch; }
+.grad { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+p.grande { font-size: clamp(1rem, 2.2vw, 1.5rem); color: var(--suave); max-width: 56ch; }
+p.grande b, li b { color: var(--texto); }
+.emoji-gigante { font-size: clamp(3rem, 10vw, 7rem); line-height: 1; }
+
+.frag { opacity: 0; transform: translateY(12px); transition: all .4s; }
+.frag.visible { opacity: 1; transform: none; }
+
+.fila { display: flex; gap: 2vw; flex-wrap: wrap; justify-content: center; width: 100%; }
+.tarjeta {
+  background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 18px;
+  padding: clamp(12px, 2.2vw, 26px); min-width: 200px; max-width: 340px; flex: 1;
+  text-align: left; font-size: clamp(.85rem, 1.7vw, 1.1rem);
+}
+.tarjeta h3 { font-size: clamp(1rem, 2vw, 1.4rem); margin-bottom: 8px; }
+.tarjeta p, .tarjeta li { color: var(--suave); }
+.tarjeta ul { margin-left: 20px; }
+.tarjeta.ok { border-color: rgba(45,216,129,.5); }
+.tarjeta.mal { border-color: rgba(255,92,122,.5); }
+
+.btn-int {
+  background: var(--tarjeta); color: var(--texto); border: 2px solid var(--borde);
+  border-radius: 14px; padding: clamp(10px, 1.6vw, 18px) clamp(16px, 2.4vw, 28px);
+  font-size: clamp(.95rem, 1.9vw, 1.25rem); font-weight: 700; cursor: pointer;
+  transition: all .18s; font-family: inherit;
+}
+.btn-int:hover { border-color: var(--acento2); transform: translateY(-2px); }
+.btn-int.correcta { background: rgba(45,216,129,.18); border-color: var(--exito); }
+.btn-int.incorrecta { background: rgba(255,92,122,.15); border-color: var(--peligro); }
+.btn-int:disabled { cursor: default; opacity: .85; }
+
+/* Consola del agente (cine) */
+.consola {
+  width: min(720px, 90vw); max-height: 46vh; overflow-y: auto; text-align: left;
+  background: #0d1120; border: 1px solid var(--borde); border-radius: 18px; padding: 18px;
+  display: flex; flex-direction: column; gap: 8px;
+  font-family: Consolas, monospace; font-size: clamp(.78rem, 1.6vw, 1rem);
+}
+.linea { padding: 8px 14px; border-radius: 10px; animation: entrar .35s ease; line-height: 1.5; border-left: 3px solid var(--borde); background: rgba(255,255,255,.02); }
+.linea.usuario { border-left-color: var(--acento2); color: var(--texto); }
+.linea.pensando { border-left-color: var(--acento); color: #c9b8ff; font-style: italic; }
+.linea.herramienta { border-left-color: var(--alerta); color: #ffd9a0; }
+.linea.resultado { border-left-color: var(--suave); color: var(--suave); }
+.linea.final { border-left-color: var(--exito); color: #bdf0d7; }
+.linea .tag { font-weight: 800; font-size: .75em; letter-spacing: 1px; text-transform: uppercase; opacity: .8; display: block; margin-bottom: 2px; }
+
+/* Quiz / juegos */
+.quiz-caja { width: min(720px, 90vw); }
+.quiz-pregunta { font-size: clamp(1.15rem, 2.6vw, 1.8rem); font-weight: 800; margin-bottom: 2.2vh; }
+.quiz-opciones { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.quiz-opciones .btn-int { text-align: left; }
+.quiz-feedback { margin-top: 14px; font-size: clamp(.9rem, 1.8vw, 1.15rem); min-height: 2.4em; color: var(--suave); }
+.marcador { font-weight: 800; color: var(--acento2); font-size: clamp(.9rem, 1.8vw, 1.15rem); }
+@media (max-width: 640px) { .quiz-opciones { grid-template-columns: 1fr; } }
+
+/* HUD */
+#hud { position: fixed; bottom: 0; left: 0; right: 0; z-index: 10; }
+#barra-prog { height: 5px; background: var(--tarjeta); }
+#barra-prog > div { height: 100%; background: var(--grad); width: 0%; transition: width .3s; }
+#controles { display: flex; justify-content: space-between; align-items: center; padding: 8px 16px; font-size: .85rem; color: var(--suave); }
+#controles .flechas button {
+  background: var(--tarjeta); border: 1px solid var(--borde); color: var(--texto);
+  border-radius: 10px; padding: 6px 16px; font-size: 1rem; cursor: pointer; margin-left: 8px;
+}
+#controles .flechas button:hover { border-color: var(--acento2); }
+#controles a { color: var(--suave); text-decoration: none; }
+#controles a:hover { color: var(--acento2); }
+.pista { font-size: clamp(.75rem, 1.4vw, .9rem); color: var(--suave); opacity: .8; }
+</style>
+</head>
+<body>
+
+<!-- ============ SLIDE 1: Portada ============ -->
+<section class="slide">
+  <div class="emoji-gigante">🦾</div>
+  <div class="kicker">Curso Agentes de IA Locales · Día 3</div>
+  <h1>Tu asistente consigue <span class="grad">MANOS</span></h1>
+  <p class="grande">Cerebro ✅ Instrucciones ✅ Memoria ✅ — Hoy llega la pieza final: <b>herramientas</b>. Tu asistente buscará en la web, creará archivos y hará informes <b>solo</b>. Hoy nace tu primer agente completo.</p>
+  <p class="pista">Flechas ← → para navegar</p>
+</section>
+
+<!-- ============ SLIDE 2: Calentamiento ============ -->
+<section class="slide">
+  <div class="kicker">Calentamiento ⚡ · 30 segundos</div>
+  <h2>Ayer aprendimos que RAG significa que el asistente…</h2>
+  <div class="fila" id="calentamiento">
+    <button class="btn-int" onclick="calentar(this, false)">🌐 Busca en Google antes de responder</button>
+    <button class="btn-int" onclick="calentar(this, true)">📄 Busca en TUS documentos y cita la fuente</button>
+    <button class="btn-int" onclick="calentar(this, false)">🧠 Memoriza todo internet</button>
+  </div>
+  <p class="grande" id="calentamiento-fb" style="min-height:2em"></p>
+</section>
+
+<!-- ============ SLIDE 3: Caja de herramientas ============ -->
+<section class="slide">
+  <div class="kicker">La pieza final 🛠️</div>
+  <h2>La caja de herramientas de un <span class="grad">agente local</span></h2>
+  <div class="fila">
+    <div class="tarjeta frag"><h3>🔎 Buscar en la web</h3><p>Noticias, precios, datos de HOY — lo que el modelo no sabe porque su memoria congeló en el pasado.</p></div>
+    <div class="tarjeta frag"><h3>🌐 Leer páginas</h3><p>"Lee esta página y resúmela": visita la dirección y extrae el contenido.</p></div>
+    <div class="tarjeta frag"><h3>💾 Crear archivos</h3><p>Guarda resúmenes e informes en archivos listos para usar.</p></div>
+    <div class="tarjeta frag"><h3>📊 Hacer gráficos</h3><p>Convierte datos en gráficos de barras, líneas o pastel.</p></div>
+  </div>
+  <p class="grande frag">Y en AnythingLLM todas se activan <b>con un interruptor</b>. Cero código, como siempre.</p>
+</section>
+
+<!-- ============ SLIDE 4: Quién navega ============ -->
+<section class="slide">
+  <div class="kicker">Concepto clave (y pregunta de quiz 👀)</div>
+  <h2>Cuando el agente "busca en la web"… <span class="grad">¿quién navega?</span></h2>
+  <div class="fila">
+    <div class="tarjeta mal"><h3>❌ Lo que NO pasa</h3><p>El modelo NO abre Chrome ni "entra a internet". Un modelo solo sabe leer y escribir texto.</p></div>
+    <div class="tarjeta ok frag"><h3>✅ Lo que SÍ pasa</h3><p>El modelo <b>pide</b>: "necesito buscar X" → una <b>herramienta</b> hace la búsqueda → le entrega los resultados como texto → él los razona y te responde.</p></div>
+  </div>
+  <p class="grande frag">El agente es un <b>jefe que delega</b>: piensa, pide, recibe, decide. Las herramientas son sus empleados. Y ojo: tus documentos siguen en tu compu — a la web solo viaja la <b>consulta de búsqueda</b>.</p>
+</section>
+
+<!-- ============ SLIDE 5: Cine del agente ============ -->
+<section class="slide">
+  <div class="kicker">🍿 Cine: mira a un agente pensar en cámara lenta</div>
+  <h2 style="font-size:clamp(1.1rem,2.8vw,2rem)">Misión: <span class="grad">"investiga X y guárdame un resumen en un archivo"</span></h2>
+  <div class="consola" id="cine"></div>
+  <div class="fila">
+    <button class="btn-int" id="btn-cine" onclick="rodar()">▶️ Reproducir</button>
+  </div>
+</section>
+
+<!-- ============ SLIDE 6: Juego elige la herramienta ============ -->
+<section class="slide">
+  <div class="kicker">Juego 🎮 · piensa como agente</div>
+  <h2>¿Qué herramienta usarías? <span class="marcador" id="marcador-eh"></span></h2>
+  <div class="quiz-caja" id="juego-eh"></div>
+</section>
+
+<!-- ============ SLIDE 7: Seguridad ============ -->
+<section class="slide">
+  <div class="kicker">Momento serio 🛡️ · con manos viene responsabilidad</div>
+  <h2>¿Le darías esta herramienta a tu <span class="grad">agente</span>?</h2>
+  <div class="quiz-caja" id="juego-seg"></div>
+</section>
+
+<!-- ============ SLIDE 8: La plantilla ============ -->
+<section class="slide">
+  <div class="kicker">Rumbo al proyecto final 🏆</div>
+  <h2>La plantilla de <span class="grad">TODO agente</span></h2>
+  <div class="fila">
+    <div class="tarjeta"><h3>🎯 Misión</h3><p>¿Qué problema real resuelve? <i>"Preparar el informe semanal de novedades del sector"</i></p></div>
+    <div class="tarjeta frag"><h3>📜 Instrucciones</h3><p>ROL + TAREA + FORMATO + REGLAS (la receta del Día 2).</p></div>
+    <div class="tarjeta frag"><h3>🛠️ Herramientas</h3><p>Solo las que NECESITA: ¿web? ¿documentos? ¿archivos?</p></div>
+    <div class="tarjeta frag"><h3>💾 Memoria</h3><p>¿Qué documentos o datos debe conocer?</p></div>
+  </div>
+  <p class="grande frag">Esta plantilla de 4 casillas es la ficha de tu <b>proyecto final</b>. Hoy en el lab la llenas por primera vez; el viernes entregas tu agente construido con ella.</p>
+</section>
+
+<!-- ============ SLIDE 9: Al laboratorio ============ -->
+<section class="slide">
+  <div class="emoji-gigante">🧪</div>
+  <div class="kicker">Manos a la obra · ~70 minutos</div>
+  <h2>Laboratorio 3: <span class="grad">tu primer agente completo</span></h2>
+  <p class="grande">Activarás las habilidades del agente en AnythingLLM, lo mandarás a investigar a la web con <b>@agent</b>, y construirás un <b>Analista de Documentos</b> que genera informes y los guarda en archivos.</p>
+  <a class="btn-int" style="border-color:var(--acento2); font-size:clamp(1rem,2.2vw,1.4rem)" href="lab.html" target="_blank">🚀 Abrir la guía del laboratorio</a>
+  <p class="pista">Al volver: quiz del día 👀</p>
+</section>
+
+<!-- ============ SLIDE 10: Quiz ============ -->
+<section class="slide">
+  <div class="kicker">Quiz del Día 3 · cuenta para la nota 👀</div>
+  <div class="quiz-caja" id="quiz"></div>
+</section>
+
+<!-- ============ SLIDE 11: Cierre ============ -->
+<section class="slide">
+  <div class="emoji-gigante">🏗️</div>
+  <h2>Agente local: <span class="grad">COMPLETO</span></h2>
+  <p class="grande">✅ Cerebro + instrucciones + memoria + herramientas: las 4 piezas armadas<br>
+  ✅ Tu agente investiga, redacta y guarda archivos con <b>@agent</b><br>
+  ✅ Tienes la plantilla de 4 casillas para diseñar CUALQUIER agente</p>
+  <p class="grande frag"><b>Mañana cambiamos de mundo:</b> agentes en la nube ☁️ con Zapier — tu analista de correos personal por Telegram. <b>Tarea:</b> ten lista tu cuenta de Gmail, instala Telegram en tu celular, y trae la plantilla de tu proyecto final llena (borrador).</p>
+</section>
+
+<!-- ============ HUD ============ -->
+<div id="hud">
+  <div id="barra-prog"><div></div></div>
+  <div id="controles">
+    <a href="../index.html">← Portada del curso</a>
+    <span id="contador">1 / ?</span>
+    <span class="flechas">
+      <button onclick="mover(-1)" aria-label="Anterior">←</button>
+      <button onclick="mover(1)" aria-label="Siguiente">→</button>
+    </span>
+  </div>
+</div>
+
+<script>
+/* ================= MOTOR DE SLIDES ================= */
+const slides = [...document.querySelectorAll('.slide')];
+let idx = 0;
+function pintar() {
+  slides.forEach((s, i) => s.classList.toggle('activa', i === idx));
+  document.querySelector('#barra-prog div').style.width = ((idx + 1) / slides.length * 100) + '%';
+  document.getElementById('contador').textContent = (idx + 1) + ' / ' + slides.length;
+  location.hash = '#/' + (idx + 1);
+}
+function mover(dir) {
+  const frags = [...slides[idx].querySelectorAll('.frag')];
+  if (dir > 0) {
+    const oculto = frags.find(f => !f.classList.contains('visible'));
+    if (oculto) { oculto.classList.add('visible'); return; }
+    if (idx < slides.length - 1) idx++;
+  } else {
+    const visibles = frags.filter(f => f.classList.contains('visible'));
+    if (visibles.length) { visibles[visibles.length - 1].classList.remove('visible'); return; }
+    if (idx > 0) idx--;
+  }
+  pintar();
+}
+document.addEventListener('keydown', e => {
+  if (['ArrowRight', ' ', 'PageDown'].includes(e.key)) { e.preventDefault(); mover(1); }
+  if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); mover(-1); }
+});
+let x0 = null;
+document.addEventListener('touchstart', e => x0 = e.touches[0].clientX);
+document.addEventListener('touchend', e => {
+  if (x0 === null) return;
+  const dx = e.changedTouches[0].clientX - x0;
+  if (Math.abs(dx) > 50) mover(dx < 0 ? 1 : -1);
+  x0 = null;
+});
+const m = location.hash.match(/#\/(\d+)/);
+if (m) idx = Math.min(slides.length - 1, Math.max(0, +m[1] - 1));
+pintar();
+
+/* ================= CALENTAMIENTO ================= */
+function calentar(btn, ok) {
+  [...document.querySelectorAll('#calentamiento .btn-int')].forEach(b => b.disabled = true);
+  btn.classList.add(ok ? 'correcta' : 'incorrecta');
+  document.getElementById('calentamiento-fb').innerHTML = ok
+    ? '✅ ¡Eso! Examen a libro abierto: busca en TUS documentos y cita de dónde sacó la respuesta.'
+    : '❌ Recuerda: RAG busca en <b>tus documentos</b>, no en Google. Lo de la web… es lo de HOY 😉';
+}
+
+/* ================= CINE DEL AGENTE ================= */
+const guion = [
+  ['usuario',     'TÚ', '@agent investiga las últimas novedades sobre inteligencia artificial en la educación y guárdame un resumen en un archivo'],
+  ['pensando',    '🧠 razonando', 'Necesito información RECIENTE. Mi conocimiento tiene fecha de caducidad y mis documentos no cubren esto… decisión: usar la herramienta de búsqueda web.'],
+  ['herramienta', '🔎 herramienta: buscar-web', 'consulta = "inteligencia artificial educación novedades 2026"'],
+  ['resultado',   '📥 resultado', '8 artículos encontrados: adopción de tutores IA en universidades, nuevas guías de UNESCO, debate sobre evaluación…'],
+  ['pensando',    '🧠 razonando', 'Tengo la información. Ahora la resumo en 5 puntos claros… y la misión pedía GUARDARLA: decisión: usar la herramienta de crear archivos.'],
+  ['herramienta', '💾 herramienta: crear-archivo', 'nombre = "resumen-ia-educacion.txt" · contenido = resumen de 5 puntos'],
+  ['final',       '✅ agente', 'Listo. Investigué 8 fuentes y guardé "resumen-ia-educacion.txt" con los 5 hallazgos clave. ¿Quieres que profundice en alguno?'],
+];
+let rodando = false;
+function rodar() {
+  if (rodando) return;
+  rodando = true;
+  const cine = document.getElementById('cine');
+  cine.innerHTML = '';
+  document.getElementById('btn-cine').textContent = '🎬 Rodando…';
+  guion.forEach(([clase, tag, texto], i) => {
+    setTimeout(() => {
+      const d = document.createElement('div');
+      d.className = 'linea ' + clase;
+      d.innerHTML = '<span class="tag">' + tag + '</span>' + texto;
+      cine.appendChild(d);
+      cine.scrollTop = cine.scrollHeight;
+      if (i === guion.length - 1) {
+        document.getElementById('btn-cine').textContent = '🔄 Ver otra vez';
+        rodando = false;
+      }
+    }, 1400 * i);
+  });
+}
+
+/* ================= JUEGO ELIGE LA HERRAMIENTA ================= */
+const retos = [
+  { p: '"¿Cuántos días de vacaciones me quedan según el manual de la empresa?"',
+    ops: ['🔎 Buscar en la web', '📄 Mis documentos (RAG)', '💾 Crear archivo', '🧠 Responde directo'],
+    ok: 1, fb: 'La respuesta vive en TUS documentos. Buscar eso en Google sería regalar tiempo (y privacidad).' },
+  { p: '"¿Qué dice la prensa HOY sobre el nuevo feriado nacional?"',
+    ops: ['🔎 Buscar en la web', '📄 Mis documentos (RAG)', '💾 Crear archivo', '🧠 Responde directo'],
+    ok: 0, fb: '"HOY" = información fresca = búsqueda web. El modelo solo, tiene la memoria congelada en el pasado.' },
+  { p: '"Pasa esta lista de tareas a un archivo para imprimirla"',
+    ops: ['🔎 Buscar en la web', '📄 Mis documentos (RAG)', '💾 Crear archivo', '🧠 Responde directo'],
+    ok: 2, fb: 'Herramienta de crear archivos: el agente redacta Y guarda. Manos a la obra, literalmente.' },
+  { p: '"¿Cuánto es el 15% de descuento sobre $240?"',
+    ops: ['🔎 Buscar en la web', '📄 Mis documentos (RAG)', '💾 Crear archivo', '🧠 Responde directo'],
+    ok: 3, fb: '¡Trampa! 😄 No toda pregunta necesita herramientas: esto lo razona el cerebro directo ($204). Un buen agente no desperdicia herramientas.' },
+  { p: '"Compara nuestro reglamento interno con la nueva ley publicada esta semana"',
+    ops: ['🔎 Web + 📄 documentos (combinadas)', '📄 Solo mis documentos', '🔎 Solo la web', '🧠 Responde directo'],
+    ok: 0, fb: 'Misión de dos manos: el reglamento está en tus documentos, la ley nueva está en la web. Los agentes encadenan herramientas.' },
+];
+let retoIdx = 0, retoPuntos = 0;
+function pintarEH() {
+  const caja = document.getElementById('juego-eh');
+  document.getElementById('marcador-eh').textContent = '⭐ ' + retoPuntos + '/' + retos.length;
+  if (retoIdx >= retos.length) {
+    caja.innerHTML = '<div class="emoji-gigante">' + (retoPuntos >= 4 ? '🏆' : retoPuntos >= 3 ? '💪' : '📚') + '</div>' +
+      '<h2>Marcador final: <span class="grad">' + retoPuntos + ' de ' + retos.length + '</span></h2>' +
+      '<p class="grande" style="margin:2vh auto">Elegir la herramienta correcta ES el trabajo del agente. Acabas de pensar exactamente como piensa él.</p>' +
+      '<button class="btn-int" onclick="retoIdx=0;retoPuntos=0;pintarEH()">🔄 Jugar de nuevo</button>';
+    return;
+  }
+  const r = retos[retoIdx];
+  caja.innerHTML = '<div class="quiz-pregunta" style="font-style:italic">' + r.p + '</div>' +
+    '<div class="quiz-opciones">' + r.ops.map((o, i) =>
+      '<button class="btn-int" onclick="jugarEH(' + i + ', this)">' + o + '</button>').join('') + '</div>' +
+    '<div class="quiz-feedback" id="eh-fb"></div>';
+}
+function jugarEH(i, btn) {
+  const r = retos[retoIdx];
+  const botones = btn.parentElement.querySelectorAll('button');
+  botones.forEach(b => b.disabled = true);
+  botones[r.ok].classList.add('correcta');
+  if (i === r.ok) { retoPuntos++; document.getElementById('eh-fb').innerHTML = '✅ ' + r.fb; }
+  else { btn.classList.add('incorrecta'); document.getElementById('eh-fb').innerHTML = '❌ ' + r.fb; }
+  setTimeout(() => { retoIdx++; pintarEH(); }, 3000);
+}
+pintarEH();
+
+/* ================= JUEGO SEGURIDAD ================= */
+const escenarios = [
+  { p: 'Herramienta: 📄 LEER tus documentos de trabajo',
+    ops: ['✅ Se la doy', '🤔 Solo con supervisión', '🚫 Jamás'],
+    ok: 0, fb: 'Riesgo bajo: solo lee, no cambia nada, y todo queda en tu máquina. Es su memoria, la necesita.' },
+  { p: 'Herramienta: 📤 ENVIAR correos automáticamente a quien sea',
+    ops: ['✅ Se la doy', '🤔 Solo con supervisión', '🚫 Jamás'],
+    ok: 1, fb: 'Enviar es IRREVERSIBLE. La jugada pro: que el agente PREPARE el borrador y TÚ des el clic de enviar. Se llama "humano en el circuito".' },
+  { p: 'Herramienta: 🗑️ BORRAR archivos de tu disco duro',
+    ops: ['✅ Se la doy', '🤔 Solo con supervisión', '🚫 Jamás'],
+    ok: 2, fb: '¿Recuerdas que los modelos a veces alucinan? Ahora imagínalo con permiso de borrar. Casi nunca se necesita: no se la des.' },
+];
+let segIdx = 0, segPuntos = 0;
+function pintarSeg() {
+  const caja = document.getElementById('juego-seg');
+  if (segIdx >= escenarios.length) {
+    caja.innerHTML = '<div class="emoji-gigante">🛡️</div>' +
+      '<h2>Acertaste <span class="grad">' + segPuntos + ' de 3</span></h2>' +
+      '<p class="grande" style="margin:2vh auto">Regla de oro: dale al agente <b>solo las herramientas que su misión necesita</b>, y que las acciones irreversibles siempre pasen por un humano. Así se construyen agentes en los que puedes confiar.</p>';
+    return;
+  }
+  const e = escenarios[segIdx];
+  caja.innerHTML = '<div class="quiz-pregunta">' + e.p + '</div>' +
+    '<div class="fila">' + e.ops.map((o, i) =>
+      '<button class="btn-int" onclick="jugarSeg(' + i + ', this)">' + o + '</button>').join('') + '</div>' +
+    '<div class="quiz-feedback" id="seg-fb"></div>';
+}
+function jugarSeg(i, btn) {
+  const e = escenarios[segIdx];
+  const botones = btn.parentElement.querySelectorAll('button');
+  botones.forEach(b => b.disabled = true);
+  botones[e.ok].classList.add('correcta');
+  if (i === e.ok) { segPuntos++; document.getElementById('seg-fb').innerHTML = '✅ ' + e.fb; }
+  else { btn.classList.add('incorrecta'); document.getElementById('seg-fb').innerHTML = '🤔 ' + e.fb; }
+  setTimeout(() => { segIdx++; pintarSeg(); }, 3400);
+}
+pintarSeg();
+
+/* ================= QUIZ ================= */
+const preguntas = [
+  { p: '1. En AnythingLLM, ¿cómo despiertas al agente (con herramientas)?',
+    ops: ['Escribiendo @agent al inicio del mensaje', 'Gritándole al micrófono', 'Presionando Ctrl+Alt+Supr', 'Pagando la versión premium'],
+    ok: 0, fb: '@agent activa el modo agente: ahí puede usar sus habilidades (web, archivos, documentos…).' },
+  { p: '2. Cuando el agente "busca en la web", ¿quién navega realmente?',
+    ops: ['El modelo abre Chrome a escondidas', 'Una HERRAMIENTA busca y le entrega los resultados como texto', 'Un empleado de Ollama', 'Nadie: se lo inventa'],
+    ok: 1, fb: 'El modelo solo pide y razona; la herramienta ejecuta. El agente es un jefe que delega.' },
+  { p: '3. "Guarda este resumen para imprimirlo" — ¿qué habilidad usa?',
+    ops: ['Buscar en la web', 'Generar gráficos', 'Crear/guardar archivos', 'Leer documentos'],
+    ok: 2, fb: 'La habilidad de crear archivos: redacta Y guarda el resultado.' },
+  { p: '4. Usar la búsqueda web del agente local significa que…',
+    ops: ['Todos tus documentos se suben a internet', 'Solo la consulta de búsqueda sale; tus documentos siguen en tu compu', 'Ya no es necesario Ollama', 'Tu compu se vuelve un servidor público'],
+    ok: 1, fb: 'Híbrido inteligente: cerebro y documentos locales; a la web solo viaja la consulta pública.' },
+  { p: '5. La regla de seguridad de oro para dar herramientas es…',
+    ops: ['Darle todas, para que sea poderoso', 'Solo las que su misión necesita + humano aprueba lo irreversible', 'Ninguna, las herramientas son peligrosas', 'Solo herramientas de pago'],
+    ok: 1, fb: 'Mínimo privilegio + humano en el circuito. Poder sin control no es un buen empleado.' },
+];
+let qIdx = 0, aciertos = 0;
+function pintarQuiz() {
+  const caja = document.getElementById('quiz');
+  if (qIdx >= preguntas.length) {
+    const nota = Math.round(aciertos / preguntas.length * 10);
+    const emoji = nota >= 9 ? '🏆' : nota >= 7 ? '💪' : nota >= 5 ? '🙂' : '📚';
+    caja.innerHTML = '<div class="emoji-gigante">' + emoji + '</div>' +
+      '<h2>Resultado: <span class="grad">' + aciertos + ' de ' + preguntas.length + '</span> (' + nota + '/10)</h2>' +
+      '<p class="grande" style="margin:2vh auto">' + (nota >= 7 ? '¡Excelente! Ya piensas en herramientas como un agente.' : 'Repasa las slides y reintenta con el botón de abajo.') + '</p>' +
+      '<button class="btn-int" onclick="qIdx=0;aciertos=0;pintarQuiz()">🔄 Reintentar</button>';
+    return;
+  }
+  const q = preguntas[qIdx];
+  caja.innerHTML = '<div class="quiz-pregunta">' + q.p + '</div>' +
+    '<div class="quiz-opciones">' + q.ops.map((o, i) =>
+      '<button class="btn-int" onclick="responder(' + i + ', this)">' + o + '</button>').join('') + '</div>' +
+    '<div class="quiz-feedback" id="quiz-fb"></div>';
+}
+function responder(i, btn) {
+  const q = preguntas[qIdx];
+  const botones = btn.parentElement.querySelectorAll('button');
+  botones.forEach(b => b.disabled = true);
+  botones[q.ok].classList.add('correcta');
+  const fb = document.getElementById('quiz-fb');
+  if (i === q.ok) { aciertos++; fb.innerHTML = '✅ <b>¡Correcto!</b> ' + q.fb; }
+  else { btn.classList.add('incorrecta'); fb.innerHTML = '❌ Casi. ' + q.fb; }
+  setTimeout(() => { qIdx++; pintarQuiz(); }, 2600);
+}
+pintarQuiz();
+</script>
+</body>
+</html>
