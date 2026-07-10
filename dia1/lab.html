@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab Día 1 · Tu IA privada con Ollama — Agentes IA Local</title>
+<link rel="stylesheet" href="../assets/curso.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦙</text></svg>">
+</head>
+<body>
+<div class="contenedor">
+
+  <nav class="nav">
+    <span class="marca">🤖 Agentes <span>IA Local</span></span>
+    <div style="display:flex;gap:18px;flex-wrap:wrap">
+      <a href="../index.html">Portada</a>
+      <a href="slides.html">Slides Día 1</a>
+    </div>
+  </nav>
+
+  <header class="lab-cabecera">
+    <div class="kicker">Laboratorio · Día 1</div>
+    <h1>🦙 Tu IA privada: instala Ollama y chatea sin internet</h1>
+    <div class="meta">
+      <span>⏱️ ~60 minutos</span>
+      <span>🎚️ Nivel: principiante total</span>
+      <span>💻 Windows 10/11 (Mac/Linux también sirve)</span>
+    </div>
+  </header>
+
+  <div class="progreso-wrap">
+    <div class="progreso-texto">Tu progreso: <b id="prog-num">0 de 6 pasos</b> — se guarda solo en tu navegador, tranquilo.</div>
+    <div class="progreso-barra"><div id="prog-fill"></div></div>
+  </div>
+
+  <!-- PASO 0 -->
+  <div class="paso" data-paso="p0">
+    <div class="paso-cabecera"><span class="paso-num">0</span><h2>Verifica que tu máquina puede</h2></div>
+    <p>Antes de nada, confirmemos que tu computadora está lista:</p>
+    <ul>
+      <li><b>Sistema:</b> Windows 10 u 11 (si tienes Mac o Linux, los pasos son casi idénticos).</li>
+      <li><b>Memoria RAM:</b> idealmente 8 GB. Para verla: clic derecho en el botón de Inicio → <b>Sistema</b> → busca "RAM instalada".</li>
+      <li><b>Espacio en disco:</b> al menos 10 GB libres.</li>
+    </ul>
+    <div class="caja caja-tip"><b>💚 ¿Tienes solo 4 GB de RAM?</b> No te bajes del barco: en el Paso 3 hay un "plan B" con un modelo más pequeñito que corre igual.</div>
+    <label class="paso-check"><input type="checkbox"> Listo, mi máquina cumple (o voy con el plan B)</label>
+  </div>
+
+  <!-- PASO 1 -->
+  <div class="paso" data-paso="p1">
+    <div class="paso-cabecera"><span class="paso-num">1</span><h2>Descarga e instala Ollama</h2></div>
+    <ol>
+      <li>Abre tu navegador y entra a <a href="https://ollama.com" target="_blank" style="color:var(--acento-2)"><b>ollama.com</b></a>.</li>
+      <li>Haz clic en el botón <b>Download</b> → elige <b>Windows</b>.</li>
+      <li>Cuando termine la descarga, abre el archivo <b>OllamaSetup.exe</b> y dale <b>Install</b>. Siguiente, siguiente… como cualquier programa.</li>
+      <li>Al terminar, se abrirá la aplicación de Ollama: una ventana de chat sencilla con una cajita para escribir. 🎉</li>
+    </ol>
+    <div class="caja caja-info"><b>ℹ️ ¿No se abrió sola?</b> Búscala: tecla <kbd>Windows</kbd> → escribe "Ollama" → Enter. También verás una llamita 🦙 en los iconos junto al reloj: significa que está corriendo.</div>
+    <label class="paso-check"><input type="checkbox"> Ollama instalado y abierto</label>
+  </div>
+
+  <!-- PASO 2 -->
+  <div class="paso" data-paso="p2">
+    <div class="paso-cabecera"><span class="paso-num">2</span><h2>Descarga tu primer modelo (el "cerebro" 🧠)</h2></div>
+    <p>Ollama es el motor, pero le falta el cerebro. Vamos a descargar <b>Gemma 3 de 4B</b>, nuestro modelo "talla gato 🐈": listo y ligero.</p>
+    <ol>
+      <li>En la ventana de Ollama, busca el <b>selector de modelo</b> (junto a la caja de escribir).</li>
+      <li>Selecciona o escribe: <b>gemma3:4b</b></li>
+      <li>Escribe cualquier saludo ("hola") y envíalo. La primera vez, Ollama <b>descargará el modelo (~3 GB)</b>: verás una barra de progreso. Es normal que tarde varios minutos según tu internet. ☕</li>
+    </ol>
+    <div class="caja caja-alerta"><b>⚠️ Esta es la ÚNICA parte que necesita internet.</b> Una vez descargado, el modelo vive en tu disco duro para siempre.</div>
+    <label class="paso-check"><input type="checkbox"> Modelo descargado y me respondió el saludo</label>
+  </div>
+
+  <!-- PASO 3 -->
+  <div class="paso" data-paso="p3">
+    <div class="paso-cabecera"><span class="paso-num">3</span><h2>Plan B para máquinas modestas 🐜</h2></div>
+    <p><b>¿La respuesta tarda una eternidad o tu PC se congela?</b> Cambia a un modelo más pequeño. Pierde un poco de "inteligencia" pero vuela:</p>
+    <ol>
+      <li>En el selector de modelo, escribe: <b>llama3.2:1b</b> (~1.3 GB)</li>
+      <li>Envía un mensaje para que se descargue, igual que antes.</li>
+    </ol>
+    <div class="caja caja-tip"><b>💚 ¿Tu máquina es potente?</b> (16 GB RAM o tarjeta gráfica): prueba <b>gemma3:12b</b> y siente la diferencia. Este es tu reto opcional.</div>
+    <label class="paso-check"><input type="checkbox"> Tengo un modelo que corre fluido en mi máquina (el que sea)</label>
+  </div>
+
+  <!-- PASO 4 -->
+  <div class="paso" data-paso="p4">
+    <div class="paso-cabecera"><span class="paso-num">4</span><h2>Ponla a trabajar de verdad</h2></div>
+    <p>Nada de "hola, ¿cómo estás?". Prueba cosas útiles de tu día a día. Copia y pega estas (el botón copia solo):</p>
+    <div class="copiable">Redacta un correo formal y breve para pedir a un proveedor que confirme la fecha de entrega del pedido #4512, que estaba prevista para esta semana.</div>
+    <div class="copiable">Dame 5 ideas de actividades para motivar a un equipo de trabajo que está desanimado, con presupuesto casi cero.</div>
+    <div class="copiable">Explícame como si tuviera 10 años qué es la inflación y por qué sube el precio del arroz.</div>
+    <div class="copiable">Resume en 3 viñetas el siguiente texto: [pega aquí cualquier texto largo de un correo o documento]</div>
+    <div class="caja caja-info"><b>ℹ️ Ojo con las respuestas.</b> Los modelos pequeños a veces se equivocan o inventan datos con total confianza ("alucinar"). Regla de oro del curso: <b>la IA propone, tú verificas y decides.</b></div>
+    <label class="paso-check"><input type="checkbox"> Probé al menos 3 tareas útiles</label>
+  </div>
+
+  <!-- PASO 5 -->
+  <div class="paso" data-paso="p5">
+    <div class="paso-cabecera"><span class="paso-num">5</span><h2>La prueba final: modo avión ✈️</h2></div>
+    <ol>
+      <li>Activa el <b>modo avión</b>: clic en el icono de WiFi/red junto al reloj → Modo avión. (O desconecta el cable de red.)</li>
+      <li>Verifica que NO tienes internet: intenta abrir cualquier página web. Debe fallar.</li>
+      <li>Vuelve a Ollama y hazle una pregunta.</li>
+    </ol>
+    <p style="margin-top:10px">¿Respondió? <b>Acabas de usar inteligencia artificial 100% tuya, sin depender de nadie.</b> 🤯 Ese es el superpoder de la IA local: privacidad total, costo cero, disponibilidad siempre.</p>
+    <div class="caja caja-tip"><b>💚 No olvides</b> desactivar el modo avión al terminar 😄.</div>
+    <label class="paso-check"><input type="checkbox">🏆 Mi IA respondió SIN internet — laboratorio completado</label>
+  </div>
+
+  <!-- Tarea -->
+  <div class="paso">
+    <div class="paso-cabecera"><span class="paso-num">📌</span><h2>Para mañana</h2></div>
+    <ul>
+      <li>Busca <b>2 o 3 documentos PDF</b> de tu trabajo o estudio (manuales, reglamentos, informes — <b>nada confidencial</b> por ahora). Mañana tu asistente los leerá y responderá preguntas sobre ellos.</li>
+      <li>Deja Ollama instalado: es la base de todo lo que viene.</li>
+    </ul>
+  </div>
+
+  <div class="nav-paginas">
+    <a class="btn btn-secundario" href="slides.html#/12">← Volver a las slides (quiz)</a>
+    <a class="btn btn-primario" href="../index.html">Portada del curso →</a>
+  </div>
+
+  <footer class="pie">Curso <b>Agentes de IA Locales</b> · ISTER 2026 · Día 1</footer>
+</div>
+
+<script>
+/* Checklist con persistencia + botones de copiar (compartido en todos los labs) */
+const clave = 'lab-' + location.pathname;
+const estado = JSON.parse(localStorage.getItem(clave) || '{}');
+const pasos = [...document.querySelectorAll('.paso[data-paso]')];
+
+function refrescar() {
+  let hechos = 0;
+  pasos.forEach(p => {
+    const id = p.dataset.paso, chk = p.querySelector('.paso-check input');
+    chk.checked = !!estado[id];
+    p.classList.toggle('completado', !!estado[id]);
+    if (estado[id]) hechos++;
+  });
+  document.getElementById('prog-num').textContent = hechos + ' de ' + pasos.length + ' pasos';
+  document.getElementById('prog-fill').style.width = (hechos / pasos.length * 100) + '%';
+}
+pasos.forEach(p => p.querySelector('.paso-check input').addEventListener('change', e => {
+  estado[p.dataset.paso] = e.target.checked;
+  localStorage.setItem(clave, JSON.stringify(estado));
+  refrescar();
+}));
+refrescar();
+
+document.querySelectorAll('.copiable').forEach(bloque => {
+  const texto = bloque.textContent.trim();
+  const btn = document.createElement('button');
+  btn.className = 'btn-copiar'; btn.textContent = '📋 Copiar';
+  btn.onclick = () => navigator.clipboard.writeText(texto).then(() => {
+    btn.textContent = '✅ ¡Copiado!'; btn.classList.add('copiado');
+    setTimeout(() => { btn.textContent = '📋 Copiar'; btn.classList.remove('copiado'); }, 1800);
+  });
+  bloque.appendChild(btn);
+});
+</script>
+</body>
+</html>

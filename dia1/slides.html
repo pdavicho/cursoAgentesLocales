@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Día 1 · ¿Qué es un agente de IA? — Agentes IA Local</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
+<style>
+/* ====== Motor de slides — autocontenido para proyectar incluso sin internet ====== */
+:root {
+  --fondo: #0b0e1a; --tarjeta: #1a2036; --borde: #2a3352;
+  --texto: #e8ecf8; --suave: #9aa5c4;
+  --acento: #7c5cff; --acento2: #00e5ff; --exito: #2dd881; --alerta: #ffb020; --peligro: #ff5c7a;
+  --grad: linear-gradient(135deg, #7c5cff, #00e5ff);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; overflow: hidden; background: var(--fondo); color: var(--texto);
+  font-family: 'Segoe UI', system-ui, sans-serif; }
+body::before { content: ""; position: fixed; inset: 0; z-index: 0;
+  background: radial-gradient(900px 500px at 85% -10%, rgba(124,92,255,.20), transparent 60%),
+              radial-gradient(700px 400px at -10% 110%, rgba(0,229,255,.12), transparent 60%); }
+
+.slide {
+  position: absolute; inset: 0; z-index: 1;
+  display: none; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 5vh 7vw; gap: 2.2vh;
+}
+.slide.activa { display: flex; animation: entrar .45s ease; }
+@keyframes entrar { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+
+.kicker { color: var(--acento2); font-weight: 800; letter-spacing: 3px; text-transform: uppercase; font-size: clamp(.7rem, 1.4vw, 1rem); }
+h1 { font-size: clamp(1.9rem, 5.5vw, 4.2rem); font-weight: 900; line-height: 1.1; letter-spacing: -1px; max-width: 20ch; }
+h2 { font-size: clamp(1.5rem, 4vw, 3rem); font-weight: 900; line-height: 1.15; max-width: 24ch; }
+.grad { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+p.grande { font-size: clamp(1rem, 2.2vw, 1.5rem); color: var(--suave); max-width: 56ch; }
+p.grande b, li b { color: var(--texto); }
+.emoji-gigante { font-size: clamp(3rem, 10vw, 7rem); line-height: 1; }
+
+/* Fragmentos (aparecen con la flecha) */
+.frag { opacity: 0; transform: translateY(12px); transition: all .4s; }
+.frag.visible { opacity: 1; transform: none; }
+
+/* Tarjetas dentro de slides */
+.fila { display: flex; gap: 2vw; flex-wrap: wrap; justify-content: center; width: 100%; }
+.tarjeta {
+  background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 18px;
+  padding: clamp(12px, 2.2vw, 26px); min-width: 200px; max-width: 340px; flex: 1;
+  text-align: left; font-size: clamp(.85rem, 1.7vw, 1.1rem);
+}
+.tarjeta h3 { font-size: clamp(1rem, 2vw, 1.4rem); margin-bottom: 8px; }
+.tarjeta p, .tarjeta li { color: var(--suave); }
+.tarjeta ul { margin-left: 20px; }
+.tarjeta.ok { border-color: rgba(45,216,129,.5); }
+.tarjeta.mal { border-color: rgba(255,92,122,.5); }
+
+/* Botones interactivos */
+.btn-int {
+  background: var(--tarjeta); color: var(--texto); border: 2px solid var(--borde);
+  border-radius: 14px; padding: clamp(10px, 1.6vw, 18px) clamp(16px, 2.4vw, 28px);
+  font-size: clamp(.95rem, 1.9vw, 1.25rem); font-weight: 700; cursor: pointer;
+  transition: all .18s; font-family: inherit;
+}
+.btn-int:hover { border-color: var(--acento2); transform: translateY(-2px); }
+.btn-int.correcta { background: rgba(45,216,129,.18); border-color: var(--exito); }
+.btn-int.incorrecta { background: rgba(255,92,122,.15); border-color: var(--peligro); }
+.btn-int:disabled { cursor: default; opacity: .85; }
+
+/* Encuesta */
+.barra-encuesta { height: 26px; border-radius: 99px; background: var(--tarjeta); overflow: hidden; width: min(520px, 82vw); border: 1px solid var(--borde); }
+.barra-encuesta > div { height: 100%; background: var(--grad); width: 50%; transition: width .5s; display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; font-size: .8rem; font-weight: 800; color: #0b0e1a; }
+
+/* Simulador (chat) */
+.chat {
+  width: min(680px, 88vw); max-height: 44vh; overflow-y: auto; text-align: left;
+  background: #0d1120; border: 1px solid var(--borde); border-radius: 18px; padding: 18px;
+  display: flex; flex-direction: column; gap: 10px; font-size: clamp(.85rem, 1.7vw, 1.05rem);
+}
+.msg { padding: 10px 16px; border-radius: 14px; max-width: 85%; animation: entrar .3s ease; line-height: 1.45; }
+.msg.sistema { background: var(--tarjeta); align-self: flex-start; border: 1px solid var(--borde); }
+.msg.agente { background: rgba(124,92,255,.18); border: 1px solid rgba(124,92,255,.5); align-self: flex-end; }
+.msg.ok { background: rgba(45,216,129,.12); border: 1px solid rgba(45,216,129,.45); align-self: flex-start; }
+.msg .rol { display: block; font-size: .72rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--acento2); margin-bottom: 3px; }
+
+/* Quiz */
+.quiz-caja { width: min(720px, 90vw); }
+.quiz-pregunta { font-size: clamp(1.15rem, 2.6vw, 1.8rem); font-weight: 800; margin-bottom: 2.2vh; }
+.quiz-opciones { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.quiz-opciones .btn-int { text-align: left; }
+.quiz-feedback { margin-top: 14px; font-size: clamp(.9rem, 1.8vw, 1.15rem); min-height: 2.4em; color: var(--suave); }
+@media (max-width: 640px) { .quiz-opciones { grid-template-columns: 1fr; } }
+
+/* HUD: progreso y controles */
+#hud { position: fixed; bottom: 0; left: 0; right: 0; z-index: 10; }
+#barra-prog { height: 5px; background: var(--tarjeta); }
+#barra-prog > div { height: 100%; background: var(--grad); width: 0%; transition: width .3s; }
+#controles {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 16px; font-size: .85rem; color: var(--suave);
+}
+#controles .flechas button {
+  background: var(--tarjeta); border: 1px solid var(--borde); color: var(--texto);
+  border-radius: 10px; padding: 6px 16px; font-size: 1rem; cursor: pointer; margin-left: 8px;
+}
+#controles .flechas button:hover { border-color: var(--acento2); }
+#controles a { color: var(--suave); text-decoration: none; }
+#controles a:hover { color: var(--acento2); }
+
+.pista { font-size: clamp(.75rem, 1.4vw, .9rem); color: var(--suave); opacity: .8; }
+</style>
+</head>
+<body>
+
+<!-- ============ SLIDE 1: Portada ============ -->
+<section class="slide">
+  <div class="emoji-gigante">🤖</div>
+  <div class="kicker">Curso Agentes de IA Locales · Día 1</div>
+  <h1>La IA que vive en <span class="grad">TU computadora</span></h1>
+  <p class="grande">Hoy: qué es (de verdad) un agente de IA, por qué <b>local &gt; nube</b> para tus datos, y tu primera IA corriendo <b>sin internet</b>.</p>
+  <p class="pista">Usa las flechas ← → del teclado o los botones de abajo</p>
+</section>
+
+<!-- ============ SLIDE 2: Encuesta rompehielos ============ -->
+<section class="slide">
+  <div class="kicker">Encuesta en vivo 🎤</div>
+  <h2>¿Hay que saber <span class="grad">programar</span> para crear un agente de IA?</h2>
+  <p class="grande">Voten levantando la mano en la videollamada… o hagamos el conteo aquí:</p>
+  <div class="fila">
+    <button class="btn-int" onclick="votar(this, 'si')">🙋 SÍ, obvio (<span id="v-si">0</span>)</button>
+    <button class="btn-int" onclick="votar(this, 'no')">🙅 NO creo (<span id="v-no">0</span>)</button>
+  </div>
+  <div class="barra-encuesta"><div id="barra-voto" style="width:50%"></div></div>
+  <p class="grande frag">Spoiler: <b>el viernes, cada uno de ustedes habrá creado al menos 3 agentes funcionando.</b> Sin una sola línea de código. 😏</p>
+</section>
+
+<!-- ============ SLIDE 3: Qué es un LLM sin jerga ============ -->
+<section class="slide">
+  <div class="kicker">Primero lo primero</div>
+  <h2>¿Qué es eso que llaman <span class="grad">"modelo de IA"</span>?</h2>
+  <div class="fila">
+    <div class="tarjeta frag">
+      <h3>📱 Tu teclado del celular…</h3>
+      <p>…adivina la siguiente palabra cuando escribes. "Nos vemos en la…" → <b>noche / casa / oficina</b>.</p>
+    </div>
+    <div class="tarjeta frag">
+      <h3>🧠 Un modelo de IA…</h3>
+      <p>…es eso mismo pero con <b>esteroides</b>: leyó millones de libros y páginas web, y adivina tan bien que puede redactar, resumir, traducir y razonar.</p>
+    </div>
+  </div>
+  <p class="grande frag">No es magia ni un cerebro consciente: es un <b>predictor de texto extraordinariamente bueno</b>. Y eso basta para hacer cosas increíbles.</p>
+</section>
+
+<!-- ============ SLIDE 4: Chatbot vs Agente ============ -->
+<section class="slide">
+  <div class="kicker">La diferencia clave del curso</div>
+  <h2>Chatbot <span style="color:var(--suave)">vs.</span> <span class="grad">Agente</span></h2>
+  <div class="fila">
+    <div class="tarjeta">
+      <h3>💬 Chatbot</h3>
+      <ul>
+        <li><b>Solo habla.</b></li>
+        <li>Tú preguntas → él responde.</li>
+        <li>Si le pides "revisa mi correo", te contesta: <i>"no puedo hacer eso"</i>.</li>
+      </ul>
+    </div>
+    <div class="tarjeta frag">
+      <h3>🦾 Agente</h3>
+      <ul>
+        <li><b>Habla… y HACE.</b></li>
+        <li>Tiene <b>herramientas</b>: leer correos, buscar en la web, crear archivos.</li>
+        <li>Decide solo qué pasos dar para cumplir la misión.</li>
+      </ul>
+    </div>
+  </div>
+  <p class="grande frag">💬 Chatbot = un asesor al teléfono. &nbsp; 🦾 Agente = <b>un empleado con manos.</b></p>
+</section>
+
+<!-- ============ SLIDE 5: Las 4 piezas ============ -->
+<section class="slide">
+  <div class="kicker">Anatomía express</div>
+  <h2>Todo agente tiene <span class="grad">4 piezas</span></h2>
+  <div class="fila">
+    <div class="tarjeta frag"><h3>🧠 Cerebro</h3><p>El modelo de IA que entiende y razona.</p></div>
+    <div class="tarjeta frag"><h3>📜 Instrucciones</h3><p>Su "contrato de trabajo": qué debe hacer, en qué tono, qué NO hacer.</p></div>
+    <div class="tarjeta frag"><h3>🛠️ Herramientas</h3><p>Sus manos: correo, web, archivos, calendario…</p></div>
+    <div class="tarjeta frag"><h3>💾 Memoria</h3><p>Lo que recuerda: tus documentos, conversaciones pasadas, datos.</p></div>
+  </div>
+  <p class="grande frag">Mañana armaremos estas 4 piezas una por una. Hoy nos toca conseguir el <b>cerebro</b> 🧠.</p>
+</section>
+
+<!-- ============ SLIDE 6: Simulador ============ -->
+<section class="slide">
+  <div class="kicker">Juego: TÚ eres el agente 🕹️</div>
+  <h2 style="font-size:clamp(1.2rem,3vw,2.2rem)">Misión: <span class="grad">"Resúmeme los correos importantes de hoy"</span></h2>
+  <div class="chat" id="sim-chat">
+    <div class="msg sistema"><span class="rol">Misión del jefe</span>Son las 8:00 am. Tu jefe quiere el resumen de correos importantes. ¿Cuál es tu PRIMER paso como agente?</div>
+  </div>
+  <div class="fila" id="sim-opciones">
+    <button class="btn-int" onclick="simular(0, this)">✍️ Inventar un resumen que suene creíble</button>
+    <button class="btn-int" onclick="simular(1, this)">📥 Usar la herramienta "leer bandeja de entrada"</button>
+    <button class="btn-int" onclick="simular(2, this)">❓ Responder "no tengo acceso a correos"</button>
+  </div>
+</section>
+
+<!-- ============ SLIDE 7: Nube vs Local ============ -->
+<section class="slide">
+  <div class="kicker">El gran debate</div>
+  <h2>☁️ IA en la nube &nbsp;vs.&nbsp; <span class="grad">🏠 IA local</span></h2>
+  <div class="fila">
+    <div class="tarjeta">
+      <h3>☁️ Nube (ChatGPT, Gemini…)</h3>
+      <ul>
+        <li>🧠 Modelos gigantes, muy capaces</li>
+        <li>💸 Gratis con límites, luego se paga</li>
+        <li>📡 Sin internet = no funciona</li>
+        <li>👀 <b>Tus datos viajan a servidores ajenos</b></li>
+      </ul>
+    </div>
+    <div class="tarjeta ok frag">
+      <h3>🏠 Local (en TU máquina)</h3>
+      <ul>
+        <li>🧠 Modelos pequeños pero sorprendentes</li>
+        <li>💰 <b>Gratis. Para siempre. Sin límites.</b></li>
+        <li>✈️ Funciona sin internet</li>
+        <li>🔒 <b>Tus datos JAMÁS salen de tu compu</b></li>
+      </ul>
+    </div>
+  </div>
+  <p class="grande frag">¿Le darías la nómina de tu empresa o los datos de tus estudiantes a un servidor en otro país? 🤔 Para eso existe la IA local.</p>
+</section>
+
+<!-- ============ SLIDE 8: Tamaños de modelos ============ -->
+<section class="slide">
+  <div class="kicker">¿Y sí corre en mi laptop?</div>
+  <h2>Los modelos vienen en <span class="grad">tallas</span></h2>
+  <div class="fila">
+    <div class="tarjeta frag"><h3>🐜 1B</h3><p>Ligerísimo. Corre hasta en laptops modestas (4 GB RAM). Ideal como plan B.</p></div>
+    <div class="tarjeta ok frag"><h3>🐈 3–4B ← el nuestro</h3><p>El punto dulce: rápido, útil y corre bien con 8 GB de RAM, <b>sin tarjeta gráfica</b>.</p></div>
+    <div class="tarjeta frag"><h3>🐘 70B+</h3><p>Los gigantes de la nube. Necesitan servidores con GPUs de miles de dólares.</p></div>
+  </div>
+  <p class="grande frag">"B" = <b>miles de millones de conexiones</b> en su red neuronal. Más B = más listo, pero más pesado. Nosotros usaremos la talla 🐈.</p>
+</section>
+
+<!-- ============ SLIDE 9: Ollama ============ -->
+<section class="slide">
+  <div class="emoji-gigante">🦙</div>
+  <h2>Conozcan a <span class="grad">Ollama</span></h2>
+  <p class="grande">Un programa <b>gratuito</b> que descarga modelos de IA y los ejecuta en tu computadora. Instalar → elegir modelo → chatear. Así de simple.</p>
+  <div class="fila">
+    <div class="tarjeta frag"><h3>1️⃣ Descargas</h3><p>ollama.com → botón Download → instalar como cualquier programa.</p></div>
+    <div class="tarjeta frag"><h3>2️⃣ Eliges modelo</h3><p>Nosotros: <b>gemma3:4b</b> (o llama3.2 si tu máquina es modesta).</p></div>
+    <div class="tarjeta frag"><h3>3️⃣ Chateas</h3><p>Con TU IA privada. Nadie más ve lo que escribes. Nadie.</p></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 10: Momento modo avión ============ -->
+<section class="slide">
+  <div class="emoji-gigante">✈️</div>
+  <div class="kicker">El momento de la verdad</div>
+  <h2>Apaguemos el <span class="grad">WiFi</span></h2>
+  <p class="grande">Ahora mismo, en vivo: activo el <b>modo avión</b>… y le pido a la IA que me escriba un poema sobre el jefe. 😄</p>
+  <p class="grande frag"><b>¿ChatGPT puede hacer esto?</b> No. Sin internet, ChatGPT es una página en blanco. Tu IA local ni se entera de que no hay conexión.</p>
+</section>
+
+<!-- ============ SLIDE 11: Al laboratorio ============ -->
+<section class="slide">
+  <div class="emoji-gigante">🧪</div>
+  <div class="kicker">Manos a la obra · ~60 minutos</div>
+  <h2>Laboratorio 1: <span class="grad">tu IA privada</span></h2>
+  <p class="grande">Sigue la guía paso a paso con checklist. Al final tendrás una IA conversando contigo <b>sin internet</b>.</p>
+  <a class="btn-int" style="border-color:var(--acento2); font-size:clamp(1rem,2.2vw,1.4rem)" href="lab.html" target="_blank">🚀 Abrir la guía del laboratorio</a>
+  <p class="pista">Se abre en otra pestaña; estas slides quedan aquí esperándote para el quiz final.</p>
+</section>
+
+<!-- ============ SLIDE 12: Quiz ============ -->
+<section class="slide">
+  <div class="kicker">Quiz del Día 1 · cuenta para la nota 👀</div>
+  <div class="quiz-caja" id="quiz"></div>
+</section>
+
+<!-- ============ SLIDE 13: Cierre ============ -->
+<section class="slide">
+  <div class="emoji-gigante">🎉</div>
+  <h2>Hoy lograste lo que el 99% <span class="grad">no sabe que se puede</span></h2>
+  <p class="grande">✅ Entiendes qué es un agente (y qué no lo es)<br>
+  ✅ Sabes por qué la IA local protege tus datos<br>
+  ✅ Tienes una IA corriendo en TU computadora</p>
+  <p class="grande frag"><b>Mañana:</b> le construimos cuerpo al cerebro 🧩 — instalamos AnythingLLM y tu asistente leerá tus propios documentos. <b>Tarea:</b> trae 2–3 PDFs de tu trabajo o estudio (no confidenciales).</p>
+</section>
+
+<!-- ============ HUD ============ -->
+<div id="hud">
+  <div id="barra-prog"><div></div></div>
+  <div id="controles">
+    <a href="../index.html">← Portada del curso</a>
+    <span id="contador">1 / ?</span>
+    <span class="flechas">
+      <button onclick="mover(-1)" aria-label="Anterior">←</button>
+      <button onclick="mover(1)" aria-label="Siguiente">→</button>
+    </span>
+  </div>
+</div>
+
+<script>
+/* ================= MOTOR DE SLIDES ================= */
+const slides = [...document.querySelectorAll('.slide')];
+let idx = 0;
+
+function pintar() {
+  slides.forEach((s, i) => s.classList.toggle('activa', i === idx));
+  document.querySelector('#barra-prog div').style.width = ((idx + 1) / slides.length * 100) + '%';
+  document.getElementById('contador').textContent = (idx + 1) + ' / ' + slides.length;
+  location.hash = '#/' + (idx + 1);
+}
+
+function mover(dir) {
+  const frags = [...slides[idx].querySelectorAll('.frag')];
+  if (dir > 0) {
+    const oculto = frags.find(f => !f.classList.contains('visible'));
+    if (oculto) { oculto.classList.add('visible'); return; }
+    if (idx < slides.length - 1) idx++;
+  } else {
+    const visibles = frags.filter(f => f.classList.contains('visible'));
+    if (visibles.length) { visibles[visibles.length - 1].classList.remove('visible'); return; }
+    if (idx > 0) idx--;
+  }
+  pintar();
+}
+
+document.addEventListener('keydown', e => {
+  if (['ArrowRight', ' ', 'PageDown'].includes(e.key)) { e.preventDefault(); mover(1); }
+  if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); mover(-1); }
+});
+
+/* Deslizar en pantallas táctiles */
+let x0 = null;
+document.addEventListener('touchstart', e => x0 = e.touches[0].clientX);
+document.addEventListener('touchend', e => {
+  if (x0 === null) return;
+  const dx = e.changedTouches[0].clientX - x0;
+  if (Math.abs(dx) > 50) mover(dx < 0 ? 1 : -1);
+  x0 = null;
+});
+
+/* Arrancar en el slide del hash si existe (#/5) */
+const m = location.hash.match(/#\/(\d+)/);
+if (m) idx = Math.min(slides.length - 1, Math.max(0, +m[1] - 1));
+pintar();
+
+/* ================= ENCUESTA ================= */
+const votos = { si: 0, no: 0 };
+function votar(btn, cual) {
+  votos[cual]++;
+  document.getElementById('v-si').textContent = votos.si;
+  document.getElementById('v-no').textContent = votos.no;
+  const total = votos.si + votos.no;
+  document.getElementById('barra-voto').style.width = (votos.si / total * 100) + '%';
+  btn.style.borderColor = 'var(--acento2)';
+}
+
+/* ================= SIMULADOR ================= */
+const simRespuestas = [
+  { ok: false, texto: '❌ ¡Agente alucinando! Inventar datos es el pecado capital de un agente. El jefe descubrirá el engaño en 5 minutos.' },
+  { ok: true,  texto: '✅ ¡Exacto! Un agente primero PERCIBE con sus herramientas. Lee la bandeja: 14 correos, 3 parecen importantes…' },
+  { ok: false, texto: '🤔 Eso haría un chatbot sin herramientas. Pero tú SÍ tienes la herramienta de correo: ¡úsala!' },
+];
+let simPaso = 0;
+function simular(opcion, btn) {
+  const chat = document.getElementById('sim-chat');
+  const r = simRespuestas[opcion];
+  btn.classList.add(r.ok ? 'correcta' : 'incorrecta');
+  agregarMsg(chat, 'agente', 'Agente (tú)', btn.textContent.trim());
+  setTimeout(() => {
+    agregarMsg(chat, r.ok ? 'ok' : 'sistema', 'Resultado', r.texto);
+    if (r.ok && simPaso === 0) {
+      simPaso = 1;
+      setTimeout(() => {
+        agregarMsg(chat, 'sistema', 'Siguiente decisión', 'Ya leíste los correos. Hay 3 importantes. ¿Ahora qué?');
+        const ops = document.getElementById('sim-opciones');
+        ops.innerHTML = '';
+        [
+          ['📤 Reenviar los 14 correos completos al jefe', false, '😵 El jefe quería un RESUMEN, no más trabajo. Un agente razona sobre la información, no la rebota.'],
+          ['📝 Razonar: extraer lo esencial y redactar 3 líneas', true, '✅ ¡Eso es RAZONAR y ACTUAR! Resumen enviado: "3 correos urgentes: proveedor X pide pago, reunión movida a las 10, cliente Y aprobó la propuesta." Misión cumplida 🏆. Ese ciclo — PERCIBIR → RAZONAR → ACTUAR — es la esencia de todo agente.'],
+        ].forEach(([txt, ok, fb]) => {
+          const b = document.createElement('button');
+          b.className = 'btn-int'; b.textContent = txt;
+          b.onclick = () => {
+            b.classList.add(ok ? 'correcta' : 'incorrecta');
+            agregarMsg(chat, 'agente', 'Agente (tú)', txt);
+            setTimeout(() => agregarMsg(chat, ok ? 'ok' : 'sistema', 'Resultado', fb), 350);
+          };
+          ops.appendChild(b);
+        });
+      }, 900);
+    }
+  }, 350);
+}
+function agregarMsg(chat, clase, rol, texto) {
+  const d = document.createElement('div');
+  d.className = 'msg ' + clase;
+  d.innerHTML = '<span class="rol">' + rol + '</span>' + texto;
+  chat.appendChild(d);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+/* ================= QUIZ ================= */
+const preguntas = [
+  { p: '1. ¿Cuál es LA diferencia entre un chatbot y un agente?',
+    ops: ['El agente usa herramientas y actúa por su cuenta', 'El agente habla con mejor ortografía', 'El chatbot es de pago y el agente gratis', 'Ninguna, son sinónimos'],
+    ok: 0, fb: 'El agente no solo conversa: percibe, razona y ACTÚA con sus herramientas.' },
+  { p: '2. ¿Cuáles son las 4 piezas de todo agente?',
+    ops: ['Cerebro, instrucciones, herramientas y memoria', 'Pantalla, teclado, mouse e internet', 'Prompt, chat, emoji y nube', 'CPU, GPU, RAM y disco'],
+    ok: 0, fb: 'Cerebro (modelo) + instrucciones + herramientas + memoria. Mañana las armamos una por una.' },
+  { p: '3. La GRAN ventaja de la IA local es…',
+    ops: ['Que responde más bonito', 'Que tus datos nunca salen de tu computadora', 'Que sabe más que ChatGPT', 'Que viene con antivirus'],
+    ok: 1, fb: 'Privacidad total: nada viaja a servidores ajenos. Además es gratis y funciona sin internet.' },
+  { p: '4. ¿Qué es Ollama?',
+    ops: ['Una red social de llamas', 'Un modelo de IA gigante', 'Un programa que descarga y ejecuta modelos de IA en tu PC', 'Un navegador web'],
+    ok: 2, fb: 'Ollama es el "motor": instala, descarga modelos y los corre localmente. Gratis.' },
+  { p: '5. Con el modelo ya descargado, ¿necesitas internet para usar tu IA local?',
+    ops: ['Sí, siempre', 'Solo los fines de semana', 'No: por eso funcionó en modo avión ✈️', 'Solo si la pregunta es difícil'],
+    ok: 2, fb: 'El modelo vive en tu disco duro. Internet solo hizo falta para descargarlo la primera vez.' },
+];
+let qIdx = 0, aciertos = 0;
+function pintarQuiz() {
+  const caja = document.getElementById('quiz');
+  if (qIdx >= preguntas.length) {
+    const nota = Math.round(aciertos / preguntas.length * 10);
+    const emoji = nota >= 9 ? '🏆' : nota >= 7 ? '💪' : nota >= 5 ? '🙂' : '📚';
+    caja.innerHTML = '<div class="emoji-gigante">' + emoji + '</div>' +
+      '<h2>Resultado: <span class="grad">' + aciertos + ' de ' + preguntas.length + '</span> (' + nota + '/10)</h2>' +
+      '<p class="grande" style="margin:2vh auto">' + (nota >= 7 ? '¡Excelente! Ya piensas como constructor de agentes.' : 'Repasa las slides y vuelve a intentarlo: el botón de abajo reinicia el quiz.') + '</p>' +
+      '<button class="btn-int" onclick="qIdx=0;aciertos=0;pintarQuiz()">🔄 Reintentar</button>';
+    return;
+  }
+  const q = preguntas[qIdx];
+  caja.innerHTML = '<div class="quiz-pregunta">' + q.p + '</div>' +
+    '<div class="quiz-opciones">' + q.ops.map((o, i) =>
+      '<button class="btn-int" onclick="responder(' + i + ', this)">' + o + '</button>').join('') + '</div>' +
+    '<div class="quiz-feedback" id="quiz-fb"></div>';
+}
+function responder(i, btn) {
+  const q = preguntas[qIdx];
+  const botones = btn.parentElement.querySelectorAll('button');
+  botones.forEach(b => b.disabled = true);
+  botones[q.ok].classList.add('correcta');
+  const fb = document.getElementById('quiz-fb');
+  if (i === q.ok) { aciertos++; fb.innerHTML = '✅ <b>¡Correcto!</b> ' + q.fb; }
+  else { btn.classList.add('incorrecta'); fb.innerHTML = '❌ Casi. ' + q.fb; }
+  setTimeout(() => { qIdx++; pintarQuiz(); }, 2600);
+}
+pintarQuiz();
+</script>
+</body>
+</html>

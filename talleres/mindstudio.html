@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Taller MindStudio · Analizador de Hojas de Vida — Agentes IA Local</title>
+<link rel="stylesheet" href="../assets/curso.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
+</head>
+<body>
+<div class="contenedor">
+
+  <nav class="nav">
+    <span class="marca">🤖 Agentes <span>IA Local</span></span>
+    <div style="display:flex;gap:18px;flex-wrap:wrap">
+      <a href="../index.html">Portada</a>
+      <a href="zapier.html">Taller Zapier</a>
+    </div>
+  </nav>
+
+  <header class="lab-cabecera">
+    <div class="kicker">Manual paso a paso · Día 5 · Plus nube ☁️</div>
+    <h1>📋 Taller MindStudio: un agente que evalúa hojas de vida como reclutador experto</h1>
+    <div class="meta">
+      <span>⏱️ ~90 minutos</span>
+      <span>🎚️ Nivel: principiante</span>
+      <span>💰 Plan gratuito de MindStudio</span>
+    </div>
+    <p style="margin-top:14px;color:var(--texto-suave)">
+      <b style="color:var(--texto)">Lo que vas a construir:</b> una mini-aplicación con IA donde cualquier persona
+      sube una <b>hoja de vida (PDF)</b>, pega los <b>requisitos del puesto</b>, y recibe un informe profesional:
+      puntaje de compatibilidad, fortalezas, brechas y recomendación de contratación. Y al final lo publicas
+      con un <b>link para compartir</b>. 🚀
+    </p>
+  </header>
+
+  <div class="progreso-wrap">
+    <div class="progreso-texto">Tu progreso: <b id="prog-num">0 de 8 pasos</b> — se guarda en tu navegador.</div>
+    <div class="progreso-barra"><div id="prog-fill"></div></div>
+  </div>
+
+  <div class="caja caja-alerta"><b>⚠️ Antes de empezar, ten a mano:</b>
+    una cuenta de Google, y <b>1 o 2 hojas de vida en PDF</b> para probar (puede ser la tuya, o una inventada — abajo te damos una de ejemplo).
+  </div>
+
+  <!-- PASO 1 -->
+  <div class="paso" data-paso="p1">
+    <div class="paso-cabecera"><span class="paso-num">1</span><h2>Crea tu cuenta en MindStudio</h2></div>
+    <ol>
+      <li>Entra a <a href="https://www.mindstudio.ai" target="_blank" style="color:var(--acento-2)"><b>mindstudio.ai</b></a> y haz clic en <b>Get started</b> / <b>Sign up</b>.</li>
+      <li>Regístrate con <b>Google</b> (lo más rápido).</li>
+      <li>Si te pregunta para qué usarás la plataforma, elige algo tipo "work / HR / productivity". Da igual, es solo estadística de ellos.</li>
+      <li>Llegarás al panel principal (workspace), donde viven tus agentes.</li>
+    </ol>
+    <div class="caja caja-info"><b>ℹ️ ¿Qué es MindStudio?</b> Una plataforma para construir "mini-aplicaciones de IA" armando bloques en un flujo, como piezas de Lego: <i>pedir datos → analizarlos con IA → mostrar el resultado</i>. Sin código, y con la ventaja de que el resultado se publica como una app con su propio link.</div>
+    <label class="paso-check"><input type="checkbox"> Cuenta creada y estoy en el panel de MindStudio</label>
+  </div>
+
+  <!-- PASO 2 -->
+  <div class="paso" data-paso="p2">
+    <div class="paso-cabecera"><span class="paso-num">2</span><h2>Crea el agente desde cero</h2></div>
+    <ol>
+      <li>Haz clic en <b>+ New Agent</b> (o "Create"). Si te ofrece plantillas o un asistente con IA, elige empezar <b>en blanco / from scratch</b> — hoy queremos entender cada pieza.</li>
+      <li>Nómbralo: <b>Analizador de Hojas de Vida</b>.</li>
+      <li>Se abrirá el <b>editor</b>: verás un lienzo con el flujo de trabajo (workflow) que por ahora solo tiene un bloque <b>Start</b> y un bloque de fin. Ese camino de bloques es literalmente "lo que hará el agente, en orden".</li>
+    </ol>
+    <div class="caja caja-tip"><b>💚 No te pierdas:</b> a la izquierda suele estar la lista de workflows y recursos; en el centro, el lienzo con los bloques; y arriba, los botones para probar (<b>Test/Run</b>) y publicar (<b>Publish</b>). Ubica esos tres lugares antes de seguir.</div>
+    <label class="paso-check"><input type="checkbox"> Agente creado y tengo el editor abierto</label>
+  </div>
+
+  <!-- PASO 3 -->
+  <div class="paso" data-paso="p3">
+    <div class="paso-cabecera"><span class="paso-num">3</span><h2>Bloque 1: pedir la hoja de vida y los requisitos 📥</h2></div>
+    <p>Lo primero que hará el agente es pedirle al usuario dos cosas. Para eso existe el bloque <b>User Input</b>:</p>
+    <ol>
+      <li>Haz clic en el <b>+</b> después del bloque Start y agrega un bloque <b>User Input</b>.</li>
+      <li>Dentro del bloque, crea el <b>primer campo</b> (prompt):
+        <ul>
+          <li><b>Tipo:</b> <code>File Upload</code> (subir archivo)</li>
+          <li><b>Pregunta/etiqueta:</b> "Sube la hoja de vida (PDF o Word)"</li>
+          <li><b>Nombre de la variable:</b> <code>cv</code> — así llamaremos a este dato después.</li>
+          <li><b>Procesamiento:</b> activa la <b>extracción de texto</b> (text extraction). Esto convierte el PDF en texto que la IA puede leer. ¡Es el detalle más importante del taller!</li>
+        </ul>
+      </li>
+      <li>En el mismo bloque, agrega un <b>segundo campo</b>:
+        <ul>
+          <li><b>Tipo:</b> <code>Long Text</code> (texto largo)</li>
+          <li><b>Pregunta/etiqueta:</b> "Pega aquí los requisitos del puesto"</li>
+          <li><b>Nombre de la variable:</b> <code>requisitos</code></li>
+        </ul>
+      </li>
+    </ol>
+    <div class="caja caja-info"><b>ℹ️ ¿Qué es una "variable"?</b> Una cajita con nombre donde se guarda un dato para usarlo después. Cuando escribamos <code>{{cv}}</code> en el siguiente paso, MindStudio lo reemplazará por el texto real de la hoja de vida. Es lo más cerca de "programar" que estaremos hoy, y ya viste que no muerde.</div>
+    <label class="paso-check"><input type="checkbox"> Bloque User Input con las variables cv y requisitos</label>
+  </div>
+
+  <!-- PASO 4 -->
+  <div class="paso" data-paso="p4">
+    <div class="paso-cabecera"><span class="paso-num">4</span><h2>Bloque 2: el análisis con IA 🧠</h2></div>
+    <p>Ahora, el corazón del agente. Después del User Input, agrega un bloque <b>Generate Text</b> (generación con IA) y pega este prompt en su campo de instrucciones:</p>
+    <div class="copiable">Actúa como un reclutador senior con 15 años de experiencia en selección de personal en Ecuador.
+
+Analiza la siguiente hoja de vida comparándola contra los requisitos del puesto.
+
+HOJA DE VIDA:
+{{cv}}
+
+REQUISITOS DEL PUESTO:
+{{requisitos}}
+
+Entrega tu análisis en español con EXACTAMENTE esta estructura:
+
+## 🎯 Puntaje de compatibilidad: [0 a 100] / 100
+
+## ✅ Fortalezas
+(3 a 5 puntos donde el candidato cumple o supera los requisitos, citando evidencia de la hoja de vida)
+
+## ⚠️ Brechas
+(los requisitos que NO cumple o no se pueden verificar con la información disponible)
+
+## ❓ Preguntas sugeridas para la entrevista
+(3 preguntas específicas para validar las brechas detectadas)
+
+## 🏁 Recomendación final
+Elige UNA: "AVANZA a entrevista" / "AVANZA con reservas" / "NO avanza", con una justificación de 2 líneas.
+
+Reglas importantes:
+- Básate SOLO en la información de la hoja de vida. No inventes experiencia ni títulos.
+- Si la hoja de vida no menciona algo, cuenta eso como brecha, no como incumplimiento seguro.
+- Sé directo y profesional, sin adornos.</div>
+    <ol>
+      <li>En la configuración del bloque, elige el <b>modelo de IA</b>: usa el que MindStudio recomiende por defecto (suelen ser modelos tipo GPT o Claude). Si hay opción de "creatividad" o <b>temperature</b>, ponla <b>baja</b>: para evaluar CVs queremos rigor, no poesía.</li>
+      <li>Guarda la salida del bloque en una variable llamada <code>informe</code> (si el bloque lo pide).</li>
+    </ol>
+    <div class="caja caja-tip"><b>💚 Fíjate en el truco del prompt:</b> le dimos un ROL (reclutador senior), un FORMATO exacto de salida y REGLAS anti-invento. Esa receta —rol + formato + reglas— sirve para cualquier agente que construyas en tu vida.</div>
+    <label class="paso-check"><input type="checkbox"> Bloque Generate Text configurado con el prompt</label>
+  </div>
+
+  <!-- PASO 5 -->
+  <div class="paso" data-paso="p5">
+    <div class="paso-cabecera"><span class="paso-num">5</span><h2>Bloque 3: mostrar el informe 📄</h2></div>
+    <ol>
+      <li>Después del bloque de IA, verifica cómo termina el flujo: necesitas que el resultado <b>se muestre en pantalla</b> al usuario.</li>
+      <li>Si el editor no lo hace automático, agrega un bloque <b>Display Content</b> (mostrar contenido) y pon dentro: <code>{{informe}}</code> (o la variable donde quedó la respuesta de la IA).</li>
+      <li>Tu flujo debe verse así: <b>Start → User Input → Generate Text → Display → End</b>. Cinco piezas de Lego. Eso es TODA la aplicación.</li>
+    </ol>
+    <label class="paso-check"><input type="checkbox"> El flujo está completo de Start a End</label>
+  </div>
+
+  <!-- PASO 6 -->
+  <div class="paso" data-paso="p6">
+    <div class="paso-cabecera"><span class="paso-num">6</span><h2>Pruébalo con una hoja de vida real 🧪</h2></div>
+    <ol>
+      <li>Haz clic en <b>Test / Run</b> (o el botón ▶). Se abrirá tu app como la vería un usuario.</li>
+      <li>Sube un CV en PDF. ¿No tienes uno a mano? Crea uno rápido: abre Word, pega el texto de ejemplo de abajo, y guárdalo como PDF (Archivo → Guardar como → PDF).</li>
+      <li>En requisitos, pega la oferta de ejemplo de abajo (o una real de LinkedIn).</li>
+      <li>Envía y mira cómo aparece tu informe con puntaje, fortalezas, brechas y recomendación. 🤯</li>
+    </ol>
+    <p><b>CV de ejemplo (para tu PDF de prueba):</b></p>
+    <div class="copiable">MARÍA FERNANDA TORRES
+Quito, Ecuador · mftorres@mail.com · 099 123 4567
+
+EXPERIENCIA
+Asistente Administrativa — Importadora Andina (2021–2025)
+- Manejo de agenda, correspondencia y archivo de gerencia.
+- Elaboración de reportes mensuales en Excel (tablas dinámicas).
+- Atención a proveedores y seguimiento de pagos.
+
+Recepcionista — Hotel Colonial (2019–2021)
+- Atención al cliente y manejo de reservas.
+
+EDUCACIÓN
+Tecnología en Administración de Empresas — ISTER (2019)
+Curso de Excel Intermedio — SECAP (2022)
+
+IDIOMAS: Español nativo, inglés básico.</div>
+    <p><b>Requisitos de ejemplo:</b></p>
+    <div class="copiable">Puesto: Asistente de Gerencia
+Requisitos:
+- Título de tercer nivel o tecnología en áreas administrativas
+- Mínimo 3 años de experiencia en asistencia administrativa
+- Excel avanzado (indispensable)
+- Inglés intermedio (deseable)
+- Experiencia manejando agenda de gerencia y proveedores</div>
+    <div class="caja caja-info"><b>ℹ️ Observa el resultado:</b> debería darle un puntaje medio-alto, detectar como brechas el Excel avanzado y el inglés intermedio, y sugerir preguntas para validarlas. Si tu informe hace eso: tu agente razona bien. 👏</div>
+    <label class="paso-check"><input type="checkbox"> Probé el agente y el informe salió con la estructura pedida</label>
+  </div>
+
+  <!-- PASO 7 -->
+  <div class="paso" data-paso="p7">
+    <div class="paso-cabecera"><span class="paso-num">7</span><h2>Publícalo y comparte el link 🌍</h2></div>
+    <ol>
+      <li>Haz clic en <b>Publish</b>.</li>
+      <li>MindStudio te dará un <b>link público</b> de tu app. Cópialo.</li>
+      <li>Ábrelo en una ventana de incógnito o mándalo a tu celular: verás tu agente funcionando como una aplicación real, sin que el usuario vea los bloques por dentro.</li>
+      <li>Compártelo en el chat de la clase. 📣 Sí: acabas de <b>publicar software con IA</b>, tú, la persona que "no sabía nada de programación".</li>
+    </ol>
+    <div class="caja caja-alerta"><b>⚠️ Privacidad, siempre.</b> Este agente corre en la nube: los CVs que se suban pasan por servidores de MindStudio y del modelo de IA. Para practicar con CVs de ejemplo, perfecto. Para CVs reales de terceros, recuerda lo aprendido en el curso: datos sensibles → mejor un agente LOCAL, o pide consentimiento. Los datos de otras personas no son tuyos para regalarlos.</div>
+    <label class="paso-check"><input type="checkbox"> App publicada y link compartido</label>
+  </div>
+
+  <!-- PASO 8: reto -->
+  <div class="paso" data-paso="p8">
+    <div class="paso-cabecera"><span class="paso-num">🏅</span><h2>Reto extra (opcional)</h2></div>
+    <ul>
+      <li><b>Nivel 1:</b> agrega al User Input un tercer campo <code>Multiple Choice</code> llamado <code>rigor</code> con opciones "Estricto" y "Flexible", y modifica el prompt: "Aplica un criterio {{rigor}} al evaluar". Acabas de hacer tu app configurable.</li>
+      <li><b>Nivel 2:</b> haz que el informe termine con un <b>borrador de correo</b> para el candidato (uno si avanza, otro si no), listo para copiar y enviar.</li>
+      <li><b>Nivel 3:</b> duplica el agente y conviértelo en otra cosa: analizador de contratos, corrector de ensayos, evaluador de proyectos estudiantiles… mismo esqueleto (subir archivo → analizar → informe), infinito potencial. <b>Pista: este puede ser tu proyecto final.</b> 😉</li>
+    </ul>
+    <label class="paso-check"><input type="checkbox"> Completé al menos un reto</label>
+  </div>
+
+  <!-- Troubleshooting -->
+  <div class="paso">
+    <div class="paso-cabecera"><span class="paso-num">🚑</span><h2>Si algo falla</h2></div>
+    <details class="problema">
+      <summary>La IA responde "no veo ninguna hoja de vida" o analiza puro vacío</summary>
+      <div class="problema-cuerpo">Casi seguro el campo de subida <b>no tiene activada la extracción de texto</b> (paso 3), así que la variable <code>{{cv}}</code> solo contiene un link al archivo, no su contenido. Actívala y prueba de nuevo. Otra causa: el PDF es un <b>escaneo/foto</b> (imagen sin texto). Prueba con un PDF generado desde Word.</div>
+    </details>
+    <details class="problema">
+      <summary>El informe sale sin la estructura pedida (sin puntaje, en desorden)</summary>
+      <div class="problema-cuerpo">Verifica que en el prompt están los <code>{{cv}}</code> y <code>{{requisitos}}</code> escritos EXACTAMENTE igual que las variables del User Input (mayúsculas incluidas). Si están bien, baja la "temperatura" del modelo o cambia a un modelo más capaz en la configuración del bloque.</div>
+    </details>
+    <details class="problema">
+      <summary>Me dice que no tengo créditos / límite alcanzado</summary>
+      <div class="problema-cuerpo">El plan gratuito de MindStudio incluye una cantidad limitada de ejecuciones con los modelos. Para el taller alcanza de sobra; si te lo agotaste jugando (bien hecho 😄), elige en el bloque de IA un modelo más económico, o espera la renovación del límite.</div>
+    </details>
+    <details class="problema">
+      <summary>La interfaz no coincide con este manual</summary>
+      <div class="problema-cuerpo">MindStudio evoluciona rápido; los nombres pueden variar levemente, pero los bloques User Input, Generate Text y Display Content siguen la misma lógica. La documentación oficial (en inglés) está en <a href="https://university.mindstudio.ai" target="_blank" style="color:var(--acento-2)">university.mindstudio.ai</a> — y recuerda que puedes preguntarle a TU IA local cómo se dice algo en inglés. 😉</div>
+    </details>
+  </div>
+
+  <div class="nav-paginas">
+    <a class="btn btn-secundario" href="zapier.html">← Taller Zapier</a>
+    <a class="btn btn-primario" href="../index.html">Portada del curso →</a>
+  </div>
+
+  <footer class="pie">Curso <b>Agentes de IA Locales</b> · ISTER 2026 · Día 5 · Taller MindStudio</footer>
+</div>
+
+<script>
+const clave = 'lab-' + location.pathname;
+const estado = JSON.parse(localStorage.getItem(clave) || '{}');
+const pasos = [...document.querySelectorAll('.paso[data-paso]')];
+function refrescar() {
+  let hechos = 0;
+  pasos.forEach(p => {
+    const id = p.dataset.paso, chk = p.querySelector('.paso-check input');
+    chk.checked = !!estado[id];
+    p.classList.toggle('completado', !!estado[id]);
+    if (estado[id]) hechos++;
+  });
+  document.getElementById('prog-num').textContent = hechos + ' de ' + pasos.length + ' pasos';
+  document.getElementById('prog-fill').style.width = (hechos / pasos.length * 100) + '%';
+}
+pasos.forEach(p => p.querySelector('.paso-check input').addEventListener('change', e => {
+  estado[p.dataset.paso] = e.target.checked;
+  localStorage.setItem(clave, JSON.stringify(estado));
+  refrescar();
+}));
+refrescar();
+document.querySelectorAll('.copiable').forEach(bloque => {
+  const texto = bloque.textContent.trim();
+  const btn = document.createElement('button');
+  btn.className = 'btn-copiar'; btn.textContent = '📋 Copiar';
+  btn.onclick = () => navigator.clipboard.writeText(texto).then(() => {
+    btn.textContent = '✅ ¡Copiado!'; btn.classList.add('copiado');
+    setTimeout(() => { btn.textContent = '📋 Copiar'; btn.classList.remove('copiado'); }, 1800);
+  });
+  bloque.appendChild(btn);
+});
+</script>
+</body>
+</html>

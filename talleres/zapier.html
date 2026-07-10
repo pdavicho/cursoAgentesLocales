@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Taller Zapier · Analista de Correos → Telegram — Agentes IA Local</title>
+<link rel="stylesheet" href="../assets/curso.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📬</text></svg>">
+</head>
+<body>
+<div class="contenedor">
+
+  <nav class="nav">
+    <span class="marca">🤖 Agentes <span>IA Local</span></span>
+    <div style="display:flex;gap:18px;flex-wrap:wrap">
+      <a href="../index.html">Portada</a>
+      <a href="mindstudio.html">Taller MindStudio</a>
+    </div>
+  </nav>
+
+  <header class="lab-cabecera">
+    <div class="kicker">Manual paso a paso · Día 4 · Plus nube ☁️</div>
+    <h1>📬 Taller Zapier: un agente que revisa tus correos y te avisa por Telegram</h1>
+    <div class="meta">
+      <span>⏱️ ~90 minutos</span>
+      <span>🎚️ Nivel: principiante</span>
+      <span>💰 Plan gratuito de Zapier</span>
+    </div>
+    <p style="margin-top:14px;color:var(--texto-suave)">
+      <b style="color:var(--texto)">Lo que vas a construir:</b> un agente que, todos los días a la hora que elijas,
+      revisa los correos <b>no leídos</b> de tu Gmail, arma un resumen clasificado por urgencia
+      y te lo envía por <b>Telegram</b> a tu celular. Tu propio secretario digital. 🤵
+    </p>
+  </header>
+
+  <div class="progreso-wrap">
+    <div class="progreso-texto">Tu progreso: <b id="prog-num">0 de 8 pasos</b> — se guarda en tu navegador.</div>
+    <div class="progreso-barra"><div id="prog-fill"></div></div>
+  </div>
+
+  <div class="caja caja-alerta"><b>⚠️ Antes de empezar, ten a mano:</b>
+    una cuenta de <b>Gmail</b> con su contraseña, la app de <b>Telegram instalada en tu celular</b> (y tu sesión iniciada), y unos 90 minutos sin interrupciones.
+  </div>
+
+  <!-- PASO 1 -->
+  <div class="paso" data-paso="p1">
+    <div class="paso-cabecera"><span class="paso-num">1</span><h2>Crea tu cuenta en Zapier</h2></div>
+    <ol>
+      <li>Entra a <a href="https://zapier.com" target="_blank" style="color:var(--acento-2)"><b>zapier.com</b></a> y haz clic en <b>Sign up</b>.</li>
+      <li>Lo más fácil: <b>Continue with Google</b> y elige tu cuenta de Gmail. Así de paso dejas medio conectado el correo.</li>
+      <li>Si te hace preguntas de bienvenida (a qué te dedicas, tamaño de empresa…), responde cualquier cosa razonable o sáltalas. No afectan nada.</li>
+      <li>Ya dentro, ve directo a la sección de agentes: <a href="https://agents.zapier.com" target="_blank" style="color:var(--acento-2)"><b>agents.zapier.com</b></a>.</li>
+    </ol>
+    <div class="caja caja-info"><b>ℹ️ ¿Qué es Zapier?</b> La plataforma de automatización más usada del mundo: conecta más de 7000 aplicaciones (Gmail, WhatsApp, Excel, Telegram…). "Zapier Agents" es su producto de agentes de IA: tú le escribes qué quieres en español y él usa esas conexiones.</div>
+    <label class="paso-check"><input type="checkbox"> Cuenta creada y estoy dentro de agents.zapier.com</label>
+  </div>
+
+  <!-- PASO 2 -->
+  <div class="paso" data-paso="p2">
+    <div class="paso-cabecera"><span class="paso-num">2</span><h2>Crea tu bot de Telegram (tu "cartero" 📮)</h2></div>
+    <p>Para que el agente te escriba por Telegram necesitas un <b>bot</b>: una cuenta especial que envía mensajes automáticos. Se crea en 2 minutos hablando con el "padre de todos los bots":</p>
+    <ol>
+      <li>Abre <b>Telegram en tu celular</b> y en el buscador 🔍 escribe: <b>@BotFather</b> (verifica que tenga el check azul de verificado ✔️).</li>
+      <li>Ábrelo y toca <b>INICIAR</b> (o escribe <code>/start</code>).</li>
+      <li>Escríbele: <span style="color:var(--acento-2)"><b>/newbot</b></span></li>
+      <li>Te pedirá un <b>nombre</b> para tu bot. Escribe por ejemplo: <b>Mi Analista de Correos</b></li>
+      <li>Te pedirá un <b>nombre de usuario</b> que debe terminar en "bot" y ser único. Prueba algo como: <b>analista_correos_tunombre_bot</b></li>
+      <li>🎉 BotFather te responderá con un mensaje que incluye el <b>token</b>: una clave larga tipo <code>7213456789:AAH9x…</code>. <b>NO cierres esta conversación</b>, la necesitarás en el paso 5.</li>
+      <li><b>Muy importante:</b> busca ahora tu bot recién creado por su nombre de usuario, ábrelo y toca <b>INICIAR</b>. Si no haces esto, el bot no podrá escribirte (Telegram lo prohíbe hasta que tú le hables primero).</li>
+    </ol>
+    <div class="caja caja-peligro"><b>🚨 El token es una contraseña.</b> Quien lo tenga controla tu bot. No lo publiques ni lo compartas en el chat de la clase.</div>
+    <label class="paso-check"><input type="checkbox"> Bot creado, token a la vista, y ya le di INICIAR a mi bot</label>
+  </div>
+
+  <!-- PASO 3 -->
+  <div class="paso" data-paso="p3">
+    <div class="paso-cabecera"><span class="paso-num">3</span><h2>Crea el agente en Zapier</h2></div>
+    <ol>
+      <li>En <b>agents.zapier.com</b>, haz clic en <b>+ New agent</b> (o "Create agent").</li>
+      <li>Si te ofrece plantillas, elige empezar <b>desde cero</b> (from scratch / blank).</li>
+      <li>Ponle nombre: <b>Analista de Correos</b>.</li>
+      <li>En la descripción o instrucciones generales del agente, pega esto:</li>
+    </ol>
+    <div class="copiable">Eres mi asistente personal de correos. Tu trabajo es revisar mi bandeja de Gmail, identificar lo importante y mantenerme informado con resúmenes breves, claros y en español. Nunca inventes información: si no hay correos, dilo tal cual.</div>
+    <div class="caja caja-info"><b>ℹ️ ¿Ves la pantalla distinta?</b> Zapier cambia su interfaz seguido. No te estreses buscando el botón exacto: busca la idea ("crear agente nuevo", "instrucciones", "agregar comportamiento"). Los conceptos no cambian.</div>
+    <label class="paso-check"><input type="checkbox"> Agente creado con nombre e instrucciones generales</label>
+  </div>
+
+  <!-- PASO 4 -->
+  <div class="paso" data-paso="p4">
+    <div class="paso-cabecera"><span class="paso-num">4</span><h2>Crea el comportamiento (behavior) con su disparador ⏰</h2></div>
+    <p>Un agente de Zapier funciona con <b>behaviors</b>: "cuando pase X (disparador), haz Y (instrucciones)". Vamos a crear el nuestro:</p>
+    <ol>
+      <li>Dentro de tu agente, busca la sección de <b>Behaviors</b> y haz clic en <b>+ Add behavior</b> (o en la sección <b>Trigger</b>, "+ Add trigger").</li>
+      <li>Como disparador elige <b>Schedule by Zapier</b> (horario programado).</li>
+      <li>Configúralo: frecuencia <b>Every day</b> (todos los días) y elige la hora, por ejemplo <b>8:00 AM</b>. Revisa que la zona horaria sea la tuya (Ecuador: <b>America/Guayaquil</b>, se configura en los ajustes de tu perfil de Zapier).</li>
+      <li>En las instrucciones del behavior (el "qué hacer cuando se dispare"), pega esto:</li>
+    </ol>
+    <div class="copiable">Cuando te actives, haz exactamente esto:
+
+1. Busca en mi Gmail los correos NO LEÍDOS de las últimas 24 horas.
+
+2. Prepara un resumen en español con este formato:
+   📊 RESUMEN DE CORREOS — [fecha de hoy]
+   Para cada correo: remitente, asunto y UNA línea con lo esencial.
+
+3. Clasifica cada correo con un emoji:
+   🔴 Urgente (requiere acción hoy)
+   🟡 Importante (requiere acción esta semana)
+   ⚪ Informativo (solo para saber)
+
+4. Al final agrega una línea: "Total: X correos sin leer".
+
+5. Envía ese resumen como mensaje de Telegram a mi chat.
+
+Si NO hay correos no leídos, envía solamente: "📭 Bandeja al día, sin correos pendientes. ¡Buen día!"
+
+No marques los correos como leídos ni los modifiques. Solo lee e informa.</div>
+    <label class="paso-check"><input type="checkbox"> Behavior creado con disparador diario e instrucciones pegadas</label>
+  </div>
+
+  <!-- PASO 5 -->
+  <div class="paso" data-paso="p5">
+    <div class="paso-cabecera"><span class="paso-num">5</span><h2>Conecta las herramientas: Gmail y Telegram 🔌</h2></div>
+    <p>El agente ya sabe QUÉ hacer; ahora dale las manos para hacerlo. Zapier te pedirá conectar las apps que mencionan tus instrucciones (o agrégalas tú en la sección <b>Tools/Apps</b> del agente):</p>
+    <p style="margin-top:10px"><b>📧 Gmail:</b></p>
+    <ol>
+      <li>Agrega <b>Gmail</b> como herramienta → <b>Connect</b> → elige tu cuenta de Google.</li>
+      <li>Google te mostrará una pantalla de permisos: acepta el acceso de <b>lectura</b> de correos (es lo que el agente necesita).</li>
+    </ol>
+    <p style="margin-top:10px"><b>📨 Telegram:</b></p>
+    <ol>
+      <li>Agrega <b>Telegram</b> como herramienta → <b>Connect</b>.</li>
+      <li>Te pedirá el <b>token del bot</b>: cópialo de la conversación con BotFather (paso 2) y pégalo.</li>
+      <li>Cuando pida el <b>Chat ID</b> (a quién escribirle): como ya le diste INICIAR a tu bot, Zapier suele dejarte elegir tu chat directamente. Si te lo pide a mano, mira el cuadro de abajo. 👇</li>
+    </ol>
+    <details class="problema">
+      <summary>🔎 ¿Cómo encuentro mi Chat ID a mano?</summary>
+      <div class="problema-cuerpo">
+        <ol>
+          <li>Asegúrate de haberle enviado al menos un mensaje a tu bot (aunque sea "hola").</li>
+          <li>En el navegador, abre esta dirección reemplazando <code>TUTOKEN</code> por tu token: <br><code>https://api.telegram.org/botTUTOKEN/getUpdates</code></li>
+          <li>Verás un texto enredado; busca donde dice <code>"chat":{"id":</code> seguido de un número (ej. <code>123456789</code>). Ese número es tu Chat ID.</li>
+        </ol>
+      </div>
+    </details>
+    <label class="paso-check"><input type="checkbox"> Gmail y Telegram conectados como herramientas del agente</label>
+  </div>
+
+  <!-- PASO 6 -->
+  <div class="paso" data-paso="p6">
+    <div class="paso-cabecera"><span class="paso-num">6</span><h2>¡Momento de la verdad: pruébalo! 🧪</h2></div>
+    <ol>
+      <li><b>Prepara el escenario:</b> pídele a un compañero del curso que te envíe un correo ahora mismo (o envíate uno desde otra cuenta) y NO lo abras, que quede sin leer.</li>
+      <li>En Zapier, usa el botón <b>Test</b> / <b>Run</b> del behavior (no hace falta esperar a mañana a las 8:00).</li>
+      <li>Observa el "razonamiento" del agente en pantalla: verás cómo decide leer Gmail, armar el resumen y llamar a Telegram. <b>Esto es un agente pensando en vivo.</b> 🍿</li>
+      <li>Revisa tu celular: debe llegarte el mensaje de Telegram con el resumen. 🎉</li>
+    </ol>
+    <div class="caja caja-tip"><b>💚 ¿Llegó el mensaje?</b> Tómale captura y compártela en el chat de la clase. Acabas de crear tu primer agente en la nube.</div>
+    <label class="paso-check"><input type="checkbox"> El resumen llegó a mi Telegram</label>
+  </div>
+
+  <!-- PASO 7 -->
+  <div class="paso" data-paso="p7">
+    <div class="paso-cabecera"><span class="paso-num">7</span><h2>Actívalo para siempre y entiende los límites</h2></div>
+    <ol>
+      <li>Activa el behavior (interruptor <b>On/Enable</b>). Desde mañana, tu resumen llegará solo, todos los días a la hora configurada.</li>
+      <li>Puedes ver el historial de ejecuciones en la sección de actividad (<b>Runs/Activity</b>) del agente: útil para saber si corrió y qué hizo.</li>
+    </ol>
+    <div class="caja caja-alerta"><b>⚠️ Límites del plan gratuito.</b> Zapier te da un número limitado de actividades/tareas al mes en el plan gratis. Para un resumen diario sobra, pero si creas 10 agentes que corren cada hora, se agota. Moraleja: en la nube, <b>lo gratis tiene techo</b> — otra razón por la que aprendimos IA local primero. 😉</div>
+    <label class="paso-check"><input type="checkbox"> Agente activado y sé dónde ver su actividad</label>
+  </div>
+
+  <!-- PASO 8: reto -->
+  <div class="paso" data-paso="p8">
+    <div class="paso-cabecera"><span class="paso-num">🏅</span><h2>Reto extra (opcional, para valientes)</h2></div>
+    <p>Elige uno y modifica tu agente:</p>
+    <ul>
+      <li><b>Nivel 1:</b> cambia las instrucciones para que también te sugiera una <b>respuesta corta</b> para cada correo urgente 🔴.</li>
+      <li><b>Nivel 2:</b> agrega un segundo behavior con disparador <b>"Gmail: New Email"</b> que te avise por Telegram <b>al instante</b> cuando llegue un correo de tu jefe (filtra por su dirección).</li>
+      <li><b>Nivel 3:</b> haz que el resumen se guarde también en una hoja de <b>Google Sheets</b> como registro histórico.</li>
+    </ul>
+    <label class="paso-check"><input type="checkbox"> Completé al menos un reto</label>
+  </div>
+
+  <!-- Troubleshooting -->
+  <div class="paso">
+    <div class="paso-cabecera"><span class="paso-num">🚑</span><h2>Si algo falla (a todos nos pasa)</h2></div>
+    <details class="problema">
+      <summary>No me llega nada a Telegram</summary>
+      <div class="problema-cuerpo">El 90% de las veces es porque <b>no le diste INICIAR a tu bot</b> (paso 2.7): Telegram bloquea a los bots que intentan escribir primero. Ábrelo, dale INICIAR, y prueba de nuevo. Si no, verifica que el Chat ID sea el correcto (cuadro del paso 5).</div>
+    </details>
+    <details class="problema">
+      <summary>Zapier dice que no puede leer mi Gmail</summary>
+      <div class="problema-cuerpo">Reconecta la cuenta: sección de conexiones/apps → Gmail → <b>Reconnect</b>, y esta vez revisa que aceptaste TODOS los permisos que pide Google. Si usas un correo institucional, puede que tu organización bloquee conexiones externas: usa un Gmail personal para el taller.</div>
+    </details>
+    <details class="problema">
+      <summary>El agente corre pero el resumen sale en inglés o con otro formato</summary>
+      <div class="problema-cuerpo">Los agentes siguen instrucciones, no leen mentes: sé más explícito. Agrega al inicio de las instrucciones: "SIEMPRE responde en español" y muéstrale un ejemplo exacto del formato que quieres. Ajustar instrucciones y reprobar es el pan de cada día de quien construye agentes.</div>
+    </details>
+    <details class="problema">
+      <summary>El botón Test no aparece / la interfaz se ve distinta a este manual</summary>
+      <div class="problema-cuerpo">Zapier actualiza su interfaz con frecuencia. Busca sinónimos: "Run", "Test behavior", "Try it". Y recuerda que dentro del agente hay un chat: puedes literalmente escribirle <i>"ejecuta ahora el resumen de correos"</i> y lo hará. La documentación oficial está en <a href="https://help.zapier.com/hc/en-us/articles/24393442652557-Build-an-agent-in-Zapier-Agents" target="_blank" style="color:var(--acento-2)">help.zapier.com → Build an agent</a>.</div>
+    </details>
+  </div>
+
+  <div class="nav-paginas">
+    <a class="btn btn-secundario" href="../index.html">← Portada del curso</a>
+    <a class="btn btn-primario" href="mindstudio.html">Siguiente taller: MindStudio →</a>
+  </div>
+
+  <footer class="pie">Curso <b>Agentes de IA Locales</b> · ISTER 2026 · Día 4 · Taller Zapier</footer>
+</div>
+
+<script>
+const clave = 'lab-' + location.pathname;
+const estado = JSON.parse(localStorage.getItem(clave) || '{}');
+const pasos = [...document.querySelectorAll('.paso[data-paso]')];
+function refrescar() {
+  let hechos = 0;
+  pasos.forEach(p => {
+    const id = p.dataset.paso, chk = p.querySelector('.paso-check input');
+    chk.checked = !!estado[id];
+    p.classList.toggle('completado', !!estado[id]);
+    if (estado[id]) hechos++;
+  });
+  document.getElementById('prog-num').textContent = hechos + ' de ' + pasos.length + ' pasos';
+  document.getElementById('prog-fill').style.width = (hechos / pasos.length * 100) + '%';
+}
+pasos.forEach(p => p.querySelector('.paso-check input').addEventListener('change', e => {
+  estado[p.dataset.paso] = e.target.checked;
+  localStorage.setItem(clave, JSON.stringify(estado));
+  refrescar();
+}));
+refrescar();
+document.querySelectorAll('.copiable').forEach(bloque => {
+  const texto = bloque.textContent.trim();
+  const btn = document.createElement('button');
+  btn.className = 'btn-copiar'; btn.textContent = '📋 Copiar';
+  btn.onclick = () => navigator.clipboard.writeText(texto).then(() => {
+    btn.textContent = '✅ ¡Copiado!'; btn.classList.add('copiado');
+    setTimeout(() => { btn.textContent = '📋 Copiar'; btn.classList.remove('copiado'); }, 1800);
+  });
+  bloque.appendChild(btn);
+});
+</script>
+</body>
+</html>

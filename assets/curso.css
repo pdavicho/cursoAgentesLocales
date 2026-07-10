@@ -1,0 +1,246 @@
+/* ============================================
+   Curso: Agentes de IA Locales — ISTER 2026
+   Estilos compartidos (portada, labs y manuales)
+   ============================================ */
+:root {
+  --fondo: #0b0e1a;
+  --fondo-2: #131829;
+  --tarjeta: #1a2036;
+  --borde: #2a3352;
+  --texto: #e8ecf8;
+  --texto-suave: #9aa5c4;
+  --acento: #7c5cff;
+  --acento-2: #00e5ff;
+  --exito: #2dd881;
+  --alerta: #ffb020;
+  --peligro: #ff5c7a;
+  --grad: linear-gradient(135deg, #7c5cff 0%, #00e5ff 100%);
+  --radio: 16px;
+  --sombra: 0 10px 40px rgba(0, 0, 0, .45);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--fondo);
+  color: var(--texto);
+  line-height: 1.65;
+  min-height: 100vh;
+}
+
+body::before {
+  content: "";
+  position: fixed; inset: 0; z-index: -1;
+  background:
+    radial-gradient(900px 500px at 85% -10%, rgba(124, 92, 255, .18), transparent 60%),
+    radial-gradient(700px 400px at -10% 30%, rgba(0, 229, 255, .10), transparent 60%);
+}
+
+.contenedor { max-width: 960px; margin: 0 auto; padding: 24px; }
+
+/* ---------- Navegación superior ---------- */
+.nav {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; flex-wrap: wrap;
+  padding: 14px 0; margin-bottom: 8px;
+  border-bottom: 1px solid var(--borde);
+}
+.nav a { color: var(--texto-suave); text-decoration: none; font-weight: 600; font-size: .95rem; }
+.nav a:hover { color: var(--acento-2); }
+.nav .marca { font-weight: 800; color: var(--texto); font-size: 1.05rem; }
+.nav .marca span { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+/* ---------- Hero ---------- */
+.hero { text-align: center; padding: 56px 16px 40px; }
+.hero h1 {
+  font-size: clamp(2.2rem, 6vw, 3.8rem);
+  font-weight: 900; line-height: 1.12; letter-spacing: -1px;
+}
+.hero h1 .grad { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.hero p.bajada {
+  margin: 18px auto 0; max-width: 640px;
+  color: var(--texto-suave); font-size: 1.15rem;
+}
+.chips { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
+.chip {
+  background: var(--tarjeta); border: 1px solid var(--borde);
+  padding: 8px 16px; border-radius: 999px; font-size: .9rem; font-weight: 600;
+}
+.chip b { color: var(--acento-2); }
+
+/* ---------- Tarjetas de días ---------- */
+.grid-dias { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 18px; margin: 30px 0; }
+.dia-card {
+  background: var(--tarjeta); border: 1px solid var(--borde);
+  border-radius: var(--radio); padding: 22px;
+  display: flex; flex-direction: column; gap: 10px;
+  transition: transform .2s, border-color .2s;
+  position: relative; overflow: hidden;
+}
+.dia-card:hover { transform: translateY(-4px); border-color: var(--acento); }
+.dia-card .num {
+  font-size: .8rem; font-weight: 800; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--acento-2);
+}
+.dia-card h3 { font-size: 1.2rem; line-height: 1.3; }
+.dia-card p { color: var(--texto-suave); font-size: .93rem; flex: 1; }
+.dia-card .enlaces { display: flex; gap: 10px; flex-wrap: wrap; }
+.dia-card.pendiente { opacity: .55; }
+.etiqueta-pronto {
+  position: absolute; top: 14px; right: -34px; transform: rotate(38deg);
+  background: var(--alerta); color: #1a1a1a; font-size: .68rem; font-weight: 800;
+  padding: 3px 38px; letter-spacing: 1px;
+}
+
+/* ---------- Botones ---------- */
+.btn {
+  display: inline-block; text-decoration: none; text-align: center;
+  padding: 10px 20px; border-radius: 12px; font-weight: 700; font-size: .93rem;
+  border: 1px solid transparent; cursor: pointer; transition: all .18s;
+}
+.btn-primario { background: var(--grad); color: #0b0e1a; }
+.btn-primario:hover { filter: brightness(1.12); transform: translateY(-1px); }
+.btn-secundario { background: transparent; color: var(--acento-2); border-color: var(--borde); }
+.btn-secundario:hover { border-color: var(--acento-2); }
+
+/* ---------- Secciones genéricas ---------- */
+.seccion { margin: 46px 0; }
+.seccion h2 { font-size: 1.7rem; font-weight: 800; margin-bottom: 14px; }
+.seccion h2 .grad { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+/* ============================================
+   PÁGINAS DE LABORATORIO / MANUALES
+   ============================================ */
+.lab-cabecera { padding: 40px 0 10px; }
+.lab-cabecera .kicker {
+  color: var(--acento-2); font-weight: 800; letter-spacing: 2px;
+  text-transform: uppercase; font-size: .85rem;
+}
+.lab-cabecera h1 { font-size: clamp(1.8rem, 4.5vw, 2.6rem); font-weight: 900; line-height: 1.15; margin: 6px 0 10px; }
+.lab-cabecera .meta { color: var(--texto-suave); display: flex; gap: 18px; flex-wrap: wrap; font-size: .92rem; }
+
+/* Barra de progreso del lab */
+.progreso-wrap {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(11, 14, 26, .92); backdrop-filter: blur(8px);
+  padding: 10px 0; border-bottom: 1px solid var(--borde); margin-bottom: 10px;
+}
+.progreso-texto { font-size: .85rem; color: var(--texto-suave); margin-bottom: 6px; }
+.progreso-texto b { color: var(--exito); }
+.progreso-barra { height: 8px; background: var(--fondo-2); border-radius: 99px; overflow: hidden; }
+.progreso-barra > div { height: 100%; width: 0%; background: var(--grad); border-radius: 99px; transition: width .4s; }
+
+/* Pasos */
+.paso {
+  background: var(--tarjeta); border: 1px solid var(--borde);
+  border-radius: var(--radio); padding: 24px; margin: 22px 0;
+  position: relative;
+}
+.paso.completado { border-color: var(--exito); }
+.paso.completado .paso-num { background: var(--exito); color: #0b0e1a; }
+.paso-cabecera { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 12px; }
+.paso-num {
+  min-width: 44px; height: 44px; border-radius: 12px;
+  background: var(--grad); color: #0b0e1a;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 1.25rem; flex-shrink: 0;
+}
+.paso h2, .paso h3.titulo-paso { font-size: 1.3rem; font-weight: 800; line-height: 1.25; padding-top: 7px; }
+.paso p, .paso li { color: #c9d2ea; }
+.paso ol, .paso ul { margin: 10px 0 10px 22px; }
+.paso li { margin: 7px 0; }
+.paso img { max-width: 100%; border-radius: 10px; border: 1px solid var(--borde); margin: 12px 0; }
+
+/* Checkbox de paso completado */
+.paso-check {
+  display: flex; align-items: center; gap: 10px; margin-top: 16px;
+  padding: 10px 14px; background: var(--fondo-2); border-radius: 10px;
+  cursor: pointer; user-select: none; font-weight: 600; font-size: .93rem;
+  border: 1px dashed var(--borde); transition: all .2s;
+}
+.paso-check:hover { border-color: var(--exito); }
+.paso-check input { width: 20px; height: 20px; accent-color: var(--exito); cursor: pointer; }
+.paso.completado .paso-check { border-style: solid; border-color: var(--exito); color: var(--exito); }
+
+/* Cajas de aviso */
+.caja { border-radius: 12px; padding: 14px 18px; margin: 14px 0; font-size: .95rem; border: 1px solid; }
+.caja b:first-child { display: block; margin-bottom: 4px; }
+.caja-tip { background: rgba(45, 216, 129, .08); border-color: rgba(45, 216, 129, .4); }
+.caja-tip b:first-child { color: var(--exito); }
+.caja-alerta { background: rgba(255, 176, 32, .08); border-color: rgba(255, 176, 32, .4); }
+.caja-alerta b:first-child { color: var(--alerta); }
+.caja-peligro { background: rgba(255, 92, 122, .08); border-color: rgba(255, 92, 122, .4); }
+.caja-peligro b:first-child { color: var(--peligro); }
+.caja-info { background: rgba(0, 229, 255, .07); border-color: rgba(0, 229, 255, .35); }
+.caja-info b:first-child { color: var(--acento-2); }
+
+/* Bloques copiables (prompts, comandos) */
+.copiable {
+  position: relative; background: #0d1120; border: 1px solid var(--borde);
+  border-radius: 12px; padding: 18px; margin: 14px 0;
+  font-family: 'Cascadia Code', Consolas, monospace; font-size: .88rem;
+  white-space: pre-wrap; word-break: break-word; color: #b8e0ff;
+  overflow-x: auto;
+}
+.copiable .btn-copiar {
+  position: absolute; top: 10px; right: 10px;
+  background: var(--tarjeta); color: var(--texto-suave);
+  border: 1px solid var(--borde); border-radius: 8px;
+  padding: 5px 12px; font-size: .78rem; font-weight: 700; cursor: pointer;
+  font-family: 'Segoe UI', sans-serif;
+}
+.copiable .btn-copiar:hover { color: var(--acento-2); border-color: var(--acento-2); }
+.copiable .btn-copiar.copiado { color: var(--exito); border-color: var(--exito); }
+
+kbd {
+  background: var(--fondo-2); border: 1px solid var(--borde); border-bottom-width: 3px;
+  border-radius: 6px; padding: 2px 8px; font-size: .85em; font-family: Consolas, monospace;
+}
+
+/* Tabla */
+table.tabla { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: .93rem; }
+.tabla th { background: var(--fondo-2); text-align: left; }
+.tabla th, .tabla td { padding: 10px 14px; border: 1px solid var(--borde); }
+.tabla-scroll { overflow-x: auto; }
+
+/* Acordeón de solución de problemas */
+details.problema {
+  background: var(--tarjeta); border: 1px solid var(--borde);
+  border-radius: 12px; padding: 0; margin: 10px 0; overflow: hidden;
+}
+details.problema summary {
+  padding: 14px 18px; cursor: pointer; font-weight: 700; list-style: none;
+  display: flex; align-items: center; gap: 10px;
+}
+details.problema summary::before { content: "▸"; color: var(--acento-2); transition: transform .2s; }
+details.problema[open] summary::before { transform: rotate(90deg); }
+details.problema .problema-cuerpo { padding: 0 18px 16px; color: #c9d2ea; }
+
+/* Footer */
+.pie {
+  margin-top: 60px; padding: 26px 0; border-top: 1px solid var(--borde);
+  text-align: center; color: var(--texto-suave); font-size: .88rem;
+}
+
+/* Navegación entre páginas al pie */
+.nav-paginas { display: flex; justify-content: space-between; gap: 12px; margin: 40px 0 10px; flex-wrap: wrap; }
+
+/* ---------- Impresión (para los manuales) ---------- */
+@media print {
+  :root { --fondo: #fff; --fondo-2: #f3f4f8; --tarjeta: #fff; --borde: #c9cede; --texto: #14182b; --texto-suave: #4a5375; }
+  body::before { display: none; }
+  .nav, .progreso-wrap, .paso-check, .btn-copiar, .nav-paginas { display: none !important; }
+  .paso { break-inside: avoid; box-shadow: none; }
+  .copiable { color: #1a2b6b; }
+  details.problema { display: block; }
+  details.problema summary::before { content: "•"; }
+  a { color: inherit; }
+}
+
+@media (max-width: 620px) {
+  .hero { padding: 36px 8px 26px; }
+  .paso { padding: 18px; }
+}
