@@ -9,11 +9,77 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
 </head>
 <body>
+
+<!-- ============================================================
+     INTRO ESTILO VIDEOJUEGO: los 4 agentes construyen una app web
+     (pantalla de carga de ~2 min con botón COMENZAR)
+     ============================================================ -->
+<style>
+#introFX{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;
+  padding:14px;overflow:auto;transition:opacity .7s ease;
+  background:radial-gradient(1000px 600px at 50% -10%,rgba(124,92,255,.28),transparent 60%),
+             radial-gradient(700px 500px at 90% 110%,rgba(0,229,255,.12),transparent 60%),#0b0e1a}
+#introFX.oculto{opacity:0;pointer-events:none}
+.intro-caja{width:min(94vw,880px);text-align:center;font-family:'Courier New',Consolas,monospace}
+.intro-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:4px}
+.intro-titulo{font-weight:900;letter-spacing:2px;font-size:clamp(.95rem,3vw,1.45rem);
+  background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;white-space:nowrap}
+.intro-mini{background:none;border:1px solid var(--borde);color:var(--texto-suave);padding:4px 12px;
+  border-radius:8px;cursor:pointer;font-family:inherit;font-weight:700;font-size:.8rem}
+.intro-mini:hover{color:var(--acento-2);border-color:var(--acento-2)}
+.intro-sub{color:var(--texto-suave);font-size:clamp(.8rem,2vw,.95rem);margin:2px 0 10px;min-height:1.4em}
+.escena{position:relative;width:100%;aspect-ratio:16/9;border:3px solid var(--borde);border-radius:12px;
+  overflow:hidden;background:#0f1526;box-shadow:var(--sombra)}
+.escena canvas{width:100%;height:100%;display:block;image-rendering:pixelated}
+.escena::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:2;
+  background:repeating-linear-gradient(transparent 0 3px,rgba(0,0,0,.09) 3px 4px),
+             radial-gradient(120% 95% at 50% 40%,transparent 62%,rgba(0,0,0,.38))}
+.burbuja{position:absolute;transform:translate(-50%,-100%);background:#f4f7ff;color:#141824;
+  border:2px solid #0b0e1a;border-radius:8px;padding:4px 8px;font-size:clamp(.6rem,1.6vw,.8rem);
+  font-weight:700;line-height:1.3;max-width:200px;display:none;pointer-events:none;z-index:3;
+  box-shadow:0 3px 0 rgba(0,0,0,.4)}
+.burbuja::after{content:'';position:absolute;left:50%;bottom:-9px;transform:translateX(-50%);
+  border:5px solid transparent;border-top-color:#0b0e1a}
+.burbuja b{display:block;font-size:.82em;letter-spacing:.5px;text-transform:uppercase}
+.intro-progreso{margin-top:12px;text-align:left}
+.intro-etq{color:var(--texto-suave);font-size:clamp(.75rem,2vw,.88rem);margin-bottom:4px;min-height:1.3em;font-weight:700}
+.intro-barra{position:relative;height:18px;background:#131829;border:2px solid var(--borde);border-radius:10px;overflow:hidden}
+#introBarra{height:100%;width:0%;background:var(--grad);transition:width .4s linear}
+#introPct{position:absolute;right:9px;top:50%;transform:translateY(-50%);font-size:.72rem;font-weight:900;color:#fff;text-shadow:0 1px 2px #000}
+#btnComenzar{margin-top:16px;font-family:inherit;font-weight:900;font-size:clamp(.95rem,2.6vw,1.3rem);
+  letter-spacing:1px;padding:14px 36px;border-radius:14px;border:none;transition:all .3s}
+#btnComenzar.cargando{background:#161c30;color:var(--texto-suave);border:2px dashed var(--borde);cursor:wait}
+#btnComenzar.listo{background:var(--grad);color:#fff;cursor:pointer;animation:latir 1.2s infinite;
+  box-shadow:0 0 34px rgba(124,92,255,.75)}
+@keyframes latir{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+</style>
+
+<div id="introFX">
+  <div class="intro-caja">
+    <div class="intro-top">
+      <button class="intro-mini" id="introSonido" title="Música">🔇</button>
+      <span class="intro-titulo">🤖 AGENTES DE IA LOCALES</span>
+      <button class="intro-mini" id="introSaltar">Saltar »</button>
+    </div>
+    <p class="intro-sub" id="introSub">Mientras cargamos… mira a un equipo de agentes de IA construir una app web ante tus ojos 👀</p>
+    <div class="escena" id="escena">
+      <canvas id="lienzo" width="320" height="180"></canvas>
+    </div>
+    <div class="intro-progreso">
+      <div class="intro-etq" id="introEtq">Abriendo la oficina…</div>
+      <div class="intro-barra"><div id="introBarra"></div><span id="introPct">0%</span></div>
+    </div>
+    <button id="btnComenzar" class="cargando">⏳ Los agentes están trabajando…</button>
+  </div>
+</div>
+<script>if(sessionStorage.getItem('introVista'))document.getElementById('introFX').style.display='none';</script>
+
 <div class="contenedor">
 
   <nav class="nav">
     <span class="marca">🤖 Agentes <span>IA Local</span></span>
     <div style="display:flex;gap:18px;flex-wrap:wrap">
+      <a href="#" id="verIntro">🎬 Intro</a>
       <a href="#agenda">Agenda</a>
       <a href="#evaluacion">Evaluación</a>
       <a href="#requisitos">Requisitos</a>
@@ -151,5 +217,269 @@
   </footer>
 
 </div>
+
+<script>
+/* ===== INTRO: la oficina pixel-art donde 4 agentes construyen "Huellitas IA" ===== */
+(function(){
+const overlay=document.getElementById('introFX');
+const cv=document.getElementById('lienzo'),ctx=cv.getContext('2d');
+const escena=document.getElementById('escena');
+const etq=document.getElementById('introEtq'),barra=document.getElementById('introBarra'),pctEl=document.getElementById('introPct');
+const btn=document.getElementById('btnComenzar'),sub=document.getElementById('introSub');
+const btnSaltar=document.getElementById('introSaltar'),btnSon=document.getElementById('introSonido');
+ctx.imageSmoothingEnabled=false;
+
+const FIN=112;                      // segundos hasta que la app está lista
+const WORK=[[43,114],[108,114],[183,114],[253,114]];   // puesto de trabajo de cada agente
+const DESKS=[[30,92],[95,92],[170,92],[240,92]];
+const NOM=['Marta','Mateo','Luciana','Ernesto'];
+const COLN=['#d63a63','#a86e00','#6a3df0','#0d8a4f'];
+const SPEC=[
+ {piel:'#f0c8a0',pelo:'#2b1c12',estilo:'bun', ropa:'#ff5c7a',pant:'#1a2036'},
+ {piel:'#c68e5f',pelo:'#4a3320',estilo:'hat', ropa:'#ffb020',pant:'#2a3352'},
+ {piel:'#f0c8a0',pelo:'#7c5cff',estilo:'long',ropa:'#00e5ff',pant:'#1a2036',gafas:1},
+ {piel:'#e8c49a',pelo:'#9aa5c4',estilo:'short',ropa:'#e8ecf8',chaleco:'#2dd881',pant:'#2a3352',mono:1}
+];
+// Área de la app en la pantalla gigante
+const AX=204,AY=16,AW=102,AH=40;
+
+let chars,stage,planStep,confeti,celebrando,shakeHasta,inicio,evi,terminado,lastConf;
+let activo=false,raf=0,el=0,prevEl=0,evT=0;
+
+const bubs=NOM.map(()=>{const d=document.createElement('div');d.className='burbuja';escena.appendChild(d);return d;});
+
+function R(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(x,y,w,h);}
+function marco(x,y,w,h,c){R(x,y,w,1,c);R(x,y+h-1,w,1,c);R(x,y,1,h,c);R(x+w-1,y,1,h,c);}
+
+/* ---------- guion ---------- */
+const EV=[];
+function at(t,f){EV.push([t,f]);}
+function go(i,x,y){const c=chars[i];c.sx=c.x;c.sy=c.y;c.tx=x;c.ty=y;c.t0=evT;c.dur=Math.max(.3,Math.hypot(x-c.sx,y-c.sy)/32);}
+function say(i,tx,d){chars[i].bub={t:tx,hasta:evT+d};}
+function lab(t){etq.textContent=t;}
+function spawn(n){for(let k=0;k<n;k++)confeti.push({x:Math.random()*320,y:-10-Math.random()*60,vx:(Math.random()-.5)*24,vy:26+Math.random()*36,c:['#7c5cff','#00e5ff','#2dd881','#ffb020','#ff5c7a'][k%5]});}
+function finish(){terminado=true;lastConf=el;lab('¡App lista! 🎉');
+  btn.classList.remove('cargando');btn.classList.add('listo');btn.textContent='▶ COMENZAR EL CURSO';
+  sub.textContent='Eso hicieron 4 agentes en 2 minutos. Imagina lo que vas a crear TÚ en 5 días. 🚀';}
+
+at(0.4,()=>{say(0,'¡Equipo! Acaba de llegar un encargo del cliente 📩',3.6);lab('Recibiendo el encargo…');});
+at(4.2,()=>go(0,40,72));
+at(6.2,()=>{say(0,'Quieren una app que encuentre mascotas perdidas con IA: 🐾 Huellitas',5);planStep=1;lab('Planificando…');});
+at(11.5,()=>{go(1,58,88);go(2,78,80);go(3,66,96);});
+at(13.5,()=>{say(0,'Plan: investigar, diseñar y construir. ¡Y sin bugs, Ernesto! 😉',4.5);planStep=2;});
+at(18.5,()=>say(1,'Yo investigo qué quiere la gente 🔎',3.4));
+at(22.2,()=>say(2,'Yo diseño la pantalla y escribo los textos ✍️',3.4));
+at(25.8,()=>say(3,'Y yo pienso romper TODO hasta que quede perfecto 🧐',3.6));
+at(29.6,()=>{say(0,'¡A trabajar! ⚡',2.2);planStep=3;});
+at(31.5,()=>{lab('Investigando…');go(0,43,114);go(1,150,152);go(2,183,114);go(3,253,114);});
+at(35,()=>say(1,'Dato: cada semana se pierde una mascota en el barrio… y nadie sabe dónde buscar 😿',4.5));
+at(39,()=>lab('Diseñando la interfaz…'));
+at(40.5,()=>{stage=1;say(2,'Boceto listo: logo, foto del perrito y botón de REPORTAR 📐',4);});
+at(44.5,()=>go(1,108,114));
+at(46.5,()=>lab('Construyendo…'));
+at(47.5,()=>{stage=2;say(2,'Encabezado con el logo 🐾',3);});
+at(52,()=>{stage=3;say(1,'Secciones listas: mapa, alertas y recompensas 🗺️',4);});
+at(56.5,()=>{stage=4;say(2,'La IA ya reconoce al perrito en las fotos 🐶📸',3.2);});
+at(58,()=>go(3,30,152));
+at(61,()=>say(3,'Control de calidad… del café ☕😏',3.8));
+at(63,()=>{stage=5;});
+at(64,()=>go(0,160,148));
+at(66.5,()=>say(0,'¿Cómo vamos, equipo? 📊',2.8));
+at(68,()=>{stage=6;lab('Dando color…');});
+at(70,()=>{say(2,'Colores de la marca aplicados 🎨',3);go(3,253,114);});
+at(73,()=>go(0,43,114));
+at(75.5,()=>{stage=7;say(2,'¡Botón de REPORTAR instalado! 🟠',3.2);lab('Probando la app…');});
+at(79.5,()=>go(3,255,78));
+at(82.5,()=>say(3,'A ver… clic aquí… 🖱️',2.2));
+at(85,()=>{stage=8;shakeHasta=evT+2.2;say(3,'🐞 ¡¡BUG!! ¡El botón sale volando!',3.8);lab('¡Bug encontrado! 🐞');});
+at(89,()=>{say(2,'¡Ups! Ya lo arreglo 🔧',2.8);lab('Corrigiendo…');});
+at(93.5,()=>{stage=9;say(3,'Mmm… ahora sí. APROBADO ✅',3.2);});
+at(97.5,()=>{lab('Publicando en internet…');go(3,253,114);});
+at(99.5,()=>{stage=10;});
+at(100.5,()=>{go(0,125,150);go(1,150,153);go(2,175,153);go(3,200,150);});
+at(103.5,()=>{celebrando=true;if(el-evT<5)spawn(150);say(0,'🚀 ¡Huellitas IA está EN LÍNEA!',3.8);lab('¡App lista! 🎉');});
+at(108,()=>say(2,'¿Te imaginas tener un equipo así en TU compu? 😉',4.5));
+at(112,()=>finish());
+EV.sort((a,b)=>a[0]-b[0]);
+
+/* ---------- dibujo de la oficina ---------- */
+function drawOficina(t){
+  R(0,0,320,64,'#20263f');                                  // pared
+  R(0,60,320,4,'#2a3352');                                  // zócalo
+  for(let ty=64;ty<180;ty+=8)for(let tx=0;tx<320;tx+=16)    // piso ajedrez
+    R(tx,ty,16,8,((tx/16+(ty-64)/8)%2)?'#171c30':'#1b2138');
+
+  // pizarra
+  R(12,12,56,44,'#3a4266');R(16,16,48,36,'#dfe6f5');
+  if(planStep>=1)R(20,20,26,2,'#7c5cff');
+  if(planStep>=2){[26,33,40].forEach((y,k)=>{R(20,y,4,4,'#59639a');R(21,y+1,2,2,'#dfe6f5');
+    const ok=[3,7,10][k];if(stage>=ok)R(21,y+1,2,2,'#2dd881');R(27,y+1,26,2,'#8a94bd');});}
+  if(planStep>=3)R(20,47,40,2,'#00e5ff');
+
+  // ventana con noche estrellada
+  R(76,14,44,38,'#3a4266');R(80,18,36,30,'#0d1224');
+  for(let k=0;k<7;k++){if(((k*7+((t*1.5)|0))%5)>0)R(82+(k*47)%32,20+(k*29)%18,1,1,'#e8ecf8');}
+  R(104,22,5,5,'#e8ecf8');R(103,22,1,1,'#0d1224');
+  R(81,40,7,8,'#1a2036');R(90,36,8,12,'#1a2036');R(100,42,9,6,'#1a2036');
+  R(83,42,1,1,'#ffb020');R(92,39,1,1,'#ffb020');R(95,43,1,1,'#ffb020');R(103,44,1,1,'#ffb020');
+  R(97,18,2,30,'#3a4266');R(80,32,36,2,'#3a4266');
+
+  // póster del robot 🤖
+  R(132,18,26,34,'#3a4266');R(134,20,22,30,'#131829');
+  R(140,26,10,7,'#9aa5c4');R(142,28,2,2,'#00e5ff');R(146,28,2,2,'#00e5ff');
+  R(144,23,2,3,'#9aa5c4');R(144,22,2,1,'#ff5c7a');R(141,34,8,6,'#7c5cff');
+  R(138,43,14,1,'#59639a');R(140,46,10,1,'#59639a');
+
+  // pantalla gigante
+  R(196,8,118,56,'#3a4266');R(200,12,110,48,'#0f1526');
+  drawApp(t);
+  R(252,64,6,2,stage>=10?'#2dd881':'#ff5c7a');
+
+  // cafetera
+  R(8,128,16,24,'#3a4266');R(10,132,12,6,'#131829');
+  R(11,133,2,2,((t*2|0)%2)?'#2dd881':'#ff5c7a');
+  R(14,140,4,4,'#131829');R(14,146,4,3,'#e8ecf8');
+  R(15,124-((t*6|0)%8),1,1,'rgba(232,236,248,.5)');R(17,122-((t*5|0)%7),1,1,'rgba(232,236,248,.35)');
+
+  // planta
+  R(298,146,10,8,'#6b4a2f');R(299,130,8,6,'#2dd881');R(296,136,14,10,'#2dd881');
+  R(300,133,3,3,'#25b56b');R(304,140,4,3,'#25b56b');
+
+  // escritorios
+  DESKS.forEach((d,i)=>{
+    const c=chars[i],typ=!andando(c)&&Math.abs(c.x-WORK[i][0])<2&&Math.abs(c.y-WORK[i][1])<2;
+    R(d[0]+7,d[1]-10,12,9,'#11162a');
+    R(d[0]+8,d[1]-9,10,7,typ&&((t*4|0)%2)?'#134a5e':'#0e2233');
+    if(typ)R(d[0]+9+((t*7|0)%7),d[1]-5,1,1,'#00e5ff');
+    R(d[0],d[1],26,4,'#7d5a3a');R(d[0],d[1]+4,26,2,'#6b4a2f');
+    R(d[0]+1,d[1]+6,2,7,'#4a3320');R(d[0]+23,d[1]+6,2,7,'#4a3320');
+    R(d[0]+9,d[1]+1,8,2,'#131829');
+  });
+}
+
+/* ---------- la app que se va construyendo ---------- */
+function A(x,y,w,h,c){R(AX+x,AY+y,w,h,c);}
+function drawApp(t){
+  const blink=((t*3|0)%2);
+  if(stage===0){if(blink)A(4,4,3,2,'#e8ecf8');return;}
+  if(stage>=6)A(0,0,AW,AH,'#101b36');
+  // wireframe
+  marco(AX+2,AY+2,AW-4,7,'#39456f');marco(AX+2,AY+12,46,20,'#39456f');
+  [13,18,23,28].forEach(y=>A(52,y,AW-56,1,'#2c3657'));marco(AX+52,AY+32,26,6,'#39456f');
+  if(stage>=2){A(2,2,AW-4,7,'#7c5cff');A(4,4,3,3,'#ffb020');A(9,4,18,2,'#e8ecf8');}
+  if(stage>=3){A(AW-34,4,8,3,'#00e5ff');A(AW-24,4,8,3,'#00e5ff');A(AW-14,4,8,3,'#00e5ff');}
+  if(stage>=4){A(2,12,46,20,'#1d3a30');A(2,28,46,4,'#245240');  // foto: perrito perdido en el parque
+    A(14,22,15,6,'#c68e5f');                                    // cuerpo
+    A(26,15,9,8,'#c68e5f');A(26,13,3,3,'#8a5a33');A(32,13,3,3,'#8a5a33'); // cabeza y orejas
+    A(33,19,4,3,'#e8c49a');A(35,19,2,2,'#0b0e1a');               // hocico y nariz
+    A(29,18,1,1,'#0b0e1a');A(32,18,1,1,'#0b0e1a');               // ojos
+    A(26,23,9,1,'#ff5c7a');                                      // collar
+    A(15,28,2,3,'#c68e5f');A(20,28,2,3,'#c68e5f');A(25,28,2,3,'#c68e5f');
+    A(11,17+((t*6|0)%2)*2,3,3,'#c68e5f');                        // cola moviéndose
+    if((t*3|0)%2){A(40,13,4,4,'#ffb020');A(41,17,2,3,'#ffb020');}} // pin de GPS parpadeando
+  if(stage>=5){A(52,13,44,2,'#9aa5c4');A(52,18,40,2,'#9aa5c4');A(52,23,42,2,'#9aa5c4');A(52,28,30,2,'#9aa5c4');}
+  if(stage>=7&&stage!==8){A(52,32,26,6,'#ffb020');A(56,34,5,2,'#3a2a00');A(63,34,5,2,'#3a2a00');A(70,34,5,2,'#3a2a00');}
+  if(stage===8){A(64,35,26,6,'#ffb020');A(68,37,14,2,'#3a2a00');   // el botón "voló"
+    for(let k=0;k<8;k++)A((k*37)%(AW-4)+2,(k*23)%(AH-4)+2,2,2,'#ff5c7a');
+    if(blink)A(0,0,AW,AH,'rgba(255,92,122,.16)');}
+  if(stage>=10){A(84,4,3,3,'#2dd881');A(87,2,2,2,'#2dd881');A(82,6,2,2,'#2dd881');  // ✓
+    for(let k=0;k<6;k++){if(((t*4|0)+k)%3===0)A((k*41)%(AW-4)+2,(k*17)%(AH-4)+2,1,1,'#fff');}}
+  R(AX,AY+((t*14)%AH|0),AW,1,'rgba(255,255,255,.05)');
+}
+
+/* ---------- personajes ---------- */
+function andando(c){return el<c.t0+c.dur&&(c.tx!==c.sx||c.ty!==c.sy);}
+function drawPersona(c,i,t){
+  let x=Math.round(c.x),y=Math.round(c.y);
+  const s=SPEC[i],walk=andando(c);
+  if(walk)y-=((t*8|0)%2);
+  if(celebrando)y-=Math.round(Math.abs(Math.sin(t*5+i*1.3))*4);
+  const L=x-6,T=y-18;
+  R(L+3,y-5,2,5,s.pant);R(L+7,y-5,2,5,s.pant);
+  R(L+3,y-1,2,1,'#0b0e1a');R(L+7,y-1,2,1,'#0b0e1a');
+  R(L+2,T+8,8,6,s.ropa);
+  if(s.chaleco){R(L+2,T+8,2,6,s.chaleco);R(L+8,T+8,2,6,s.chaleco);}
+  R(L+1,T+8,1,4,s.ropa);R(L+10,T+8,1,4,s.ropa);
+  R(L+1,T+12,1,1,s.piel);R(L+10,T+12,1,1,s.piel);
+  const typ=!walk&&Math.abs(c.x-WORK[i][0])<2&&Math.abs(c.y-WORK[i][1])<2;
+  if(typ)R(L+3+((t*9|0)%2),T+13,6,1,s.piel);                 // manos tecleando
+  R(L+3,T+3,6,5,s.piel);
+  R(L+3,T,6,3,s.pelo);
+  if(s.estilo==='bun')R(L+9,T+1,2,2,s.pelo);
+  if(s.estilo==='hat'){R(L+2,T+2,8,1,'#6b4a2f');R(L+3,T,6,2,'#5a3d26');}
+  if(s.estilo==='long'){R(L+2,T+3,1,6,s.pelo);R(L+9,T+3,1,6,s.pelo);}
+  if(s.estilo==='short')R(L+2,T+3,1,2,s.pelo);
+  R(L+4,T+5,1,1,'#0b0e1a');R(L+7,T+5,1,1,'#0b0e1a');
+  if(s.gafas){R(L+4,T+5,2,1,'#bfe3ff');R(L+7,T+5,2,1,'#bfe3ff');R(L+6,T+5,1,1,'#9aa5c4');}
+  if(s.mono){marco(L+6,T+4,3,3,'#ffd700');R(L+7,T+5,1,1,'#0b0e1a');}
+}
+
+/* ---------- música chiptune (opcional) ---------- */
+let actx=null,sonido=false,sig=0,mi=0;
+const MEL=[659,784,880,784,659,587,523,587,659,523,587,659,440,523,587,523];
+const BAJ=[131,131,98,98,110,110,87,98];
+function nota(f,t,d,tipo,v){if(!f)return;const o=actx.createOscillator(),g=actx.createGain();
+  o.type=tipo;o.frequency.value=f;g.gain.setValueAtTime(v,t);
+  g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g);g.connect(actx.destination);o.start(t);o.stop(t+d+.02);}
+function musica(){if(!sonido||!actx)return;
+  while(sig<actx.currentTime+.3){nota(MEL[mi],sig,.16,'square',.04);
+    if(mi%2===0)nota(BAJ[(mi>>1)%BAJ.length],sig,.24,'triangle',.055);
+    sig+=.24;mi=(mi+1)%MEL.length;}}
+btnSon.onclick=()=>{if(!actx)actx=new (window.AudioContext||window.webkitAudioContext)();
+  sonido=!sonido;if(sonido)sig=actx.currentTime+.05;btnSon.textContent=sonido?'🔊':'🔇';};
+
+/* ---------- bucle principal ---------- */
+function frame(){
+  el=(performance.now()-inicio)/1000;const t=el;
+  while(evi<EV.length&&EV[evi][0]<=el){evT=EV[evi][0];EV[evi][1]();evi++;}
+  chars.forEach(c=>{if(el<c.t0+c.dur){const k=Math.max(0,(el-c.t0)/c.dur);
+    c.x=c.sx+(c.tx-c.sx)*k;c.y=c.sy+(c.ty-c.sy)*k;}else{c.x=c.tx;c.y=c.ty;}});
+  const p=terminado?100:Math.min(99,el/FIN*100);
+  barra.style.width=p+'%';pctEl.textContent=Math.round(p)+'%';
+
+  ctx.save();
+  if(el<shakeHasta)ctx.translate(Math.round(Math.sin(el*60)*1.5),Math.round(Math.cos(el*47)*1.2));
+  drawOficina(t);
+  [...chars.keys()].sort((a,b)=>chars[a].y-chars[b].y).forEach(i=>drawPersona(chars[i],i,t));
+  const dt=Math.min(.05,Math.max(0,el-prevEl));prevEl=el;
+  confeti=confeti.filter(pt=>{pt.x+=pt.vx*dt;pt.y+=pt.vy*dt;
+    if(pt.y>186)return false;R(pt.x|0,pt.y|0,2,2,pt.c);return true;});
+  ctx.restore();
+  if(terminado&&el-lastConf>6){spawn(35);lastConf=el;}
+
+  chars.forEach((c,i)=>{const b=bubs[i];
+    if(c.bub&&el<c.bub.hasta){b.style.display='block';
+      b.innerHTML='<b style="color:'+COLN[i]+'">'+NOM[i]+'</b>'+c.bub.t;
+      b.style.left=Math.min(88,Math.max(12,c.x/320*100))+'%';
+      b.style.top=((c.y-22)/180*100)+'%';}
+    else b.style.display='none';});
+
+  musica();
+  if(activo)raf=requestAnimationFrame(frame);
+}
+
+/* ---------- control ---------- */
+function reset(){
+  chars=WORK.map(p=>({x:p[0],y:p[1],sx:p[0],sy:p[1],tx:p[0],ty:p[1],t0:0,dur:0,bub:null}));
+  stage=0;planStep=0;confeti=[];celebrando=false;shakeHasta=0;evi=0;terminado=false;lastConf=0;
+  inicio=performance.now();el=0;prevEl=0;
+  etq.textContent='Abriendo la oficina…';barra.style.width='0%';pctEl.textContent='0%';
+  btn.className='cargando';btn.textContent='⏳ Los agentes están trabajando…';
+  sub.textContent='Mientras cargamos… mira a un equipo de agentes de IA construir una app web ante tus ojos 👀';
+}
+function abrir(){overlay.style.display='flex';overlay.classList.remove('oculto');
+  document.body.style.overflow='hidden';reset();
+  if(!activo){activo=true;raf=requestAnimationFrame(frame);}}
+function cerrar(){sonido=false;btnSon.textContent='🔇';sessionStorage.setItem('introVista','1');
+  overlay.classList.add('oculto');document.body.style.overflow='';
+  setTimeout(()=>{overlay.style.display='none';activo=false;cancelAnimationFrame(raf);},750);}
+
+btn.onclick=()=>{if(btn.classList.contains('listo'))cerrar();};
+btnSaltar.onclick=()=>{inicio=performance.now()-(FIN+0.2)*1000;};
+document.getElementById('verIntro').onclick=e=>{e.preventDefault();abrir();};
+
+if(!sessionStorage.getItem('introVista'))abrir();
+})();
+</script>
 </body>
 </html>
