@@ -15,12 +15,16 @@
      (pantalla de carga de ~2 min con botón COMENZAR)
      ============================================================ -->
 <style>
-#introFX{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;
-  padding:14px;overflow:auto;transition:opacity .7s ease;
+#introFX{position:fixed;inset:0;z-index:1000;display:flex;
+  padding:10px 14px;overflow:auto;transition:opacity .7s ease;
   background:radial-gradient(1000px 600px at 50% -10%,rgba(124,92,255,.28),transparent 60%),
              radial-gradient(700px 500px at 90% 110%,rgba(0,229,255,.12),transparent 60%),#0b0e1a}
 #introFX.oculto{opacity:0;pointer-events:none}
-.intro-caja{width:min(94vw,880px);text-align:center;font-family:'Courier New',Consolas,monospace}
+/* margin:auto centra SIN recortar el tope cuando el contenido no cabe (a diferencia de align-items:center),
+   y el ancho también se limita por la ALTURA del viewport para que título, barra y botón siempre entren */
+.intro-caja{width:max(280px,min(94vw,880px,calc((100vh - 250px)*1.7778)));margin:auto;
+  text-align:center;font-family:'Courier New',Consolas,monospace}
+@supports (height:100dvh){.intro-caja{width:max(280px,min(94vw,880px,calc((100dvh - 250px)*1.7778)))}}
 .intro-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:4px}
 .intro-titulo{font-weight:900;letter-spacing:2px;font-size:clamp(.95rem,3vw,1.45rem);
   background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;white-space:nowrap}
@@ -52,6 +56,11 @@
 #btnComenzar.listo{background:var(--grad);color:#fff;cursor:pointer;animation:latir 1.2s infinite;
   box-shadow:0 0 34px rgba(124,92,255,.75)}
 @keyframes latir{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+@media (max-height:600px){
+  .intro-sub{margin:2px 0 6px}
+  .intro-progreso{margin-top:8px}
+  #btnComenzar{margin-top:10px;padding:10px 28px}
+}
 </style>
 
 <div id="introFX">
@@ -207,13 +216,12 @@
         <li>💻 Una laptop o PC con <b>Windows 10/11</b> (también sirve Mac o Linux) y de preferencia <b>8 GB de RAM</b>. ¿Tienes menos? Hay plan B, tranquilo.</li>
         <li>💾 Unos <b>10 GB libres</b> en disco para los modelos de IA.</li>
         <li>📱 Tu <b>celular con cámara</b> para el día 4 (fotografiar documentos). Gmail y Telegram solo si haces los talleres bonus de la nube.</li>
-        <li>🧠 <b>Cero conocimientos de programación.</b> En serio. Ese es justamente el punto del curso.</li>
       </ul>
     </div>
   </section>
 
   <footer class="pie">
-    Curso <b>Agentes de IA Locales</b> · ISTER 2026 · Ing. David Minango. PhD. · Hecho con 🤖 y ☕
+    Curso <b>Agentes de IA Locales</b> · ISTER 2026 · Ing. David Minango. PhD.
   </footer>
 
 </div>
