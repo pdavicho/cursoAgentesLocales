@@ -54,9 +54,7 @@ body::before { content: ""; position: fixed; inset: 0; z-index: -1;
 }
 .escritorio.activo { border-color: var(--acento2); box-shadow: 0 0 24px rgba(0,229,255,.25); }
 .escritorio.hecho { border-color: rgba(45,216,129,.55); }
-.avatar { font-size: clamp(2.4rem, 5vw, 3.4rem); line-height: 1; transition: transform .3s; }
-.escritorio.activo .avatar { animation: pensar 1s ease-in-out infinite; }
-@keyframes pensar { 0%,100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-7px) rotate(2deg); } }
+.avatar-px { width: clamp(96px, 11vw, 126px); image-rendering: pixelated; }
 .nombre { font-weight: 800; font-size: .98rem; }
 .rol { color: var(--suave); font-size: .78rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
 .chip-estado {
@@ -141,28 +139,28 @@ details.config .cuerpo { padding: 0 16px 16px; display: flex; flex-direction: co
   <div class="oficina">
     <div class="escritorios">
       <div class="escritorio" id="desk-0">
-        <div class="avatar">👩‍💼</div>
+        <canvas class="avatar-px" id="ava-0" width="48" height="56"></canvas>
         <div class="nombre">Marta</div>
         <div class="rol">Jefa de proyecto</div>
         <div class="chip-estado" id="estado-0">💤 esperando</div>
         <div class="burbuja" id="burbuja-0">Lista para recibir el encargo del cliente (o sea, tú).</div>
       </div>
       <div class="escritorio" id="desk-1">
-        <div class="avatar">🕵️</div>
+        <canvas class="avatar-px" id="ava-1" width="48" height="56"></canvas>
         <div class="nombre">Mateo</div>
         <div class="rol">Investigador</div>
         <div class="chip-estado" id="estado-1">💤 esperando</div>
         <div class="burbuja" id="burbuja-1">Afilando ideas y datos…</div>
       </div>
       <div class="escritorio" id="desk-2">
-        <div class="avatar">👩‍💻</div>
+        <canvas class="avatar-px" id="ava-2" width="48" height="56"></canvas>
         <div class="nombre">Luciana</div>
         <div class="rol">Redactora</div>
         <div class="chip-estado" id="estado-2">💤 esperando</div>
         <div class="burbuja" id="burbuja-2">Con el teclado caliente.</div>
       </div>
       <div class="escritorio" id="desk-3">
-        <div class="avatar">🧐</div>
+        <canvas class="avatar-px" id="ava-3" width="48" height="56"></canvas>
         <div class="nombre">Ernesto</div>
         <div class="rol">Crítico de calidad</div>
         <div class="chip-estado" id="estado-3">💤 esperando</div>
@@ -237,12 +235,96 @@ const equipo = [
   { nombre: 'Ernesto', sistema: 'Eres Ernesto, el crítico de calidad: implacable pero constructivo, con humor fino. En español, lee el borrador y entrega exactamente 3 mejoras concretas y accionables en viñetas. NO reescribas el texto completo. Máximo 70 palabras.' },
 ];
 
+/* ---------- Avatares pixel-art (los mismos personajes de la intro de la portada) ---------- */
+const AVSPEC = [
+  { piel:'#f0c8a0', pelo:'#2b1c12', estilo:'bun',   ropa:'#ff5c7a', pant:'#1a2036' },
+  { piel:'#c68e5f', pelo:'#4a3320', estilo:'hat',   ropa:'#ffb020', pant:'#2a3352' },
+  { piel:'#f0c8a0', pelo:'#7c5cff', estilo:'long',  ropa:'#00e5ff', pant:'#1a2036', gafas:1 },
+  { piel:'#e8c49a', pelo:'#9aa5c4', estilo:'short', ropa:'#e8ecf8', pant:'#2a3352', chaleco:'#2dd881', mono:1 },
+];
+const estados = ['espera', 'espera', 'espera', 'espera'];
+const hechoAt = [-9, -9, -9, -9];            // cuándo terminó cada uno (para el festejo)
+const avConf = [[], [], [], []];             // confeti por escritorio
+const avCtx = [0, 1, 2, 3].map(i => { const c = $('ava-' + i).getContext('2d'); c.imageSmoothingEnabled = false; return c; });
+
+function lanzaConfeti(i) {
+  const cols = ['#7c5cff', '#00e5ff', '#2dd881', '#ffb020', '#ff5c7a'];
+  for (let k = 0; k < 14; k++) avConf[i].push({ x: 4 + Math.random() * 40, y: -2 - Math.random() * 10, vx: (Math.random() - .5) * 10, vy: 16 + Math.random() * 20, c: cols[k % 5] });
+}
+
+function pxAvatar(i, t) {
+  const x = avCtx[i], st = estados[i], s = AVSPEC[i];
+  const P = (px, py, w, h, c) => { x.fillStyle = c; x.fillRect(px, py, w, h); };
+  const M = (mx, my, w, h, c) => { P(mx, my, w, 1, c); P(mx, my + h - 1, w, 1, c); P(mx, my, 1, h, c); P(mx + w - 1, my, 1, h, c); };
+  x.clearRect(0, 0, 48, 56);
+
+  // monitor sobre el escritorio
+  P(16, 4, 16, 13, '#3a4266');
+  let scr = '#0e2233';
+  if (st === 'activo') scr = ((t * 4 | 0) % 2) ? '#134a5e' : '#0e2233';
+  if (st === 'hecho') scr = '#10331f';
+  P(18, 6, 12, 9, scr);
+  if (st === 'activo') { P(19, 8, 6, 1, '#1d5a72'); P(19 + ((t * 7 | 0) % 10), 12, 1, 1, '#00e5ff'); }
+  if (st === 'hecho') { P(21, 11, 1, 1, '#2dd881'); P(22, 12, 1, 1, '#2dd881'); P(23, 11, 1, 1, '#2dd881'); P(24, 10, 1, 1, '#2dd881'); P(25, 9, 1, 1, '#2dd881'); }
+  P(23, 17, 2, 1, '#2a3352');
+
+  // puntitos de "pensando" cuando trabaja
+  if (st === 'activo') for (let k = 0; k < 3; k++) if (((t * 2.5 | 0) % 4) > k) P(35 + k * 4, 2, 2, 2, '#00e5ff');
+
+  // escritorio con teclado
+  P(6, 18, 36, 4, '#7d5a3a'); P(6, 22, 36, 2, '#6b4a2f');
+  P(8, 24, 2, 8, '#4a3320'); P(38, 24, 2, 8, '#4a3320');
+  P(19, 19, 10, 2, '#131829');
+
+  // personaje (festeja un ratito al terminar)
+  const fiesta = st === 'hecho' && (t - hechoAt[i]) < 3;
+  let y = 50;
+  if (fiesta) y -= Math.round(Math.abs(Math.sin(t * 5 + i)) * 3);
+  const L = 18, T = y - 18;
+  P(L + 3, y - 5, 2, 5, s.pant); P(L + 7, y - 5, 2, 5, s.pant);
+  P(L + 3, y - 1, 2, 1, '#0b0e1a'); P(L + 7, y - 1, 2, 1, '#0b0e1a');
+  P(L + 2, T + 8, 8, 6, s.ropa);
+  if (s.chaleco) { P(L + 2, T + 8, 2, 6, s.chaleco); P(L + 8, T + 8, 2, 6, s.chaleco); }
+  if (fiesta) { P(L, T + 3, 1, 5, s.ropa); P(L + 11, T + 3, 1, 5, s.ropa); P(L, T + 2, 1, 1, s.piel); P(L + 11, T + 2, 1, 1, s.piel); }
+  else { P(L + 1, T + 8, 1, 4, s.ropa); P(L + 10, T + 8, 1, 4, s.ropa); P(L + 1, T + 12, 1, 1, s.piel); P(L + 10, T + 12, 1, 1, s.piel); }
+  if (st === 'activo') P(L + 3 + ((t * 9 | 0) % 2), T + 13, 6, 1, s.piel);   // manos tecleando
+  P(L + 3, T + 3, 6, 5, s.piel);
+  P(L + 3, T, 6, 3, s.pelo);
+  if (s.estilo === 'bun') P(L + 9, T + 1, 2, 2, s.pelo);
+  if (s.estilo === 'hat') { P(L + 2, T + 2, 8, 1, '#6b4a2f'); P(L + 3, T, 6, 2, '#5a3d26'); }
+  if (s.estilo === 'long') { P(L + 2, T + 3, 1, 6, s.pelo); P(L + 9, T + 3, 1, 6, s.pelo); }
+  if (s.estilo === 'short') P(L + 2, T + 3, 1, 2, s.pelo);
+  const guino = st === 'espera' && ((t + i * 1.1) % 3.4) < 0.14;   // parpadeo mientras espera
+  if (!guino) { P(L + 4, T + 5, 1, 1, '#0b0e1a'); P(L + 7, T + 5, 1, 1, '#0b0e1a'); }
+  if (s.gafas) { P(L + 4, T + 5, 2, 1, '#bfe3ff'); P(L + 7, T + 5, 2, 1, '#bfe3ff'); P(L + 6, T + 5, 1, 1, '#9aa5c4'); }
+  if (s.mono) { M(L + 6, T + 4, 3, 3, '#ffd700'); P(L + 7, T + 5, 1, 1, '#0b0e1a'); }
+}
+
+let avPrev = 0;
+function frameAv(now) {
+  const t = now / 1000, dt = Math.min(.05, Math.max(0, t - avPrev));
+  avPrev = t;
+  for (let i = 0; i < 4; i++) {
+    pxAvatar(i, t);
+    avConf[i] = avConf[i].filter(p => {
+      p.x += p.vx * dt; p.y += p.vy * dt;
+      if (p.y > 54) return false;
+      avCtx[i].fillStyle = p.c; avCtx[i].fillRect(p.x | 0, p.y | 0, 2, 2);
+      return true;
+    });
+  }
+  requestAnimationFrame(frameAv);
+}
+requestAnimationFrame(frameAv);
+
 /* ---------- Utilidades de escena ---------- */
 function setDesk(i, estado, texto) {
   const desk = $('desk-' + i);
   desk.classList.remove('activo', 'hecho');
   if (estado === 'activo') desk.classList.add('activo');
   if (estado === 'hecho') desk.classList.add('hecho');
+  if (estado === 'hecho' && estados[i] !== 'hecho') { hechoAt[i] = performance.now() / 1000; lanzaConfeti(i); }
+  estados[i] = estado;
   $('estado-' + i).textContent = estado === 'activo' ? '🤔 trabajando…' : estado === 'hecho' ? '✅ listo' : '💤 esperando';
   if (texto !== undefined) $('burbuja-' + i).textContent = texto;
 }
